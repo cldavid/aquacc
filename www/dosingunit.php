@@ -8,7 +8,7 @@ function driveMotor_form($id) {
 	echo "
 		<br/>
 		<center>
-		<form action=\"aquacc.php\">
+		<form action=\"aquacc.php?app=dosingunit&cmd=drivemotor\" method=\"post\">
 		<table>
 			<tr>
 				<td><label>Motor</label></td>
@@ -72,7 +72,7 @@ function setMotorInfo_form($id) {
 	echo "
 		<br/>
 		<center>
-		<form action=\"aquacc.php\">
+		<form action=\"aquacc.php?app=dosingunit&cmd=setmotorinfo\" method=\"post\">
 		<table>
 			<tr>
 				<td><label>Motor</label></td>
@@ -103,6 +103,11 @@ function setMotorInfo_form($id) {
 		</center>
 		";
 
+}
+
+function dosingVolumeToTime($v) {
+	global $DOSINGCONSTANT;
+	return round($v / $DOSINGCONSTANT);
 }
 
 function dosingTimeToVolume($t) {
@@ -190,9 +195,14 @@ function getMotorInfo($fp, $id) {
 		}
 	}
 	date_default_timezone_set('Europe/Brussels');
-	echo "<form action=\"aquacc.php\">";
+	echo "<form action=\"aquacc.php?app=dosingunit&cmd=disablemotor\" method=\"post\">";
 	echo "<table>";
-	echo "<tr><td>Motor:</td><td>$motor_id</td><td><input type=\"submit\" value=\"Disable\"></td>\n";
+	echo "<tr><td>Motor:</td><td>$motor_id</td>
+			  <td>
+			  	<input type=\"hidden\" name=\"motor_id\" value=\"$motor_id\"/>
+				<input type=\"submit\" value=\"Disable\"/>
+			  </td>
+		  </tr>\n";
 	echo "<tr><td>Start:</td><td colspan\"2\">" . date('d-m-Y H:i:s', $motor_start) . "</td></tr>\n";
 	echo "<tr><td>Stop:</td><td colspan\"2\">" . date('d-m-Y H:i:s', $motor_stop) . "</td></tr>\n";
 	echo "<tr><td>Duration:</td><td colspan\"2\">$motor_for seconds (". dosingTimeToVolume($motor_for)  . "ml )</td></tr>\n";
@@ -201,24 +211,30 @@ function getMotorInfo($fp, $id) {
 	echo "</form>";
 }
 
-function dosingShowSchedule() {
-	set_time_limit(5);
+function dosingOpenSocket() {
 	$fp = fsockopen("192.168.1.21", 5000, $errno, $errstr, 30);
 	if (!$fp) {
 		echo "$errstr ($errno)<br />\n";
-	} else {
-		echo "<center>";
-		echo "<table width=\"100%\">
-			<tr><td colspan=\"3\" align=\"center\"><b>Schedule dosing unit</b></td></tr>
-			<tr><td>";
-		getMotorInfo($fp, 1);
-		echo "</td><td>";
-		getMotorInfo($fp, 2);
-		echo "</td><td>";
-		getMotorInfo($fp, 3);
-		echo "</td></tr></table>";
-		echo "</center>";
-		fclose($fp);
 	}
+	return $fp;
+}
+
+function dosingShowSchedule() {
+	$fp = dosingOpenSocket();
+	if (!$fp) {
+		return;
+	}
+	echo "<center>";
+	echo "<table width=\"100%\">
+		<tr><td colspan=\"3\" align=\"center\"><b>Schedule dosing unit</b></td></tr>
+		<tr><td>";
+	getMotorInfo($fp, 1);
+	echo "</td><td>";
+	getMotorInfo($fp, 2);
+	echo "</td><td>";
+	getMotorInfo($fp, 3);
+	echo "</td></tr></table>";
+	echo "</center>";
+	fclose($fp);
 }
 ?>
