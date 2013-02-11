@@ -49,7 +49,7 @@ int makeSocket (int16_t port) {
 /* Connection request on original socket. */
 int acceptSocket(int sock) {
 	int                 new;
-	size_t              size;
+	socklen_t           size;
 	struct sockaddr_in  clientname;
 	char                *host;
 	uint16_t            port;

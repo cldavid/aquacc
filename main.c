@@ -24,7 +24,7 @@ ssize_t	setUnixTime(int fd, time_t cur_time) {
 	return(writen_ni(fd, string, len));
 }
 
-int main(int argc, char *argv[], char *envp[]) {
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)), char *envp[] __attribute__ ((unused))) {
 	fd_set                  read_fds;
 	fd_set 	       	        read_fd_set;
 	fd_set			write_fds;
@@ -81,7 +81,7 @@ int main(int argc, char *argv[], char *envp[]) {
 						for (i = 0; i < MAX_SOCKETS; i++) {
 							if (socks[i].free) {
 								if (socks[i].has_w_data) {
-									printf("Appending wlen %d + dos_len %d\n", socks[i].w_len, dos_len);
+									printf("Appending wlen %lu + dos_len %lu\n", socks[i].w_len, dos_len);
 									memcpy(socks[i].w_buffer + socks[i].w_len, dos_buffer, dos_len);
 									socks[i].has_w_data = 1;
 									socks[i].w_len += dos_len;
