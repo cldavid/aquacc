@@ -60,7 +60,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	ssize_t			dos_len;
 	struct timeval 		stimeout;
 
-	//daemonize();
+	daemonize();
 
 	initSocket();
 	if (listenSocket(fd_socket, 1) < 0) {
@@ -99,7 +99,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 						for (i = 0; i < MAX_SOCKETS; i++) {
 							if (socks[i].free) {
 								if (socks[i].has_w_data) {
-									printf("Appending wlen %lu + dos_len %lu\n", socks[i].w_len, dos_len);
+									printf("Appending wlen %u + dos_len %u\n", socks[i].w_len, dos_len);
 									memcpy(socks[i].w_buffer + socks[i].w_len, dos_buffer, dos_len);
 									socks[i].has_w_data = 1;
 									socks[i].w_len += dos_len;

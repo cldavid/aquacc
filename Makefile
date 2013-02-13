@@ -21,5 +21,13 @@ clean:
 	rm -rf $(TARGET) $(OBJS) 
 
 install:
-	echo "INSTALL" 
-
+	@echo "INSTALL" 
+	install -d /usr/local/bin
+	install -m 0755 aquacc /usr/local/bin/aquacc
+	install -m 0755 etc/init.d/aquacc /etc/init.d/aquacc
+	@echo
+	@echo "###"
+	@echo "# Run:"
+	@echo "# sudo update-rc.d aquacc defaults"
+	@echo "# If you want aquacc to start automatically at boot."
+	@echo "###"

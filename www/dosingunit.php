@@ -231,7 +231,7 @@ function getMotorInfo($fp, $id) {
 }
 
 function dosingOpenSocket() {
-	$fp = fsockopen("192.168.1.21", 5000, $errno, $errstr, 30);
+	$fp = fsockopen("localhost", 5000, $errno, $errstr, 30);
 	if (!$fp) {
 		echo "$errstr ($errno)<br />\n";
 	}
