@@ -1,0 +1,31 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          aquacc
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Should-Start:      autofs $network $named 
+# Should-Stop:       autofs $network $named 
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Aquarium Control Center
+# Description:       Starts the aquarium controll center daemon.
+### END INIT INFO
+PATH=$PATH:/usr/bin:/bin
+case "$1" in
+	start|"")
+		/usr/local/bin/aquacc
+	;;
+	restart|reload|force-reload)
+		echo "Error: argument '$1' not supported" >&2
+		exit 3
+	;;
+	stop)
+		killall aquacc
+	;;
+	*)
+		echo "Usage: aquacc [start|stop]" >&2
+		exit 3
+	;;
+esac
+
+exit 0
