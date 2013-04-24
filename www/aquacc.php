@@ -20,6 +20,7 @@
 ?>
 <html>
 	<head>
+		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 		<title>Aquarium Control Center</title>
 	</head>
 	<body bgcolor="#C6CED9">

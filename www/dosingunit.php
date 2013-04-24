@@ -91,7 +91,7 @@ function setMotorInfo_form($id) {
 	echo "
 		<br/>
 		<center>
-		<form action=\"aquacc.php?app=dosingunit&cmd=setmotorinfo\" method=\"post\">
+		<form id=\"setMotorInfo\" action=\"aquacc.php?app=dosingunit&cmd=setmotorinfo\" method=\"post\">
 		<table>
 			<tr>
 				<td><label>Motor</label></td>
@@ -104,18 +104,40 @@ function setMotorInfo_form($id) {
 			echo "<option value=\"$i\">$i</option>";
 		}
 	}
+	$today = getdate();
 	echo "
 					</select>
 				</td>
 				<td><label>Start</label></td>
-				<td><input type=\"text\" name=\"motor_start\"></td>
-				<td><label>Duration</label></td>
-				<td><input type=\"text\" name=\"motor_for\"></td>
-				<td><label>Frequency</label></td>
-				<td><input type=\"text\" name=\"motor_every\"></td>
+				<td><input type=\"text\" name=\"day\"   size=\"2\" maxlength=\"2\" value=\"$today[mday]\"   >-</td>
+				<td><input type=\"text\" name=\"month\" size=\"2\" maxlength=\"2\" value=\"$today[mon]\"    >-</td>
+				<td><input type=\"text\" name=\"year\"  size=\"4\" maxlength=\"4\" value=\"$today[year]\"   ></td>
+				<td><input type=\"text\" name=\"hours\" size=\"2\" maxlength=\"2\" value=\"$today[hours]\"  >:</td>
+				<td><input type=\"text\" name=\"min\"   size=\"2\" maxlength=\"2\" value=\"$today[minutes]\">:</td>
+				<td><input type=\"text\" name=\"sec\"   size=\"2\" maxlength=\"2\" value=\"$today[seconds]\"></td>
+				<td><label>For</label></td>
+				<td>
+					<select name=\"motor_for\">";
+	for ($i = 0; $i < 11; $i++) {
+		echo "<option value=\"$i\">$i</option>";
+	}
+	echo "			</select>
+				</td>
+				<td><label>Every</label></td>
+				<td>
+					<select name=\"motor_every\">
+						<option value=\"3600\"  >1h</option>
+						<option value=\"7200\"  >2h</option>
+						<option value=\"14400\" >4h</option>
+						<option value=\"28800\" >8h</option>
+						<option value=\"43200\" >12h</option>
+						<option value=\"86400\" >1d</option>
+						<option value=\"172800\">2d</option>
+					</select>
+				</td>
 			</tr>
 			<tr>
-				<td colspan=\"8\" align=\"right\"><input type=\"submit\" value=\"Submit\"></td>
+				<td colspan=\"8\" align=\"right\"><input type=\"submit\" onclick=\"set_motor_start(this.form)\" value=\"Submit\"></td>
 			</tr>
 		</table>
 		</form>
