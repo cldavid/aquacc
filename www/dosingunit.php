@@ -174,8 +174,24 @@ function displayEvery($id) {
 			$every = "two hours";
 			break;
 
+		case 14400:
+			$every = "four hours";
+			break;
+
+		case 28800:
+			$every = "eight hours";
+			break;
+
+		case 43200:
+			$every = "twelve hours";
+			break;
+
 		case 86400:
 			$every = "day";
+			break;
+
+		case 172800:
+			$every = "two days";
 			break;
 
 		case 604800:
