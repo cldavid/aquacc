@@ -128,11 +128,14 @@ function setMotorInfo_form($id) {
 					<select name=\"motor_every\">
 						<option value=\"3600\"  >1h</option>
 						<option value=\"7200\"  >2h</option>
+						<option value=\"10800\" >3h</option>
 						<option value=\"14400\" >4h</option>
+						<option value=\"21600\" >6h</option>
 						<option value=\"28800\" >8h</option>
 						<option value=\"43200\" >12h</option>
 						<option value=\"86400\" >1d</option>
 						<option value=\"172800\">2d</option>
+						<option value=\"604800\">1w</option>
 					</select>
 				</td>
 			</tr>
