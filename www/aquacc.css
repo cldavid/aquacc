@@ -1,0 +1,158 @@
+#power-4{
+position:absolute;
+		 z-index:2;
+left:149px;
+top:16px;
+}
+
+#power-3{
+position:absolute;
+		 z-index:2;
+left:203px;
+top:16px;
+}
+
+#power-2{
+position:absolute;
+		 z-index:2;
+left:257px;
+top:16px;
+}
+
+#power-1{
+position:absolute;
+		 z-index:2;
+left:311px;
+top:16px;
+}
+
+#sis-pm{
+width:460px;
+height:139px;
+background:url(images/sis-pm.jpg);
+position:relative;
+display:block;
+margin:auto;
+}
+
+#sis-pm li{
+margin: 0; 
+padding: 0; 
+		 list-style: none; 
+position: absolute;
+}
+
+#sis-pm a{
+display:block;
+		text-indent: -9999px; 
+		text-decoration: none;
+}
+
+/** switches power on*/
+#power-1-on,#power-2-on,#power-3-on,#power-4-on{
+background:url(images/power-on.jpg);
+width:7px;
+height:42px;
+}
+
+#power-4-on{
+left:149px;
+top:16px;
+}
+
+#power-3-on{
+left:203px;
+top:16px;
+}
+
+#power-2-on{
+left:257px;
+top:16px;
+}
+
+#power-1-on{
+left:311px;
+top:16px;
+}
+
+/** switch on */
+#power-all-switch,#power-1-switch,#power-2-switch,#power-3-switch,#power-4-switch{
+width:60px;
+height:60px;
+top:70px;
+}
+
+#power-all-switch a,#power-1-switch a,#power-2-switch a,#power-3-switch a,#power-4-switch a{
+height:60px;
+width:60px;
+display:block;
+		text-decoration:none;
+		z-index:20;
+}
+
+#power-all-switch a:hover,#power-1-switch a:hover,#power-2-switch a:hover,#power-3-switch a:hover,#power-4-switch a:hover{
+background:url(images/switch.gif);
+}
+
+#power-all-switch{
+left:30px;
+}
+
+#power-4-switch{
+left:96px;
+}
+
+#power-3-switch{
+left:158px;
+}
+
+#power-2-switch{
+left:219px;
+}
+
+#power-1-switch{
+left:289px;
+}
+
+/* device styles */
+table.device-table{
+margin:auto;
+width:300pt;
+	  margin-bottom:20pt;
+}
+
+td.device-title{
+	text-align:center;
+	font-weight:bold;
+}
+
+td.device-name{
+	letter-spacing:0.1em;
+	text-align:left;
+	border-bottom:1pt solid black;
+	padding-top:10pt;
+	font-weight:bold;
+}
+
+td.device-value{
+	border-bottom:1pt solid black;
+	padding-top:10pt;
+}
+
+#reload{
+	letter-spacing:0.1em;
+color:black;
+	  text-decoration:underline;
+}
+
+#reload:hover{
+	text-decoration:none;
+	font-weight:bold;
+}
+
+#loading{
+position:absolute;
+top:10;
+left:10;
+}
+
