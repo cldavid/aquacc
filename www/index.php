@@ -18,6 +18,7 @@
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
 	require "dosingunit.php";
+	require "pdu.php";
 ?>
 <html>
 <head>
@@ -30,6 +31,7 @@
 		<meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 		<script src="aquacc.js" language="javascript" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="aquacc.css">
 		<title>Aqua Control Center</title>
 	</head>
 <body bgcolor="#C6CED9">
@@ -46,6 +48,8 @@
 	echo "</td></tr></table>";
 	echo "</td></tr><tr><td align=\"center\">";
 	setMotorInfo_form(0);
+	echo "</td></tr><tr><td align=\"center\">";
+	printPDUinfo();
 	echo "</td></tr></table>";
 
 ?>
