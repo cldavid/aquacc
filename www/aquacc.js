@@ -25,3 +25,27 @@ function set_motor_start(theForm) {
 
 	theForm.appendChild(hiddenField);
 }
+
+function switch_outlet(no, state) {
+	if (state == "off") {
+		outlet_off(no, state);
+	} else if (state == "on") {
+		outlet_on(no, state);
+	}
+}
+
+function outlet_on(outlet_no) {
+		$.ajax({
+			type: "POST",
+			url: "aquacc.php?app=pdu&cmd=outlet_on",
+			data: { outlet_no: outlet_no }
+		});
+}
+
+function outlet_off(outlet_no) {
+		$.ajax({
+			type: "POST",
+			url: "aquacc.php?app=pdu&cmd=outlet_off",
+			data: { outlet_no: outlet_no }
+		});
+}

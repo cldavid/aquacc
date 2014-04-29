@@ -30,6 +30,7 @@
 		<meta name="description" content=""/>
 		<meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+		<script src="jquery-2.1.0.min.js" type="text/javascript"></script>
 		<script src="aquacc.js" language="javascript" type="text/javascript"></script>
 		<link rel="stylesheet" type="text/css" href="aquacc.css">
 		<title>Aqua Control Center</title>

@@ -25,7 +25,9 @@
 	</head>
 	<body bgcolor="#C6CED9">
 <?php
-require('dosingunit.php');
+require "dosingunit.php";
+require "pdu.php";
+
 $app = isset($_GET['app']) ? $_GET['app'] : "unknown";
 $cmd = isset($_GET['cmd']) ? $_GET['cmd'] : "unknown";
 
@@ -36,8 +38,13 @@ if (!$fp) {
 
 switch($app) {
 	case 'dosingunit':
-		parseCmd($fp, $cmd);
+		dsu_parseCmd($fp, $cmd);
 		break;
+
+	case 'pdu':
+		pdu_parseCmd($cmd);
+		break;
+
 	default:
 		break;
 }
@@ -49,7 +56,7 @@ function goHome() {
 	echo "<script>window.location = 'index.php'</script>";
 }
 
-function parseCmd($fp, $cmd) {
+function dsu_parseCmd($fp, $cmd) {
 	switch($cmd) {
 		case 'drivemotor':
 			parseDriveMotor($fp);
