@@ -31,14 +31,15 @@ require "pdu.php";
 $app = isset($_GET['app']) ? $_GET['app'] : "unknown";
 $cmd = isset($_GET['cmd']) ? $_GET['cmd'] : "unknown";
 
-$fp = dosingOpenSocket();
-if (!$fp) {
-	return;
-}
-
 switch($app) {
 	case 'dosingunit':
+		$fp = dosingOpenSocket();
+		if (!$fp) {
+			return;
+		}
 		dsu_parseCmd($fp, $cmd);
+		fclose($fp);
+		goHome();
 		break;
 
 	case 'pdu':
@@ -48,9 +49,6 @@ switch($app) {
 	default:
 		break;
 }
-
-fclose($fp);
-	goHome();
 
 function goHome() {
 	echo "<script>window.location = 'index.php'</script>";
