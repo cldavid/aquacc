@@ -34,6 +34,10 @@ function pdu_parseCmd($cmd) {
 			echo ("Disabling output $outlet result $result");
 			break;
 
+		case 'status':
+			printPDUstatus();
+			break;
+
 		default:
 			break;
 	}
@@ -89,31 +93,27 @@ function getPDU_outlet_status() {
 	return $status;
 }
 
-function printPDUinfo() {
+function printPDUstatus() {
 	$status = getPDU_outlet_status();
+	for ($i = 0; $i < 4; $i++) {
+		$outlet = $i + 1;
+		if ($status[$i]) {
+			echo "<li id=\"power-$outlet-switch\"><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'off')\"></a></li>\n";
+			echo "<li id=\"power-$outlet-on\"></li>\n";
+		} else {
+			echo "<li id=\"power-$outlet-switch\"><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'on')\"></a></li>\n";
+		}
+	}
+}
+
+function printPDUinfo() {
 	?>
 		<ul id="sis-pm">
-			<li id="power-all-switch"><a title="Switch all" href="#"></a></li>
-			<li id="power-4-switch"><a title="Switch fourth" onClick="switch_outlet(4, 'off');"></a></li>
-			<li id="power-2-switch"><a title="Switch second" onClick="switch_outlet(2, 'off');"></a></li>
-			<li id="power-1-switch"><a title="Switch first"  onClick="switch_outlet(1, 'on');"></a></li>
-	<?php
-		if ($status[3]) {
-			echo "<li id=\"power-4-on\"></li>\n";
-		}
-		if ($status[2]) {
-			echo "<li id=\"power-3-switch\"><a title=\"Switch third\"  onClick=\"switch_outlet(3, 'off')\"></a></li>\n";
-			echo "<li id=\"power-3-on\"></li>\n";
-		} else {
-			echo "<li id=\"power-3-switch\"><a title=\"Switch third\"  onClick=\"switch_outlet(3, 'on')\"></a></li>\n";
-		}
-		if ($status[1]) {
-			echo "<li id=\"power-2-on\"></li>\n";
-		}
-		if ($status[0]) {
-			echo "<li id=\"power-1-on\"></li>\n";
-		}
-		?>
+			<div id="div-sis-pm">
+				<?php
+					printPDUstatus();
+				?>
+			</div>
 		</ul>
 	<?php
 }

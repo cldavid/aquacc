@@ -38,7 +38,8 @@ function outlet_on(outlet_no) {
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_on",
-			data: { outlet_no: outlet_no }
+			data: { outlet_no: outlet_no },
+			success: reload_outlet_status
 		});
 }
 
@@ -46,6 +47,38 @@ function outlet_off(outlet_no) {
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_off",
-			data: { outlet_no: outlet_no }
+			data: { outlet_no: outlet_no },
+			success: reload_outlet_status
 		});
+}
+
+function reload_outlet_status() {
+	$.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=pdu&cmd=status",
+		success: function(html) {
+			$('#div-sis-pm').html(html);
+		}
+	});
+
+}
+
+function setTimer_example() {
+	$(document).ready(function () {
+			var interval = 10000;   //number of mili seconds between each call
+			var refresh = function() {
+				$.ajax({
+					url: "aquacc.php?app=pdu&cmd=status",
+					cache: false,
+					success: function(html) {
+						$('#div-sis-pm').html(html);
+						setTimeout(function() {
+							refresh();
+						}, interval);
+					}
+				});
+			};
+			refresh();
+	});
 }
