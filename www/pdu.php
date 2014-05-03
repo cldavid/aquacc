@@ -93,6 +93,31 @@ function getPDU_outlet_status() {
 	return $status;
 }
 
+function getPDU_outlet_plannification($outlet) {
+	global $SISPMCTL;
+	
+	if (($outlet < 1) || ($outlet > 4)) {
+		return null;
+	}
+	$plan = array();
+	$index = 0;
+	$output = exec($SISPMCTL . " -a$outlet", $arr);
+	foreach ($arr as &$value) {
+		$pattern = "/\s+On\s+([\w-]+)\s+([\w:]+)\s+switch\s+(\w+)/";
+		if (preg_match($pattern, $value, $matches)) {
+			$date   = $matches[1];
+			$time   = $matches[2];
+			$status = $matches[3] == "on" ? 1 : 0;
+			$plan[$index] = array('date' 		=> $date,
+								  'time' 		=> $time,
+								  'status' 	=> $status);
+			$index++;
+		} 
+	}   
+	unset($value);
+	return $plan;
+}
+
 function printPDUstatus() {
 	$status = getPDU_outlet_status();
 	for ($i = 0; $i < 4; $i++) {
@@ -116,5 +141,14 @@ function printPDUinfo() {
 			</div>
 		</ul>
 	<?php
+	for ($i = 1; $i < 5; $i++) {
+		$plan = getPDU_outlet_plannification($i);
+		foreach($plan as $key => $value) {
+			$date 	= $plan[$key]['date'];
+			$time 	= $plan[$key]['time'];
+			$status = $plan[$key]['status'];
+			echo ("Outlet $i: Date $date $time - Status $status<br/>");
+		}
+	}
 }
 ?>
