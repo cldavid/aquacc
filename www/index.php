@@ -36,25 +36,71 @@
 		<link rel="stylesheet" type="text/css" href="css/cupertino/jquery-ui-1.10.4.custom.css">
 		<link rel="stylesheet" type="text/css" href="css/aquacc.css">
 		<title>Aqua Control Center</title>
+		<script>
+			$(function() {
+				$( "#tabs" ).tabs();
+			});
+		</script>
 	</head>
-<body bgcolor="#C6CED9">
-<?php
-	echo "<table border=\"1\" width=\"100%\"><tr><td>";
-	dosingShowSchedule();	
-	echo "</td></tr><tr><td>";
-	echo "<table width=\"100%\" vallign=\"top\" allign=\"left\"><tr><td>";
-	driveMotor_form(1);
-	echo "</td><td>";
-	driveMotor_form(2);
-	echo "</td><td>";
-	driveMotor_form(3);
-	echo "</td></tr></table>";
-	echo "</td></tr><tr><td align=\"center\">";
-	setMotorInfo_form(0);
-	echo "</td></tr><tr><td align=\"center\">";
-	printPDUinfo();
-	echo "</td></tr></table>";
+	<body bgcolor="#C6CED9">
+		<div id="tabs">
+		<ul>
+			<li><a href="#tabs-1">Dosing Unit</a></li>
+			<li><a href="#tabs-2">PDU</a></li>
+		</ul>
+		<div id="tabs-1">
+		<table border="1" width="100%">
+			<tr>
+				<td>
+				<?php
+					dosingShowSchedule();	
+				?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table width="100%" vallign="top" allign="left">
+						<tr>
+							<td>
+							<?php
+								driveMotor_form(1);
+							?>
+							</td>
+							<td>
+							<?php
+								driveMotor_form(2);
+							?>
+							</td>
+							<td>
+							<?php
+								driveMotor_form(3);
+							?>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="center">
+				<?php
+					setMotorInfo_form(0);
+				?>
+				</td>
+			</tr>
+			</table>
+			</div>
 
-?>
-</body>
+			<div id="tabs-2">
+			<table border="1" width="100%">
+			<tr>
+				<td align="center">
+				<?php
+					printPDUinfo();
+				?>
+				</td>
+			</tr>
+			</table>
+			</div>
+		</div>
+	</body>
 </html>
