@@ -95,11 +95,11 @@ function getPDU_outlet_status() {
 
 function getPDU_outlet_plannification($outlet) {
 	global $SISPMCTL;
-	
+	$plan = array();
+
 	if (($outlet < 1) || ($outlet > 4)) {
 		return null;
 	}
-	$plan = array();
 	$index = 0;
 	$output = exec($SISPMCTL . " -a$outlet", $arr);
 	foreach ($arr as &$value) {
@@ -131,6 +131,35 @@ function printPDUstatus() {
 	}
 }
 
+function printPDU_outlet_plannification() {
+	echo "<br/>\n";
+	echo "<table border=\"1\" width=\"90%\">\n";
+	echo "<tr><th colspan=\"4\">Planification</th></tr>\n";
+	echo "<tr>\n";
+	for ($i = 1; $i < 5; $i++) {
+		echo "<td valign=\"top\" align=\"center\">\n";
+		echo "<table  width=\"100%\">\n";
+		$plan = getPDU_outlet_plannification($i);
+		if ($plan) {
+			echo "<tr><th colspan=\"4\">Outlet $i</th></tr>\n";
+			foreach($plan as $key => $value) {
+				$date 	= $plan[$key]['date'];
+				$time 	= $plan[$key]['time'];
+				$status = $plan[$key]['status'];
+				$status = $status ? "on" : "off";
+				echo "<tr><td><b>Date</b></td><td>$date $time</td><td><b>Status</b></td><td>$status</td></tr>\n";
+			}
+		} else {
+			echo "<tr><th>Outlet $i</th></tr>\n";
+			echo "<tr><th>Disabled</th></tr>\n";
+		}
+		echo "</table>\n";
+		echo "</td>\n";
+	}
+	echo "</tr>\n";
+	echo "</table>\n";
+}
+
 function printPDUinfo() {
 	?>
 		<ul id="sis-pm">
@@ -141,14 +170,6 @@ function printPDUinfo() {
 			</div>
 		</ul>
 	<?php
-	for ($i = 1; $i < 5; $i++) {
-		$plan = getPDU_outlet_plannification($i);
-		foreach($plan as $key => $value) {
-			$date 	= $plan[$key]['date'];
-			$time 	= $plan[$key]['time'];
-			$status = $plan[$key]['status'];
-			echo ("Outlet $i: Date $date $time - Status $status<br/>");
-		}
-	}
+	printPDU_outlet_plannification();
 }
 ?>
