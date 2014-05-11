@@ -9,10 +9,15 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <rrd.h>
 
 #define DIR_PATH 	"/sys/bus/w1/devices"
 #define BUF_SIZE	1024
 #define DATA_SIZE	4096
+
+void logData(const char *sensorName, float temp) {
+
+}
 
 int readSensor(const char *sensorName, const char *file, float *temp) {
 	char 	buf[BUF_SIZE];
@@ -65,6 +70,8 @@ int readSensors(const char *path) {
 			if (0 > readSensor(dirent->d_name, fileName, &temp)) {
 				continue;
 			}
+
+			logData(dirent->d_name, temp);
 		}
 	}
 	closedir(dir);
