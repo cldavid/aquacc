@@ -1,11 +1,14 @@
 CC	= gcc
-CFLAGS += -g -Wall -Wextra
+CFLAGS += -g -Wall -Wextra -lc -lm
 LDFLAGS += 
 
 TARGET	= aquacc
 SRCS	= main.c aquacc.c serial.c socket.c daemon.c
 OBJS	= $(SRCS:.c=.o)
 
+TEMP_TARGET	= temp
+TEMP_SRCS	= temp.c
+TEMP_OBJS	= $(TEMP_SRCS:.c=.o)
 
 .PHONY: all clean install 
 
@@ -14,11 +17,14 @@ OBJS	= $(SRCS:.c=.o)
 
 all: $(SRCS) $(TARGET)
 
+$(TEMP_TARGET): $(TEMP_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(TEMP_OBJS) $(LDFLAGS)
+
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 clean:  
-	rm -rf $(TARGET) $(OBJS) 
+	rm -rf $(TARGET) $(TEMP_TARGET) $(OBJS) $(TEMP_OBJS)
 
 install:
 	@echo "INSTALL" 
