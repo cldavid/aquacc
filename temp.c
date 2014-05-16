@@ -20,21 +20,29 @@
 #define DATA_SIZE		4096
 #define NUM_SENSOR_MAX	10
 
+#define SENSOR_1_NAME	"28-0000053c55c1"
+#define	SENSOR_2_NAME	"28-0000053c6b1f"
+
 typedef struct {
 	bool			active;
-	char			sensorName[256];
+	char			sensorName[32];
 	float			temp;
 } sensor_t;
 
-void logData(sensor_t sdata[], size_t arr_len) {
+sensor_t sensors[] = {
+	{	true,	SENSOR_1_NAME, 0.0	},
+	{	true,	SENSOR_2_NAME, 0.0	},
+};
+
+void logData() {
 	char system_cmd[256];
 	size_t i	= 0;
 	size_t len	= 0;
 
 	len = snprintf(system_cmd + len, sizeof(system_cmd) - len, RRDTOOL" update "RRD_DB_PATH" N");
-	for (i = 0; i < arr_len; i++) {
-		if (sdata[i].active) {
-			len += snprintf(system_cmd + len, sizeof(system_cmd) - len, ":%.0f", roundf(sdata[i].temp) );
+	for (i = 0; i < sizeof(sensors) / sizeof(sensor_t); i++) {
+		if (sensors[i].active) {
+			len += snprintf(system_cmd + len, sizeof(system_cmd) - len, ":%.0f", roundf(sensors[i].temp) );
 		}
 	}
 	printf("%s\n", system_cmd);
@@ -72,49 +80,21 @@ int readSensor(const char *sensorName, const char *file, float *temp) {
 	return 0;
 }
 
-int readSensors(const char *path, sensor_t sdata[], size_t len) {
+int readSensors(const char *path) {
 	char 			fileName[PATH_MAX + NAME_MAX];
-	DIR 			*dir		= NULL;
-	struct dirent 	*dirent		= NULL;
-	float			temp		= 0.0;
 	size_t			i 			= 0;
 
-	dir = opendir(path);
-	if (!dir) {
-		perror ("Couldn't open the w1 devices directory");
-		return -1;
-	}
-
-	while ((dirent = readdir(dir))) {
-		// 1-wire devices are links beginning with 28-
-		if (dirent->d_type == DT_LNK && strstr(dirent->d_name, "28-") != NULL) {
-			snprintf(fileName, sizeof(fileName), "%s/%s/w1_slave", path, dirent->d_name);
-			if (0 > readSensor(dirent->d_name, fileName, &temp)) {
-				continue;
-			}
-
-			if (len > i) {
-				sdata[i].active = true;
-				strncpy(sdata[i].sensorName, dirent->d_name, sizeof(sdata[i].sensorName) - 1);
-				sdata[i].temp = temp;
-				i++;
-			} else {
-				fprintf(stderr, "Error too much sensors detected\n");
-				break;
-			}
+	for (i = 0; i < sizeof(sensors) / sizeof(sensor_t); i++) {
+		snprintf(fileName, sizeof(fileName), "%s/%s/w1_slave", path, sensors[i].sensorName);
+		if (0 > readSensor(sensors[i].sensorName, fileName, &sensors[i].temp)) {
+			continue;
 		}
 	}
-	closedir(dir);
 	return 0;
 }
 
 int main(int __attribute__((__unused__)) argc, char __attribute__((__unused__)) *argv[], char __attribute__((__unused__)) *envp[]) {
-	sensor_t		sdata[NUM_SENSOR_MAX];
-	size_t			len = NUM_SENSOR_MAX;
-
-	memset(sdata, 0, sizeof(sdata));
-
-	readSensors(DIR_PATH, sdata, len);
-	logData(sdata, len);
+	readSensors(DIR_PATH);
+	logData();
 	return 0;
 }

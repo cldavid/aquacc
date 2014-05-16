@@ -29,6 +29,7 @@
 #include "serial.h"
 #include "socket.h"
 #include "daemon.h"
+#include "dsu.h"
 
 extern aq_socket_t	socks[MAX_SOCKETS];
 
@@ -43,21 +44,19 @@ ssize_t	setUnixTime(int fd, time_t cur_time) {
 }
 
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)), char *envp[] __attribute__ ((unused))) {
-	fd_set                  read_fds;
-	fd_set 	       	        read_fd_set;
-	fd_set			write_fds;
+	fd_set              read_fds;
+	fd_set 	       	    read_fd_set;
+	fd_set				write_fds;
 	fd_set	        	write_fd_set;
-	size_t			i;
+	size_t				i;
 	int 	        	fd_dosing 	= openSerial(DOSINGUNIT_DEV, 8, 1, 'N');
-	int                     fd_socket       = makeSocket(SOCKET_PORT);
-	int		       	fd		= -1;
-	int                     new_fd          = -1;
-	int		       	maxfd		= FD_SETSIZE;
-	int                     sres		= -1;
+	int                 fd_socket   = makeSocket(SOCKET_PORT);
+	int		       		fd			= -1;
+	int                 new_fd      = -1;
+	int		       		maxfd		= FD_SETSIZE;
+	int                 sres		= -1;
 	time_t	        	cur_time;
-	time_t			prev_time;
-	char 			dos_buffer[MAXMSG];
-	ssize_t			dos_len;
+	time_t				prev_time;
 	struct timeval 		stimeout;
 
 	daemonize();
@@ -93,25 +92,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 			if (FD_ISSET(fd, &read_fds)) {
 				/* Read From Dosing Unit */
 				if (fd == fd_dosing) {
-					dos_len = readSerial(fd, dos_buffer, sizeof(dos_buffer));
-					if (dos_len >= 0) {
-						/* Copy Buffer To All Connected Sockets */
-						for (i = 0; i < MAX_SOCKETS; i++) {
-							if (socks[i].free) {
-								if (socks[i].has_w_data) {
-									printf("Appending wlen %u + dos_len %u\n", socks[i].w_len, dos_len);
-									memcpy(socks[i].w_buffer + socks[i].w_len, dos_buffer, dos_len);
-									socks[i].has_w_data = 1;
-									socks[i].w_len += dos_len;
-								} else {
-									memcpy(socks[i].w_buffer, dos_buffer, dos_len);
-									socks[i].has_w_data = 1;
-									socks[i].w_len = dos_len;
-								}
-								FD_SET(socks[i].fd, &write_fd_set);
-							}
-						}
-					}
+					dsu_read(fd_dosing, socks, &write_fd_set);
 					/* Handle New Socket Connection */
 				} else if (fd == fd_socket) {
 					if (0 < (new_fd = acceptSocket(fd))) {
@@ -136,14 +117,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 			} else if (FD_ISSET(fd, &write_fds)) {
 				if (fd == fd_dosing) {
 					/* Write socket information to dosing unit */
-					for (i = 0; i < MAX_SOCKETS; i++) {
-						if (socks[i].free && socks[i].has_r_data) {
-							writen_ni(fd_dosing, socks[i].r_buffer, socks[i].r_len);
-							socks[i].has_r_data = 0;
-							socks[i].r_len = 0;
-						}
-					}
-					FD_CLR(fd, &write_fd_set);
+					dsu_read(fd_dosing, socks, &write_fd_set);
 				} else if (fd != fd_socket) {
 					writeSocket(fd);
 					FD_CLR(fd, &write_fd_set);
