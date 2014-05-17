@@ -55,6 +55,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	int		       		fd			= -1;
 	int                 new_fd      = -1;
 	int		       		maxfd		= FD_SETSIZE;
+	int					fd_timer1	= -1;
 	int                 sres		= -1;
 	time_t	        	cur_time;
 	time_t				prev_time;
@@ -68,6 +69,9 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 		exit(EXIT_FAILURE);
 	}
 
+	timer_init(5, &fd_timer_1);
+
+
 	time(&cur_time);
 	prev_time = cur_time;
 
@@ -75,6 +79,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	FD_ZERO(&write_fd_set);
 	FD_SET(fd_socket, &read_fd_set);
 	FD_SET(fd_dosing, &read_fd_set);
+	FD_SET(fd_timer_1, &read_fd_set);
 	while (alive && is_valid_fd(fd_dosing) && is_valid_fd(fd_socket)) {
 		read_fds 	= read_fd_set;	
 		write_fds	= write_fd_set;
@@ -104,6 +109,8 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 						}
 						FD_SET(new_fd, &read_fd_set);
 					}
+				} else if (fd == fd_timer_1) {
+					printf("FD TIMER 1\n");
 					/* Read From Current Socket */
 				} else {
 					if (0 >= readSocket(fd)) {
