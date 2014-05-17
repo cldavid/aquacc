@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h> 
+#include <string.h>
 #include <stdbool.h>
 
 bool timer_set(int fd, unsigned int sec) {
@@ -48,10 +49,9 @@ bool timer_set(int fd, unsigned int sec) {
 bool timer_init(unsigned int sec, int *fd_out) {
 	struct itimerspec 	timerSpec;
 	int 				fd;
-	ssize_t 			s;
 
 	memset(&timerSpec, 0, sizeof(timerSpec));
-	if (0 > (fd = timerfd_create(CLOCK_REALTIME, 0)))
+	if (0 > (fd = timerfd_create(CLOCK_REALTIME, 0))) {
 		perror("Error creating timer");
 		return false;
 	}
