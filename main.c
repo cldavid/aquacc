@@ -92,7 +92,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 			if (FD_ISSET(fd, &read_fds)) {
 				/* Read From Dosing Unit */
 				if (fd == fd_dosing) {
-					dsu_read(fd_dosing, socks, &write_fd_set);
+					dsu_read(fd, socks, &write_fd_set);
 					/* Handle New Socket Connection */
 				} else if (fd == fd_socket) {
 					if (0 < (new_fd = acceptSocket(fd))) {
@@ -117,7 +117,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 			} else if (FD_ISSET(fd, &write_fds)) {
 				if (fd == fd_dosing) {
 					/* Write socket information to dosing unit */
-					dsu_read(fd_dosing, socks, &write_fd_set);
+					dsu_write(fd, socks, &write_fd_set);
 				} else if (fd != fd_socket) {
 					writeSocket(fd);
 					FD_CLR(fd, &write_fd_set);
