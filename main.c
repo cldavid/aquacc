@@ -26,11 +26,15 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <stdint.h>
 #include "aquacc.h"
 #include "serial.h"
 #include "socket.h"
 #include "daemon.h"
 #include "dsu.h"
+#include "timer.h"
 
 extern aq_socket_t	socks[MAX_SOCKETS];
 
@@ -69,8 +73,9 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 		exit(EXIT_FAILURE);
 	}
 
-	timer_init(5, &fd_timer_1);
+	timer_init(5, &fd_timer1);
 
+	openlog("aquacc", LOG_PID, LOG_USER);
 
 	time(&cur_time);
 	prev_time = cur_time;
@@ -79,7 +84,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	FD_ZERO(&write_fd_set);
 	FD_SET(fd_socket, &read_fd_set);
 	FD_SET(fd_dosing, &read_fd_set);
-	FD_SET(fd_timer_1, &read_fd_set);
+	FD_SET(fd_timer1, &read_fd_set);
 	while (alive && is_valid_fd(fd_dosing) && is_valid_fd(fd_socket)) {
 		read_fds 	= read_fd_set;	
 		write_fds	= write_fd_set;
@@ -109,8 +114,17 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 						}
 						FD_SET(new_fd, &read_fd_set);
 					}
-				} else if (fd == fd_timer_1) {
-					printf("FD TIMER 1\n");
+				} else if (fd == fd_timer1) {
+					ssize_t s;
+					uint64_t exp;
+					s = read(fd, &exp, sizeof(uint64_t));
+					if (s != sizeof(uint64_t)) {
+						syslog(LOG_INFO, "ERROR FD_TIMER 1");
+					}
+					syslog(LOG_INFO, "FD_TIMER 1 s %u exp %llu", s, exp);
+					//Destroy example FD_CLR + destroy
+					//FD_CLR(fd, &read_fd_set);
+					//timer_destroy(fd);
 					/* Read From Current Socket */
 				} else {
 					if (0 >= readSocket(fd)) {
@@ -147,5 +161,6 @@ exit:
 	}
 	closeSerial(fd_dosing);
 	closeSocket(fd_socket);
+	closelog();
 	exit(EXIT_SUCCESS);
 }

@@ -64,6 +64,8 @@ bool timer_init(unsigned int sec, int *fd_out) {
 }
 
 bool timer_destroy(int fd) {
-	return(timer_set(fd, 0));
+	timer_set(fd, 0);
+	close(fd);
+	return true;
 }
 
