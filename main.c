@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <stdio.h>
 #include <syslog.h>
 #include <time.h>
