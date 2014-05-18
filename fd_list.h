@@ -17,11 +17,29 @@
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AQUACC_DSU_H__
-#define __AQUACC_DSU_H__
-void dsu_setUnixTime_timer(int fd_dosing);
-ssize_t dsu_setUnixTime(int fd, time_t cur_time);
-bool dsu_timer_setUnixTime_cb(int fd, void *data);
-void dsu_write(int fd, aq_socket_t socks[], fd_set *write_fd_set);
-void dsu_read(int fd, aq_socket_t socks[], fd_set *write_fd_set);
-#endif //__AQUACC_DSU_H__
+#ifndef __FD_LIST_T_H__
+#define __FD_LIST_T_H__
+enum fd_list_type {
+	FD_LIST_TYPE_UNKNOWN,
+	FD_LIST_TYPE_TIMER,
+	FD_LIST_TYPE_NORMAL,
+};
+
+struct _fd_list_t {
+	int 				fd;
+	enum fd_list_type	type;
+	void				*data;
+	bool				(*cb)(int fd, void *data);
+	struct _fd_list_t	*next;
+	struct _fd_list_t	*prev;
+};
+typedef struct _fd_list_t	fd_list_t;
+
+bool aquacc_fd_list_cb(int fd);
+bool aquacc_fd_list_write_set(fd_set *write_fd_set);
+bool aquacc_fd_list_read_set(fd_set *read_fd_set);
+bool aquacc_fd_list_set(fd_list_t *list, int fd);
+fd_list_t *aquacc_fd_list_new(void);
+void aquacc_fd_list_destroy(void);
+
+#endif //__FD_LIST_T_H__

@@ -24,8 +24,50 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <time.h>
+#include <unistd.h>
 #include "aquacc.h"
 #include "serial.h"
+#include "fd_list.h"
+#include "timer.h"
+#include "dsu.h"
+
+void dsu_setUnixTime_timer(int fd_dosing) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	timer_init(SET_TIME_INTERVAL, &fdList->fd);
+	fdList->type 	= FD_LIST_TYPE_TIMER;
+	fdList->data    = fd_dosing;
+	fdList->cb      = dsu_timer_setUnixTime_cb;
+}
+
+ssize_t dsu_setUnixTime(int fd, time_t cur_time) {
+	char    string[250];
+	int     len;
+	len = snprintf(string, sizeof(string), "setUnixTime %lu\n", cur_time);
+	return(writen_ni(fd, string, len));
+}
+
+/* Write current the current time to the dosing unit */
+bool dsu_timer_setUnixTime_cb(int fd, void *data) {
+	time_t cur_time;
+	ssize_t s;
+	uint64_t exp;
+	int fd_dosing = (int)data;
+
+	s = read(fd, &exp, sizeof(uint64_t));
+	if (s != sizeof(uint64_t)) {
+		syslog(LOG_INFO, "ERROR FD_TIMER x");
+		return false;
+	}
+
+	time(&cur_time);
+
+	dsu_setUnixTime(fd_dosing, cur_time);
+	return true;
+}
 
 void dsu_write(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
 	size_t i;
