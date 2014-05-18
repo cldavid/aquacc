@@ -20,5 +20,5 @@
 #ifndef __AQUACC_RRD_TIMER_H__
 #define __AQUACC_RRD_TIMER_H__
 bool rrd_temperature_timer_1_cb(int fd, void *data);
-void rrd_temperature_timer(void);
+void rrd_set_temperature_timer(void);
 #endif //__AQUACC_RRD_TIMER_H__

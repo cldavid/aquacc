@@ -75,7 +75,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	dsu_set_write_event(fd_dosing, socks);
 
 	/* RRD Timer */
-	rrd_temperature_timer();
+	rrd_set_temperature_timer();
 
 	/* setUnixTime Timer */
 	dsu_set_setUnixTime_timer(fd_dosing);
