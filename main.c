@@ -36,6 +36,7 @@
 #include "dsu.h"
 #include "timer.h"
 #include "fd_list.h"
+#include "rrd_timer.h"
 
 extern aq_socket_t	socks[MAX_SOCKETS];
 
@@ -45,14 +46,6 @@ extern 		int errno;
 void aquacc_log(const char *msg) {
 	syslog(LOG_INFO, msg);
 	return;
-}
-
-bool timer_1_cb(int fd, void *data) {
-	syslog(LOG_INFO, "FD_TIMER 1");
-	//Destroy example FD_CLR + destroy
-	//FD_CLR(fd, &read_fd_set);
-	//timer_destroy(fd);
-	return true;
 }
 
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)), char *envp[] __attribute__ ((unused))) {
@@ -68,9 +61,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	int		       		maxfd		= FD_SETSIZE;
 	int                 sres		= -1;
 	time_t	        	cur_time;
-	time_t				prev_time;
 	struct timeval 		stimeout;
-	fd_list_t			*fdList		= NULL;
 
 	daemonize();
 
@@ -81,10 +72,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	}
 
 	/* RRD Timer */
-	fdList = aquacc_fd_list_new();
-	fdList->type = FD_LIST_TYPE_TIMER;
-	timer_init(5, &fdList->fd);
-	fdList->cb = timer_1_cb;
+	rrd_temperature_timer();
 
 	/* setUnixTime Timer */
 	dsu_setUnixTime_timer(fd_dosing);
@@ -92,7 +80,6 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	openlog("aquacc", LOG_PID, LOG_USER);
 
 	time(&cur_time);
-	prev_time = cur_time;
 
 	FD_ZERO(&read_fd_set);
 	FD_ZERO(&write_fd_set);
@@ -157,13 +144,6 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 				} 
 			}
 		}
-		/* Write current the current time to the dosing unit */
-		/*
-		if ((cur_time - prev_time) >= SET_TIME_INTERVAL) {
-			setUnixTime(fd_dosing, cur_time);
-			prev_time = cur_time;
-		}
-		*/
 	}
 
 exit:
