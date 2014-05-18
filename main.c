@@ -78,7 +78,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	rrd_set_temperature_timer();
 
 	/* setUnixTime Timer */
-	dsu_set_setUnixTime_timer(fd_dosing);
+	dsu_set_unixtime_timer(fd_dosing);
 
 	openlog("aquacc", LOG_PID, LOG_USER);
 
@@ -88,6 +88,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	zero_write_event();
 	set_read_event(fd_socket);
 	aquacc_fd_list_read_set();
+	aquacc_fd_list_write_set();
 	while (alive && is_valid_fd(fd_dosing) && is_valid_fd(fd_socket)) {
 		read_fds 	= get_read_event();
 		write_fds	= get_write_event();

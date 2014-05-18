@@ -55,7 +55,7 @@ void dsu_set_read_event(int fd_dosing, aq_socket_t *socks) {
 	fdList->cb      = dsu_read_event_cb;
 }
 
-void dsu_set_setUnixTime_timer(int fd_dosing) {
+void dsu_set_unixtime_timer(int fd_dosing) {
 	fd_list_t *fdList = aquacc_fd_list_new();
 
 	timer_init(SET_TIME_INTERVAL, &fdList->fd);

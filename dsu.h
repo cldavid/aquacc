@@ -23,7 +23,7 @@ void dsu_set_read_event(int fd_dosing, aq_socket_t *socks);
 void dsu_set_write_event(int fd_dosing, aq_socket_t *socks);
 bool dsu_read_event_cb(int fd, void *data);
 bool dsu_write_event_cb(int fd, void *data);
-void dsu_set_setUnixTime_timer(int fd_dosing);
+void dsu_set_unixtime_timer(int fd_dosing);
 ssize_t dsu_setUnixTime(int fd, time_t cur_time);
 bool dsu_timer_setUnixTime_cb(int fd, void *data);
 void dsu_write(int fd, aq_socket_t socks[]);

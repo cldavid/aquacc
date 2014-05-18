@@ -104,6 +104,20 @@ bool aquacc_fd_list_read_set(void) {
 	return true;
 }
 
+void aquacc_fd_list_delete(fd_list_t *fdlist) {
+	if (fdlist) {
+		//Detach fd_list from linked list;
+		if (fdlist->prev) {
+			fdlist->prev->next = fdlist->next;
+		}
+
+		if (fdlist->next) {
+			fdlist->next->prev = fdlist->prev;
+		}
+		free(fdlist);
+	}
+}
+
 fd_list_t *aquacc_fd_list_new(void) {
 	fd_list_t	*tmp	= fd_list;
 
