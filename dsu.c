@@ -31,16 +31,32 @@
 #include "aquacc.h"
 #include "serial.h"
 #include "fd_list.h"
+#include "fd_event.h"
 #include "timer.h"
 #include "dsu.h"
 
-void dsu_setUnixTime_timer(int fd_dosing) {
+void dsu_set_read_event(int fd_dosing, aq_socket_t *socks) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->fd		= fd_dosing;
+	fdList->type 	= FD_LIST_TYPE_NORMAL;
+	fdList->data    = socks;
+	fdList->cb      = dsu_read_event_cb;
+}
+
+void dsu_set_setUnixTime_timer(int fd_dosing) {
 	fd_list_t *fdList = aquacc_fd_list_new();
 
 	timer_init(SET_TIME_INTERVAL, &fdList->fd);
 	fdList->type 	= FD_LIST_TYPE_TIMER;
 	fdList->data    = fd_dosing;
 	fdList->cb      = dsu_timer_setUnixTime_cb;
+}
+
+bool dsu_read_event_cb(int fd, void *data) {
+	aq_socket_t *socks = data;
+	dsu_read(fd, socks);
+	return true;
 }
 
 ssize_t dsu_setUnixTime(int fd, time_t cur_time) {
@@ -51,25 +67,16 @@ ssize_t dsu_setUnixTime(int fd, time_t cur_time) {
 }
 
 /* Write current the current time to the dosing unit */
-bool dsu_timer_setUnixTime_cb(int fd, void *data) {
+bool dsu_timer_setUnixTime_cb(int __attribute__ ((unused)) fd, void *data) {
 	time_t cur_time;
-	ssize_t s;
-	uint64_t exp;
 	int fd_dosing = (int)data;
 
-	s = read(fd, &exp, sizeof(uint64_t));
-	if (s != sizeof(uint64_t)) {
-		syslog(LOG_INFO, "ERROR FD_TIMER x");
-		return false;
-	}
-
 	time(&cur_time);
-
 	dsu_setUnixTime(fd_dosing, cur_time);
 	return true;
 }
 
-void dsu_write(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
+void dsu_write(int fd, aq_socket_t socks[]) {
 	size_t i;
 
 	/* Write socket information to dosing unit */
@@ -80,10 +87,10 @@ void dsu_write(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
 			socks[i].r_len = 0;
 		}
 	}
-	FD_CLR(fd, write_fd_set);
+	clr_write_event(fd);
 }
 
-void dsu_read(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
+void dsu_read(int fd, aq_socket_t socks[]) {
 	char                dos_buffer[MAXMSG];
 	size_t				i;
 	ssize_t             dos_len;
@@ -103,7 +110,7 @@ void dsu_read(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
 					socks[i].has_w_data = 1;
 					socks[i].w_len = dos_len;
 				}
-				FD_SET(socks[i].fd, write_fd_set);
+				set_write_event(socks[i].fd);
 			}
 		}
 	}

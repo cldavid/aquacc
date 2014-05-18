@@ -37,6 +37,7 @@
 #include "timer.h"
 #include "fd_list.h"
 #include "rrd_timer.h"
+#include "fd_event.h"
 
 extern aq_socket_t	socks[MAX_SOCKETS];
 
@@ -50,9 +51,7 @@ void aquacc_log(const char *msg) {
 
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)), char *envp[] __attribute__ ((unused))) {
 	fd_set              read_fds;
-	fd_set 	       	    read_fd_set;
 	fd_set				write_fds;
-	fd_set	        	write_fd_set;
 	size_t				i;
 	int 	        	fd_dosing 	= openSerial(DOSINGUNIT_DEV, 8, 1, 'N');
 	int                 fd_socket   = makeSocket(SOCKET_PORT);
@@ -71,24 +70,27 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 		exit(EXIT_FAILURE);
 	}
 
+	/* DSU */
+	dsu_set_read_event(fd_dosing, socks);
+
 	/* RRD Timer */
 	rrd_temperature_timer();
 
 	/* setUnixTime Timer */
-	dsu_setUnixTime_timer(fd_dosing);
+	dsu_set_setUnixTime_timer(fd_dosing);
 
 	openlog("aquacc", LOG_PID, LOG_USER);
 
 	time(&cur_time);
 
-	FD_ZERO(&read_fd_set);
-	FD_ZERO(&write_fd_set);
-	FD_SET(fd_socket, &read_fd_set);
-	FD_SET(fd_dosing, &read_fd_set);
-	aquacc_fd_list_read_set(&read_fd_set);
+	zero_read_event();
+	zero_write_event();
+	set_read_event(fd_socket);
+	set_read_event(fd_dosing);
+	aquacc_fd_list_read_set();
 	while (alive && is_valid_fd(fd_dosing) && is_valid_fd(fd_socket)) {
-		read_fds 	= read_fd_set;	
-		write_fds	= write_fd_set;
+		read_fds 	= get_read_event();
+		write_fds	= get_write_event();
 
 		stimeout.tv_sec		= 1;
 		stimeout.tv_usec	= 0;
@@ -106,7 +108,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 				/* Read From Dosing Unit */
 				if (fd == fd_dosing) {
 					aquacc_log("read fd_dosing TST");
-					dsu_read(fd, socks, &write_fd_set);
+					dsu_read(fd, socks);
 					/* Handle New Socket Connection */
 				} else if (fd == fd_socket) {
 					aquacc_log("read fd_socket TST");
@@ -116,7 +118,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 							closeSocket(new_fd);
 							continue;
 						}
-						FD_SET(new_fd, &read_fd_set);
+						set_read_event(new_fd);
 					}
 				} else if (aquacc_fd_list_cb(fd)) {
 					aquacc_log("aquacc_fd_list_cb OK");
@@ -126,21 +128,21 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 					if (0 >= readSocket(fd)) {
 						fprintf(stderr, "Error: reading from socket.\nClosing socket %d.\n", fd);
 						freeSocket(fd);
-						FD_CLR(fd, &read_fd_set);
+						clr_read_event(fd);
 						closeSocket(fd);
 						continue;
 					} 
-					FD_SET(fd_dosing, &write_fd_set);
+					set_write_event(fd_dosing);
 				}
 			} else if (FD_ISSET(fd, &write_fds)) {
 				if (fd == fd_dosing) {
 					aquacc_log("write dosing TST");
 					/* Write socket information to dosing unit */
-					dsu_write(fd, socks, &write_fd_set);
+					dsu_write(fd, socks);
 				} else if (fd != fd_socket) {
 					aquacc_log("write !fd_socket TST");
 					writeSocket(fd);
-					FD_CLR(fd, &write_fd_set);
+					clr_write_event(fd);
 				} 
 			}
 		}

@@ -36,8 +36,8 @@ struct _fd_list_t {
 typedef struct _fd_list_t	fd_list_t;
 
 bool aquacc_fd_list_cb(int fd);
-bool aquacc_fd_list_write_set(fd_set *write_fd_set);
-bool aquacc_fd_list_read_set(fd_set *read_fd_set);
+bool aquacc_fd_list_write_set(void);
+bool aquacc_fd_list_read_set(void);
 bool aquacc_fd_list_set(fd_list_t *list, int fd);
 fd_list_t *aquacc_fd_list_new(void);
 void aquacc_fd_list_destroy(void);

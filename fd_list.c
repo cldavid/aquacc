@@ -26,6 +26,7 @@
 #include <sys/select.h>
 #include <syslog.h>
 #include "fd_list.h"
+#include "fd_event.h"
 
 static fd_list_t	*fd_list	= NULL;
 
@@ -70,21 +71,21 @@ bool aquacc_fd_list_set(fd_list_t *list, int fd) {
 	return true;
 }
 
-bool aquacc_fd_list_write_set(fd_set *write_fd_set) {
+bool aquacc_fd_list_write_set(void) {
 	fd_list_t	*tmp	= fd_list;
 
 	while(tmp) {
-		FD_SET(tmp->fd, write_fd_set);
+		set_write_event(tmp->fd);
 		tmp =  tmp->next;
 	}
 	return true;
 }
 
-bool aquacc_fd_list_read_set(fd_set *read_fd_set) {
+bool aquacc_fd_list_read_set(void) {
 	fd_list_t	*tmp	= fd_list;
 
 	while(tmp) {
-		FD_SET(tmp->fd, read_fd_set);
+		set_read_event(tmp->fd);
 		tmp =  tmp->next;
 	}
 	return true;
