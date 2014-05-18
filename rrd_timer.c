@@ -43,7 +43,8 @@ bool rrd_temperature_timer_1_cb(int __attribute__((__unused__)) fd, void __attri
 void rrd_temperature_timer(void) {
 	fd_list_t *fdList = aquacc_fd_list_new();
 
-	fdList->type = FD_LIST_TYPE_TIMER;
+	fdList->type 	= FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer	= true;
 	timer_init(5, &fdList->fd);
 	fdList->cb = rrd_temperature_timer_1_cb;
 }

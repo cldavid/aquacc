@@ -30,38 +30,51 @@
 
 static fd_list_t	*fd_list	= NULL;
 
-bool aquacc_fd_list_type(const fd_list_t *fdlist) {
-	switch(fdlist->type) {
-		case FD_LIST_TYPE_UNKNOWN:
+bool aquacc_fd_list_type_cb(const fd_list_t *fdlist) {
+	if (fdlist->istimer) {
+		ssize_t s;
+		uint64_t exp;
+		s = read(fdlist->fd, &exp, sizeof(uint64_t));
+		if (s != sizeof(uint64_t)) {
+			syslog(LOG_INFO, "ERROR FD_TIMER 1");
 			return false;
 
-		case FD_LIST_TYPE_TIMER:
-			{
-				ssize_t s;
-				uint64_t exp;
-				s = read(fdlist->fd, &exp, sizeof(uint64_t));
-				if (s != sizeof(uint64_t)) {
-					syslog(LOG_INFO, "ERROR FD_TIMER 1");
-					return false;
-				}
-				return true;
-			}
-		case FD_LIST_TYPE_NORMAL:
+		}
+	}
+
+	switch(fdlist->type) {
+		case FD_LIST_TYPE_READ_EVENT:
+			return fdlist->cb(fdlist->fd, fdlist->data);
+
+		case FD_LIST_TYPE_WRITE_EVENT:
+			return fdlist->cb(fdlist->fd, fdlist->data);
 		default:
-			return true;
+			return false;
+	}
+}
+
+bool aquacc_fd_list_read_cb(int fd) {
+	fd_list_t	*tmp	= fd_list;
+
+	while(tmp) {
+		syslog(LOG_INFO, "aquacc_fd_list_read_cb %d tst %d", tmp->fd, fd);
+		if ((tmp->fd == fd) && (tmp->type == FD_LIST_TYPE_READ_EVENT)) {
+			return(aquacc_fd_list_type_cb(tmp));
+		}
+		tmp = tmp->next;
 	}
 	return false;
 }
 
-bool aquacc_fd_list_cb(int fd) {
+bool aquacc_fd_list_write_cb(int fd) {
 	fd_list_t	*tmp	= fd_list;
 
 	while(tmp) {
-		if (tmp->fd == fd) {
-			aquacc_fd_list_type(tmp);
-			return tmp->cb(tmp->fd, tmp->data);
+		syslog(LOG_INFO, "aquacc_fd_list_write_cb %d tst %d", tmp->fd, fd);
+		if ((tmp->fd == fd) && (tmp->type == FD_LIST_TYPE_WRITE_EVENT)) {
+			return(aquacc_fd_list_type_cb(tmp));
 		}
-		tmp =  tmp->next;
+		tmp = tmp->next;
 	}
 	return false;
 }
@@ -92,6 +105,8 @@ bool aquacc_fd_list_read_set(void) {
 }
 
 fd_list_t *aquacc_fd_list_new(void) {
+	fd_list_t	*tmp	= fd_list;
+
 	if (!fd_list) {
 		if (NULL == (fd_list = calloc(1, sizeof(fd_list_t)))) {
 			perror("Error allocating memory");
@@ -100,16 +115,16 @@ fd_list_t *aquacc_fd_list_new(void) {
 		return fd_list;
 	}
 
-	while(fd_list->next) {
-		fd_list = fd_list->next;
+	while(tmp->next) {
+		tmp = tmp->next;
 	}
 
-	if (NULL == (fd_list->next = calloc(1, sizeof(fd_list_t)))) {
+	if (NULL == (tmp->next = calloc(1, sizeof(fd_list_t)))) {
 		perror("Error allocating memory");
 		return NULL;
 	}
-	fd_list->next->prev = fd_list;
-	return fd_list->next; 
+	tmp->next->prev = tmp;
+	return tmp->next; 
 }
 
 void aquacc_fd_list_destroy(void) {

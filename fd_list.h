@@ -22,20 +22,24 @@
 enum fd_list_type {
 	FD_LIST_TYPE_UNKNOWN,
 	FD_LIST_TYPE_TIMER,
-	FD_LIST_TYPE_NORMAL,
+	FD_LIST_TYPE_READ_EVENT,
+	FD_LIST_TYPE_WRITE_EVENT,
 };
 
 struct _fd_list_t {
 	int 				fd;
 	enum fd_list_type	type;
 	void				*data;
+	bool				istimer;
 	bool				(*cb)(int fd, void *data);
 	struct _fd_list_t	*next;
 	struct _fd_list_t	*prev;
 };
 typedef struct _fd_list_t	fd_list_t;
 
-bool aquacc_fd_list_cb(int fd);
+bool aquacc_fd_list_type_cb(const fd_list_t *fdlist);
+bool aquacc_fd_list_read_cb(int fd);
+bool aquacc_fd_list_write_cb(int fd);
 bool aquacc_fd_list_write_set(void);
 bool aquacc_fd_list_read_set(void);
 bool aquacc_fd_list_set(fd_list_t *list, int fd);

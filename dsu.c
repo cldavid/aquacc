@@ -35,11 +35,22 @@
 #include "timer.h"
 #include "dsu.h"
 
+void dsu_set_write_event(int fd_dosing, aq_socket_t *socks) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->fd		= fd_dosing;
+	fdList->type 	= FD_LIST_TYPE_WRITE_EVENT;
+	fdList->istimer	= false;
+	fdList->data    = socks;
+	fdList->cb      = dsu_write_event_cb;
+}
+
 void dsu_set_read_event(int fd_dosing, aq_socket_t *socks) {
 	fd_list_t *fdList = aquacc_fd_list_new();
 
 	fdList->fd		= fd_dosing;
-	fdList->type 	= FD_LIST_TYPE_NORMAL;
+	fdList->type 	= FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer	= false;
 	fdList->data    = socks;
 	fdList->cb      = dsu_read_event_cb;
 }
@@ -48,14 +59,21 @@ void dsu_set_setUnixTime_timer(int fd_dosing) {
 	fd_list_t *fdList = aquacc_fd_list_new();
 
 	timer_init(SET_TIME_INTERVAL, &fdList->fd);
-	fdList->type 	= FD_LIST_TYPE_TIMER;
-	fdList->data    = fd_dosing;
+	fdList->type 	= FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer	= true;
+	fdList->data    = (void *)fd_dosing;
 	fdList->cb      = dsu_timer_setUnixTime_cb;
 }
 
 bool dsu_read_event_cb(int fd, void *data) {
 	aq_socket_t *socks = data;
 	dsu_read(fd, socks);
+	return true;
+}
+
+bool dsu_write_event_cb(int fd, void *data) {
+	aq_socket_t *socks = data;
+	dsu_write(fd, socks);
 	return true;
 }
 

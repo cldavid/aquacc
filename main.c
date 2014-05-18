@@ -72,6 +72,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 
 	/* DSU */
 	dsu_set_read_event(fd_dosing, socks);
+	dsu_set_write_event(fd_dosing, socks);
 
 	/* RRD Timer */
 	rrd_temperature_timer();
@@ -86,7 +87,6 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	zero_read_event();
 	zero_write_event();
 	set_read_event(fd_socket);
-	set_read_event(fd_dosing);
 	aquacc_fd_list_read_set();
 	while (alive && is_valid_fd(fd_dosing) && is_valid_fd(fd_socket)) {
 		read_fds 	= get_read_event();
@@ -104,13 +104,8 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 		time(&cur_time);
 		for (fd = 0; fd < maxfd; fd++) {
 			if (FD_ISSET(fd, &read_fds)) {
-				aquacc_log("READ SET TST");
-				/* Read From Dosing Unit */
-				if (fd == fd_dosing) {
-					aquacc_log("read fd_dosing TST");
-					dsu_read(fd, socks);
-					/* Handle New Socket Connection */
-				} else if (fd == fd_socket) {
+				/* Handle New Socket Connection */
+				if (fd == fd_socket) {
 					aquacc_log("read fd_socket TST");
 					if (0 < (new_fd = acceptSocket(fd))) {
 						if (0 > addSocket(new_fd)) {
@@ -120,11 +115,10 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 						}
 						set_read_event(new_fd);
 					}
-				} else if (aquacc_fd_list_cb(fd)) {
-					aquacc_log("aquacc_fd_list_cb OK");
+				} else if (aquacc_fd_list_read_cb(fd)) {
+					syslog(LOG_INFO, "aquacc_fd_list_read_cb OK fd %d", fd);
 				} else {
 					aquacc_log("read else TST");
-					aquacc_fd_list_cb(fd);
 					if (0 >= readSocket(fd)) {
 						fprintf(stderr, "Error: reading from socket.\nClosing socket %d.\n", fd);
 						freeSocket(fd);
@@ -135,10 +129,8 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 					set_write_event(fd_dosing);
 				}
 			} else if (FD_ISSET(fd, &write_fds)) {
-				if (fd == fd_dosing) {
-					aquacc_log("write dosing TST");
-					/* Write socket information to dosing unit */
-					dsu_write(fd, socks);
+				if (aquacc_fd_list_write_cb(fd)) {
+					syslog(LOG_INFO, "aquacc_fd_list_write_cb OK fd %d", fd);
 				} else if (fd != fd_socket) {
 					aquacc_log("write !fd_socket TST");
 					writeSocket(fd);
