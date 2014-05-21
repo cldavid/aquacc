@@ -17,15 +17,8 @@
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AQUACC_DSU_H__
-#define __AQUACC_DSU_H__
-void dsu_set_read_event(int fd_dosing, aq_socket_t *socks);
-void dsu_set_write_event(int fd_dosing, aq_socket_t *socks);
-bool dsu_read_event_cb(int fd, void *data);
-bool dsu_write_event_cb(int fd, void *data);
-void dsu_set_unixtime_timer(int fd_dosing);
-ssize_t dsu_setUnixTime(int fd, time_t cur_time);
-bool dsu_timer_setUnixTime_cb(int fd, void *data);
-void dsu_write(int fd, aq_socket_t socks[]);
-void dsu_read(int fd, aq_socket_t socks[]);
-#endif //__AQUACC_DSU_H__
+#ifndef __AQUACC_RRD_TIMER_H__
+#define __AQUACC_RRD_TIMER_H__
+bool rrd_temperature_timer_1_cb(int fd, void *data);
+void rrd_set_temperature_timer(void);
+#endif //__AQUACC_RRD_TIMER_H__

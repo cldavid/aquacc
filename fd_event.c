@@ -17,15 +17,43 @@
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AQUACC_DSU_H__
-#define __AQUACC_DSU_H__
-void dsu_set_read_event(int fd_dosing, aq_socket_t *socks);
-void dsu_set_write_event(int fd_dosing, aq_socket_t *socks);
-bool dsu_read_event_cb(int fd, void *data);
-bool dsu_write_event_cb(int fd, void *data);
-void dsu_set_unixtime_timer(int fd_dosing);
-ssize_t dsu_setUnixTime(int fd, time_t cur_time);
-bool dsu_timer_setUnixTime_cb(int fd, void *data);
-void dsu_write(int fd, aq_socket_t socks[]);
-void dsu_read(int fd, aq_socket_t socks[]);
-#endif //__AQUACC_DSU_H__
+#include <stdio.h>
+#include <syslog.h>
+#include <sys/select.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
+static fd_set _read_fd_set;
+static fd_set _write_fd_set;
+
+void clr_read_event(int fd) {
+	FD_CLR(fd, &_read_fd_set);
+}
+
+void clr_write_event(int fd) {
+	FD_CLR(fd, &_write_fd_set);
+}
+void zero_read_event(void) {
+	FD_ZERO(&_read_fd_set);
+}
+
+void zero_write_event(void) {
+	FD_ZERO(&_write_fd_set);
+}
+
+fd_set get_read_event(void) {
+	return _read_fd_set;
+}
+
+fd_set get_write_event(void) {
+	return _write_fd_set;
+}
+
+void set_read_event(int fd) {
+	FD_SET(fd, &_read_fd_set);
+}
+
+void set_write_event(int fd) {
+	FD_SET(fd, &_write_fd_set);
+}

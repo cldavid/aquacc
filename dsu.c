@@ -24,10 +24,77 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <time.h>
+#include <unistd.h>
 #include "aquacc.h"
 #include "serial.h"
+#include "fd_list.h"
+#include "fd_event.h"
+#include "timer.h"
+#include "dsu.h"
 
-void dsu_write(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
+void dsu_set_write_event(int fd_dosing, aq_socket_t *socks) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->fd		= fd_dosing;
+	fdList->type 	= FD_LIST_TYPE_WRITE_EVENT;
+	fdList->istimer	= false;
+	fdList->data    = socks;
+	fdList->cb      = dsu_write_event_cb;
+}
+
+void dsu_set_read_event(int fd_dosing, aq_socket_t *socks) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->fd		= fd_dosing;
+	fdList->type 	= FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer	= false;
+	fdList->data    = socks;
+	fdList->cb      = dsu_read_event_cb;
+}
+
+void dsu_set_unixtime_timer(int fd_dosing) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	timer_init(SET_TIME_INTERVAL, &fdList->fd);
+	fdList->type 	= FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer	= true;
+	fdList->data    = (void *)fd_dosing;
+	fdList->cb      = dsu_timer_setUnixTime_cb;
+}
+
+bool dsu_read_event_cb(int fd, void *data) {
+	aq_socket_t *socks = data;
+	dsu_read(fd, socks);
+	return true;
+}
+
+bool dsu_write_event_cb(int fd, void *data) {
+	aq_socket_t *socks = data;
+	dsu_write(fd, socks);
+	return true;
+}
+
+ssize_t dsu_setUnixTime(int fd, time_t cur_time) {
+	char    string[250];
+	int     len;
+	len = snprintf(string, sizeof(string), "setUnixTime %lu\n", cur_time);
+	return(writen_ni(fd, string, len));
+}
+
+/* Write current the current time to the dosing unit */
+bool dsu_timer_setUnixTime_cb(int __attribute__ ((unused)) fd, void *data) {
+	time_t cur_time;
+	int fd_dosing = (int)data;
+
+	time(&cur_time);
+	dsu_setUnixTime(fd_dosing, cur_time);
+	return true;
+}
+
+void dsu_write(int fd, aq_socket_t socks[]) {
 	size_t i;
 
 	/* Write socket information to dosing unit */
@@ -38,10 +105,10 @@ void dsu_write(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
 			socks[i].r_len = 0;
 		}
 	}
-	FD_CLR(fd, write_fd_set);
+	clr_write_event(fd);
 }
 
-void dsu_read(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
+void dsu_read(int fd, aq_socket_t socks[]) {
 	char                dos_buffer[MAXMSG];
 	size_t				i;
 	ssize_t             dos_len;
@@ -61,7 +128,7 @@ void dsu_read(int fd, aq_socket_t socks[], fd_set *write_fd_set) {
 					socks[i].has_w_data = 1;
 					socks[i].w_len = dos_len;
 				}
-				FD_SET(socks[i].fd, write_fd_set);
+				set_write_event(socks[i].fd);
 			}
 		}
 	}

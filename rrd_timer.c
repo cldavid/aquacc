@@ -16,16 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
+#include <stdio.h>
+#include <syslog.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <time.h>
+#include <unistd.h>
+#include "fd_list.h"
+#include "timer.h"
+#include "rrd_timer.h"
 
-#ifndef __AQUACC_DSU_H__
-#define __AQUACC_DSU_H__
-void dsu_set_read_event(int fd_dosing, aq_socket_t *socks);
-void dsu_set_write_event(int fd_dosing, aq_socket_t *socks);
-bool dsu_read_event_cb(int fd, void *data);
-bool dsu_write_event_cb(int fd, void *data);
-void dsu_set_unixtime_timer(int fd_dosing);
-ssize_t dsu_setUnixTime(int fd, time_t cur_time);
-bool dsu_timer_setUnixTime_cb(int fd, void *data);
-void dsu_write(int fd, aq_socket_t socks[]);
-void dsu_read(int fd, aq_socket_t socks[]);
-#endif //__AQUACC_DSU_H__
+bool rrd_temperature_timer_1_cb(int __attribute__((__unused__)) fd, void __attribute__((__unused__)) *data) {
+	syslog(LOG_INFO, "RRD FD_TIMER 1");
+	//Destroy example FD_CLR + destroy
+	//FD_CLR(fd, &read_fd_set);
+	//timer_destroy(fd);
+	return true;
+}
+
+void rrd_set_temperature_timer(void) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->type 	= FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer	= true;
+	timer_init(5, &fdList->fd);
+	fdList->cb = rrd_temperature_timer_1_cb;
+}
+

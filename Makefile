@@ -3,7 +3,7 @@ CFLAGS += -g -Wall -Wextra -lc -lm
 LDFLAGS += 
 
 TARGET	= aquacc
-SRCS	= main.c aquacc.c serial.c socket.c daemon.c dsu.c timer.c
+SRCS	= main.c aquacc.c serial.c socket.c daemon.c dsu.c timer.c fd_list.c rrd_timer.c fd_event.c
 OBJS	= $(SRCS:.c=.o)
 
 TEMP_TARGET	= temp
@@ -15,7 +15,7 @@ TEMP_OBJS	= $(TEMP_SRCS:.c=.o)
 .c.o:
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-all: $(SRCS) $(TARGET)
+all: $(SRCS) $(TARGET) $(TEMP_TARGET)
 
 $(TEMP_TARGET): $(TEMP_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(TEMP_OBJS) $(LDFLAGS)
