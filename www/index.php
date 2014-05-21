@@ -19,6 +19,7 @@
  */
 	require "dosingunit.php";
 	require "pdu.php";
+	require "rrd.php";
 ?>
 <html>
 <head>
@@ -47,6 +48,7 @@
 		<ul>
 			<li><a href="#tabs-1">Dosing Unit</a></li>
 			<li><a href="#tabs-2">PDU</a></li>
+			<li><a href="#tabs-3">RRD</a></li>
 		</ul>
 		<div id="tabs-1">
 		<table border="1" width="100%">
@@ -96,6 +98,17 @@
 				<td align="center">
 				<?php
 					printPDUinfo();
+				?>
+				</td>
+			</tr>
+			</table>
+			</div>
+			<div id="tabs-3">
+			<table border="1" width="100%">
+			<tr>
+				<td align="center">
+				<?php
+					printRRD();
 				?>
 				</td>
 			</tr>

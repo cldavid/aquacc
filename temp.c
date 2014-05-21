@@ -42,7 +42,7 @@ void logData() {
 	len = snprintf(system_cmd + len, sizeof(system_cmd) - len, RRDTOOL" update "RRD_DB_PATH" N");
 	for (i = 0; i < sizeof(sensors) / sizeof(sensor_t); i++) {
 		if (sensors[i].active) {
-			len += snprintf(system_cmd + len, sizeof(system_cmd) - len, ":%.0f", roundf(sensors[i].temp) );
+			len += snprintf(system_cmd + len, sizeof(system_cmd) - len, ":%.1f", sensors[i].temp);
 		}
 	}
 	printf("%s\n", system_cmd);
