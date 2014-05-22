@@ -45,7 +45,7 @@ unsigned 	int alive			= 1;
 extern 		int errno;
 
 void aquacc_log(const char *msg) {
-	syslog(LOG_INFO, msg);
+	syslog(LOG_INFO, "%s", msg);
 	return;
 }
 
