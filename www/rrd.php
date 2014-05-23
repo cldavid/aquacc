@@ -9,7 +9,7 @@ function	printRRD() {
 	</tr>
 	<tr>
 		<td>
-			<img src="rrd/mhour.png"/>
+			<a href="rrd/big_mhour.png"><img src="rrd/mhour.png"/></a>
 		</td>
 	</tr>
 	<tr>
@@ -19,7 +19,7 @@ function	printRRD() {
 	</tr>
 	<tr>
 		<td>
-			<img src="rrd/mday.png"/>
+			<a href="rrd/big_mday.png"><img src="rrd/mday.png"/></a>
 		</td>
 	</tr>
 	<tr>
@@ -29,7 +29,7 @@ function	printRRD() {
 	</tr>
 	<tr>
 		<td>
-			<img src="rrd/mweek.png"/>
+			<a href="rrd/big_mweek.png"><img src="rrd/mweek.png"/></a>
 		</td>
 	</tr>
 	<tr>
@@ -39,7 +39,7 @@ function	printRRD() {
 	</tr>
 	<tr>
 		<td>
-			<img src="rrd/mmonth.png"/>
+			<a href="rrd/big_mmonth.png"><img src="rrd/mmonth.png"/></a>
 		</td>
 	</tr>
 	<tr>
@@ -49,7 +49,7 @@ function	printRRD() {
 	</tr>
 	<tr>
 		<td>
-			<img src="rrd/myear.png"/>
+			<a href="rrd/big_myear.png"><img src="rrd/myear.png"/></a>
 		</td>
 	</tr>
 </table>
