@@ -2,8 +2,8 @@
 RRDPATH=/home/pi/aquacc
 GRAPHPATH=/var/www/rrd
 RAWCOLOUR1="#00FF00"
-RAWCOLOUR2="#0000FF"
-MINCOLOUR="#FFFF00"
+RAWCOLOUR2="#BBFF00"
+MINCOLOUR="#0000FF"
 AVGCOLOUR="#FF9900"
 MAXCOLOUR="#FF0000"
 
@@ -27,15 +27,15 @@ rrdtool graph $GRAPHPATH/big_mhour.png --start -6h -w 1024 -h 300\
 		VDEF:avg_outtemp=outtemp,AVERAGE \
 		VDEF:max_intemp=intemp,MAXIMUM \
 		VDEF:max_outtemp=outtemp,MAXIMUM \
-		HRULE:min_intemp$MINCOLOUR:"Min inside temperature" \
-		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature\n" \
-		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature" \
-		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature\n" \
-		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature" \
-		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature\n" \
-		LINE2:intemp$RAWCOLOUR1:"Inside temperature" \
+		LINE2:intemp$RAWCOLOUR1:"Inside temperature\t" \
+		HRULE:min_intemp$MINCOLOUR:"Min inside temperature\t" \
+		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature\t" \
+		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature\t" \
 		GPRINT:intemp:LAST:"Current temp.\: %.2lf°C\n" \
-		LINE2:outtemp$RAWCOLOUR2:"Outside temperature" \
+		LINE2:outtemp$RAWCOLOUR2:"Outside temperature\t" \
+		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature\t" \
+		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature\t" \
+		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature\t" \
 		GPRINT:outtemp:LAST:"Current temp.\: %.2lf°C\n" 
 
 #day
@@ -54,14 +54,17 @@ rrdtool graph $GRAPHPATH/big_mday.png --start -1d  -w 1024 -h 300\
 		VDEF:avg_outtemp=outtemp,AVERAGE \
 		VDEF:max_intemp=intemp,MAXIMUM \
 		VDEF:max_outtemp=outtemp,MAXIMUM \
-		HRULE:min_intemp$MINCOLOUR:"Min inside temperature" \
-		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature" \
-		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature" \
-		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature" \
-		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature" \
-		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature" \
-		LINE2:intemp$RAWCOLOUR1:"Inside temperature" \
-		LINE2:outtemp$RAWCOLOUR2:"Outside temperature" 
+		LINE2:intemp$RAWCOLOUR1:"Inside temperature\t" \
+		HRULE:min_intemp$MINCOLOUR:"Min inside temperature\t" \
+		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature\t" \
+		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature\t" \
+		GPRINT:intemp:LAST:"Current temp.\: %.2lf°C\n" \
+		LINE2:outtemp$RAWCOLOUR2:"Outside temperature\t" \
+		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature\t" \
+		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature\t" \
+		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature\t" \
+		GPRINT:outtemp:LAST:"Current temp.\: %.2lf°C\n" 
+
 #week
 rrdtool graph $GRAPHPATH/mweek.png --start -1w \
 		DEF:intemp=$RRDPATH/multirPItemp.rrd:in_temp:AVERAGE \
@@ -69,7 +72,7 @@ rrdtool graph $GRAPHPATH/mweek.png --start -1w \
 		LINE2:intemp$RAWCOLOUR1:"Inside temperature" \
 		LINE2:outtemp$RAWCOLOUR2:"Outside temperature" 
 
-rrdtool graph $GRAPHPATH/big_mweek.png --start -1w -w 1024 -h 300\
+rrdtool graph $GRAPHPATH/big_mweek.png --start -1w -w 1024 -h 300 -E\
 		DEF:intemp=$RRDPATH/multirPItemp.rrd:in_temp:AVERAGE \
 		DEF:outtemp=$RRDPATH/multirPItemp.rrd:out_temp:AVERAGE \
 		VDEF:min_intemp=intemp,MINIMUM \
@@ -78,14 +81,19 @@ rrdtool graph $GRAPHPATH/big_mweek.png --start -1w -w 1024 -h 300\
 		VDEF:avg_outtemp=outtemp,AVERAGE \
 		VDEF:max_intemp=intemp,MAXIMUM \
 		VDEF:max_outtemp=outtemp,MAXIMUM \
-		HRULE:min_intemp$MINCOLOUR:"Min inside temperature" \
-		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature" \
-		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature" \
-		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature" \
-		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature" \
-		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature" \
-		LINE2:intemp$RAWCOLOUR1:"Inside temperature" \
-		LINE2:outtemp$RAWCOLOUR2:"Outside temperature" 
+		AREA:intemp$RAWCOLOUR1:"Inside temperature\t" \
+		HRULE:min_intemp$MINCOLOUR:"" \
+		HRULE:avg_intemp$AVGCOLOUR:"" \
+		HRULE:max_intemp$MAXCOLOUR:"" \
+		GPRINT:intemp:MIN:"Min\: %.2lf°C\t" \
+		GPRINT:intemp:MAX:"Max\: %.2lf°C\t" \
+		GPRINT:intemp:AVERAGE:"Avg\: %.2lf°C\t" \
+		GPRINT:intemp:LAST:"Current\: %.2lf°C\n" \
+		AREA:outtemp$RAWCOLOUR2:"Outside temperature\t" \
+		GPRINT:outtemp:MIN:"Min\: %.2lf°C\t" \
+		GPRINT:outtemp:MAX:"Max\: %.2lf°C\t" \
+		GPRINT:outtemp:AVERAGE:"Avg\: %.2lf°C\t" \
+		GPRINT:outtemp:LAST:"Current\: %.2lf°C\n"
 
 #month
 rrdtool graph $GRAPHPATH/mmonth.png --start -1m\
@@ -103,14 +111,16 @@ rrdtool graph $GRAPHPATH/mmonth.png --start -1m\
 		VDEF:avg_outtemp=outtemp,AVERAGE \
 		VDEF:max_intemp=intemp,MAXIMUM \
 		VDEF:max_outtemp=outtemp,MAXIMUM \
-		HRULE:min_intemp$MINCOLOUR:"Min inside temperature" \
-		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature" \
-		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature" \
-		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature" \
-		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature" \
-		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature" \
-		LINE2:intemp$RAWCOLOUR1:"Inside temperature" \
-		LINE2:outtemp$RAWCOLOUR2:"Outside temperature" 
+		LINE2:intemp$RAWCOLOUR1:"Inside temperature\t" \
+		HRULE:min_intemp$MINCOLOUR:"Min inside temperature\t" \
+		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature\t" \
+		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature\t"\
+		GPRINT:intemp:LAST:"Current temp.\: %.2lf°C\n" \
+		LINE2:outtemp$RAWCOLOUR2:"Outside temperature\t" \
+		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature\t" \
+		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature\t" \
+		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature\t" \
+		GPRINT:outtemp:LAST:"Current temp.\: %.2lf°C\n"
 
 #year
 rrdtool graph $GRAPHPATH/myear.png --start -1y\
@@ -128,11 +138,14 @@ rrdtool graph $GRAPHPATH/big_myear.png --start -1y -w 1024 -h 300\
 		VDEF:avg_outtemp=outtemp,AVERAGE \
 		VDEF:max_intemp=intemp,MAXIMUM \
 		VDEF:max_outtemp=outtemp,MAXIMUM \
-		HRULE:min_intemp$MINCOLOUR:"Min inside temperature" \
-		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature" \
-		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature" \
-		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature" \
-		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature" \
-		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature" \
-		LINE2:intemp$RAWCOLOUR1:"Inside temperature" \
-		LINE2:outtemp$RAWCOLOUR2:"Outside temperature" 
+		LINE2:intemp$RAWCOLOUR1:"Inside temperature\t" \
+		HRULE:min_intemp$MINCOLOUR:"Min inside temperature\t" \
+		HRULE:avg_intemp$AVGCOLOUR:"Average inside temperature\t"\
+		HRULE:max_intemp$MAXCOLOUR:"Max inside temperature\t"\
+		GPRINT:intemp:LAST:"Current temp.\: %.2lf°C\n" \
+		GPRINT:intemp:AVERAGE:"Average temp.\: %.2lf°C\n" \
+		LINE2:outtemp$RAWCOLOUR2:"Outside temperature\t" \
+		HRULE:min_outtemp$MINCOLOUR:"Min outside temperature\t" \
+		HRULE:avg_outtemp$AVGCOLOUR:"Average outside temperature\t" \
+		HRULE:max_outtemp$MAXCOLOUR:"Max outside temperature\t" \
+		GPRINT:outtemp:LAST:"Current temp.\: %.2lf°C\n"
