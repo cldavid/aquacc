@@ -10,7 +10,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <rrd.h>
 #include <math.h>
 
 #define RRDTOOL			"/usr/bin/rrdtool"
@@ -53,7 +52,6 @@ int readSensor(const char *sensorName, const char *file, float *temp) {
 	char 	buf[BUF_SIZE];
 	char 	data[DATA_SIZE];
 	char	*tString	= NULL;
-	ssize_t numRead 	= 0;
 	ssize_t	len			= 0;
 	int 	fd 			= -1;
 	float	t			= 0.0;
@@ -63,7 +61,7 @@ int readSensor(const char *sensorName, const char *file, float *temp) {
 		return -1;   
 	}
 
-	while((numRead = read(fd, buf, sizeof(buf))) > 0) {
+	while((read(fd, buf, sizeof(buf))) > 0) {
 		len += snprintf(data + len, sizeof(data) - len, "%s", buf);
 	}
 	close(fd);

@@ -147,5 +147,4 @@ void aquacc_fd_list_destroy(void) {
 		free(fd_list);
 		fd_list = tmp;
 	}
-	fd_list->next->prev = fd_list;
 }
