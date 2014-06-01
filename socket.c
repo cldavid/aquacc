@@ -31,12 +31,15 @@
 #include <errno.h>
 #include <signal.h>
 #include <termios.h>
+#include <stdbool.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "aquacc.h"
 #include "socket.h"
+#include "fd_list.h"
+#include "fd_event.h"
 
 aq_socket_t	socks[MAX_SOCKETS];
 extern 		int errno;
@@ -172,3 +175,74 @@ int listenSocket(int sockfd, int backlog) {
 int closeSocket(int fd) {
     return(close(fd));
 }
+
+void socketserver_set_read_event(int fd_socket, int fd_dosing) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->fd      = fd_socket;
+	fdList->type    = FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer = false;
+	fdList->data    = (void *)fd_dosing;
+	fdList->cb      = socketserver_read_event_cb;
+}
+
+void socketchild_set_read_event(int fd, int fd_dosing) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->fd      = fd;
+	fdList->type    = FD_LIST_TYPE_READ_EVENT;
+	fdList->istimer = false;
+	fdList->data    = (void *)fd_dosing;
+	fdList->cb      = socketchild_read_event_cb;
+}
+
+void socketchild_set_write_event(int fd) {
+	fd_list_t *fdList = aquacc_fd_list_new();
+
+	fdList->fd      = fd;
+	fdList->type    = FD_LIST_TYPE_WRITE_EVENT;
+	fdList->istimer = false;
+	fdList->data    = NULL;
+	fdList->cb      = socketchild_write_event_cb;
+}
+
+bool socketchild_read_event_cb(int fd, void *data) {
+	int fd_dosing = (int)data;
+	syslog(LOG_INFO, "socketchild_read_event_cb OK fd %d", fd);
+	if (0 >= readSocket(fd)) {
+		fprintf(stderr, "Error: reading from socket.\nClosing socket %d.\n", fd);
+		freeSocket(fd);
+		clr_read_event(fd);
+		closeSocket(fd);
+		return true;
+	}
+	syslog(LOG_INFO, "set write event fd_dosing %d", fd_dosing);
+	set_write_event(fd_dosing);
+	return true;
+}
+
+bool socketchild_write_event_cb(int fd, void __attribute__((__unused__)) *data) {
+	syslog(LOG_INFO, "socketchild_write_event_cb OK fd %d", fd);
+	writeSocket(fd);
+	clr_write_event(fd);
+	return true;
+}
+
+bool socketserver_read_event_cb(int fd, void *data) {
+	int new_fd		= -1;
+	int fd_dosing	= (int)data;
+
+	if (0 < (new_fd = acceptSocket(fd))) {
+		if (0 > addSocket(new_fd)) {
+			writen_ni(new_fd, "Max Sockets", strlen("Max Sockets"));
+			closeSocket(new_fd);
+			return true;
+		}
+		socketchild_set_read_event(new_fd, fd_dosing);
+		socketchild_set_write_event(new_fd);
+		set_read_event(new_fd);
+		return true;
+	}
+	return true;
+}
+

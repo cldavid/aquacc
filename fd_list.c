@@ -57,7 +57,6 @@ bool aquacc_fd_list_read_cb(int fd) {
 	fd_list_t	*tmp	= fd_list;
 
 	while(tmp) {
-		syslog(LOG_INFO, "aquacc_fd_list_read_cb %d tst %d", tmp->fd, fd);
 		if ((tmp->fd == fd) && (tmp->type == FD_LIST_TYPE_READ_EVENT)) {
 			return(aquacc_fd_list_type_cb(tmp));
 		}
@@ -70,7 +69,6 @@ bool aquacc_fd_list_write_cb(int fd) {
 	fd_list_t	*tmp	= fd_list;
 
 	while(tmp) {
-		syslog(LOG_INFO, "aquacc_fd_list_write_cb %d tst %d", tmp->fd, fd);
 		if ((tmp->fd == fd) && (tmp->type == FD_LIST_TYPE_WRITE_EVENT)) {
 			return(aquacc_fd_list_type_cb(tmp));
 		}

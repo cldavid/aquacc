@@ -29,4 +29,10 @@ int makeSocket(int16_t port);
 int listenSocket(int sockfd, int backlog);
 int closeSocket(int fd);
 
+void socketserver_set_read_event(int fd_socket, int fd_dosing);
+void socketchild_set_write_event(int fd);
+void socketchild_set_read_event(int fd, int fd_dosing);
+bool socketchild_read_event_cb(int fd, void *data);
+bool socketchild_write_event_cb(int fd, void *data);
+bool socketserver_read_event_cb(int fd, void *data);
 #endif //__SOCKET_H__

@@ -67,12 +67,14 @@ void dsu_set_unixtime_timer(int fd_dosing) {
 
 bool dsu_read_event_cb(int fd, void *data) {
 	aq_socket_t *socks = data;
+	syslog(LOG_INFO, "dsu_read_event_cb %d", fd);
 	dsu_read(fd, socks);
 	return true;
 }
 
 bool dsu_write_event_cb(int fd, void *data) {
 	aq_socket_t *socks = data;
+	syslog(LOG_INFO, "dsu_write_event_cb %d", fd);
 	dsu_write(fd, socks);
 	return true;
 }
