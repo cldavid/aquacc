@@ -66,7 +66,7 @@ bool socketchild_read_event_cb(int fd, void *data) {
 	if (0 >= readSocket(fd)) {
 		fprintf(stderr, "Error: reading from socket.\nClosing socket %d.\n", fd);
 		freeSocket(fd);
-		clr_read_event(fd);
+		aquacc_read_fd_list_delete_by_fd(fd);
 		closeSocket(fd);
 		return true;
 	}

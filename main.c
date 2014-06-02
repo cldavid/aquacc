@@ -31,6 +31,7 @@
 #include <stdint.h>
 #include "aquacc.h"
 #include "serial.h"
+#include "dsu_socket.h"
 #include "socket.h"
 #include "daemon.h"
 #include "dsu.h"
@@ -61,7 +62,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	time_t	        	cur_time;
 	struct timeval 		stimeout;
 
-	daemonize();
+	//daemonize();
 
 	initSocket();
 	if (listenSocket(fd_socket, 1) < 0) {

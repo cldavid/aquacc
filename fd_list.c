@@ -53,26 +53,32 @@ bool aquacc_fd_list_type_cb(const fd_list_t *fdlist) {
 	}
 }
 
-bool aquacc_fd_list_read_cb(int fd) {
+fd_list_t *aquacc_fd_list_find(int fd, enum fd_list_type type) {
 	fd_list_t	*tmp	= fd_list;
 
 	while(tmp) {
-		if ((tmp->fd == fd) && (tmp->type == FD_LIST_TYPE_READ_EVENT)) {
-			return(aquacc_fd_list_type_cb(tmp));
+		if ((tmp->fd == fd) && (tmp->type == type)) {
+			return tmp;
 		}
 		tmp = tmp->next;
+	}
+	return NULL;
+}
+
+bool aquacc_fd_list_read_cb(int fd) {
+	fd_list_t	*tmp	= aquacc_fd_list_find(fd, FD_LIST_TYPE_READ_EVENT);
+
+	if (tmp) {
+		return(aquacc_fd_list_type_cb(tmp));
 	}
 	return false;
 }
 
 bool aquacc_fd_list_write_cb(int fd) {
-	fd_list_t	*tmp	= fd_list;
+	fd_list_t	*tmp	= aquacc_fd_list_find(fd, FD_LIST_TYPE_WRITE_EVENT);
 
-	while(tmp) {
-		if ((tmp->fd == fd) && (tmp->type == FD_LIST_TYPE_WRITE_EVENT)) {
-			return(aquacc_fd_list_type_cb(tmp));
-		}
-		tmp = tmp->next;
+	if (tmp) {
+		return(aquacc_fd_list_type_cb(tmp));
 	}
 	return false;
 }
@@ -102,8 +108,20 @@ bool aquacc_fd_list_read_set(void) {
 	return true;
 }
 
+
+void aquacc_read_fd_list_delete_by_fd(int fd) {
+	fd_list_t *list = aquacc_fd_list_find(fd, FD_LIST_TYPE_READ_EVENT);
+	aquacc_fd_list_delete(list);
+}
+
+void aquacc_write_fd_list_delete_by_fd(int fd) {
+	fd_list_t *list = aquacc_fd_list_find(fd, FD_LIST_TYPE_WRITE_EVENT);
+	aquacc_fd_list_delete(list);
+}
+
 void aquacc_fd_list_delete(fd_list_t *fdlist) {
 	if (fdlist) {
+		clr_read_event(fdlist->fd);
 		//Detach fd_list from linked list;
 		if (fdlist->prev) {
 			fdlist->prev->next = fdlist->next;
