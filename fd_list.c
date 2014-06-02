@@ -108,6 +108,10 @@ bool aquacc_fd_list_read_set(void) {
 	return true;
 }
 
+void aquacc_fd_list_delete_by_fd(int fd) {
+	aquacc_read_fd_list_delete_by_fd(fd);
+	aquacc_write_fd_list_delete_by_fd(fd);
+}
 
 void aquacc_read_fd_list_delete_by_fd(int fd) {
 	fd_list_t *list = aquacc_fd_list_find(fd, FD_LIST_TYPE_READ_EVENT);
@@ -121,7 +125,12 @@ void aquacc_write_fd_list_delete_by_fd(int fd) {
 
 void aquacc_fd_list_delete(fd_list_t *fdlist) {
 	if (fdlist) {
-		clr_read_event(fdlist->fd);
+		if (fdlist->type == FD_LIST_TYPE_READ_EVENT) {
+			clr_read_event(fdlist->fd);
+		} else if (fdlist->type == FD_LIST_TYPE_WRITE_EVENT) {
+			clr_write_event(fdlist->fd);
+		}
+
 		//Detach fd_list from linked list;
 		if (fdlist->prev) {
 			fdlist->prev->next = fdlist->next;

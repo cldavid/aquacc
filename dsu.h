@@ -19,6 +19,8 @@
 
 #ifndef __AQUACC_DSU_H__
 #define __AQUACC_DSU_H__
+void dsu_init(void);
+void dsu_exit(void);
 void dsu_set_read_event(int fd_dosing, aq_socket_t *socks);
 void dsu_set_write_event(int fd_dosing, aq_socket_t *socks);
 bool dsu_read_event_cb(int fd, void *data);

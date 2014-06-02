@@ -34,6 +34,44 @@
 #include "fd_event.h"
 #include "timer.h"
 #include "dsu.h"
+#include "dsu_socket.h"
+#include "socket.h"
+
+extern aq_socket_t  socks[MAX_SOCKETS];
+
+static int fd_dosing;
+static int fd_socket;
+
+void dsu_init(void) {
+	fd_dosing   = openSerial(DOSINGUNIT_DEV, 8, 1, 'N');
+	fd_socket   = makeSocket(SOCKET_PORT);
+
+	initSocket();
+	if (listenSocket(fd_socket, 1) < 0) {
+		perror("listen");
+		exit(EXIT_FAILURE);
+	}
+
+	/* DSU Socket Server */
+	socketserver_set_read_event(fd_socket, fd_dosing);
+
+	/* DSU */
+	dsu_set_read_event(fd_dosing, socks);
+	dsu_set_write_event(fd_dosing, socks);
+
+	/* DSU setUnixTime Timer */
+	dsu_set_unixtime_timer(fd_dosing);
+}
+
+void dsu_exit(void) {
+	size_t i;
+	for (i = 0; i < MAX_SOCKETS; i++) {
+		freeSocket(socks[i].fd);
+		closeSocket(socks[i].fd);
+	}
+	closeSerial(fd_dosing);
+	closeSocket(fd_socket);
+}
 
 void dsu_set_write_event(int fd_dosing, aq_socket_t *socks) {
 	fd_list_t *fdList = aquacc_fd_list_new();

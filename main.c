@@ -53,35 +53,19 @@ void aquacc_log(const char *msg) {
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)), char *envp[] __attribute__ ((unused))) {
 	fd_set              read_fds;
 	fd_set				write_fds;
-	size_t				i;
-	int 	        	fd_dosing 	= openSerial(DOSINGUNIT_DEV, 8, 1, 'N');
-	int                 fd_socket   = makeSocket(SOCKET_PORT);
 	int		       		fd			= -1;
 	int		       		maxfd		= FD_SETSIZE;
 	int                 sres		= -1;
 	time_t	        	cur_time;
 	struct timeval 		stimeout;
 
-	//daemonize();
+	daemonize();
 
-	initSocket();
-	if (listenSocket(fd_socket, 1) < 0) {
-		perror("listen");
-		exit(EXIT_FAILURE);
-	}
-
-	/* DSU Socket Server */
-	socketserver_set_read_event(fd_socket, fd_dosing);
-
-	/* DSU */
-	dsu_set_read_event(fd_dosing, socks);
-	dsu_set_write_event(fd_dosing, socks);
+	/* Start DSU components */
+	dsu_init();
 
 	/* RRD Timer */
 	rrd_set_temperature_timer();
-
-	/* setUnixTime Timer */
-	dsu_set_unixtime_timer(fd_dosing);
 
 	openlog("aquacc", LOG_PID, LOG_USER);
 
@@ -91,7 +75,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	zero_write_event();
 	aquacc_fd_list_read_set();
 	aquacc_fd_list_write_set();
-	while (alive && is_valid_fd(fd_dosing) && is_valid_fd(fd_socket)) {
+	while (alive) {
 		read_fds 	= get_read_event();
 		write_fds	= get_write_event();
 
@@ -121,12 +105,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 
 exit:
 	/* Cleanup */
-	for (i = 0; i < MAX_SOCKETS; i++) {
-		freeSocket(socks[i].fd);
-		closeSocket(socks[i].fd);
-	}
-	closeSerial(fd_dosing);
-	closeSocket(fd_socket);
+	dsu_exit();
 	aquacc_fd_list_destroy();
 	closelog();
 	exit(EXIT_SUCCESS);

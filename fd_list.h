@@ -38,6 +38,7 @@ struct _fd_list_t {
 typedef struct _fd_list_t	fd_list_t;
 
 fd_list_t *aquacc_fd_list_find(int fd, enum fd_list_type type);
+void aquacc_fd_list_delete_by_fd(int fd);
 void aquacc_read_fd_list_delete_by_fd(int fd);
 void aquacc_write_fd_list_delete_by_fd(int fd);
 bool aquacc_fd_list_type_cb(const fd_list_t *fdlist);
