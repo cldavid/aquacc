@@ -3,7 +3,7 @@ CFLAGS += -g -Wall -Wextra -lc -lm
 LDFLAGS += 
 
 TARGET	= aquacc
-SRCS	= main.c aquacc.c serial.c socket.c daemon.c dsu.c timer.c fd_list.c rrd_timer.c fd_event.c
+SRCS	= main.c aquacc.c serial.c socket.c dsu_socket.c daemon.c dsu.c timer.c fd_list.c rrd_timer.c fd_event.c
 OBJS	= $(SRCS:.c=.o)
 
 TEMP_TARGET	= temp

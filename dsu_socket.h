@@ -16,17 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __SOCKET_H__
-#define __SOCKET_H__
-
-int readSocket(int fd);
-int writeSocket(int fd);
-int freeSocket(int fd);
-int addSocket(int fd);
-void initSocket(void);
-int acceptSocket(int sock);
-int makeSocket(int16_t port);
-int listenSocket(int sockfd, int backlog);
-int closeSocket(int fd);
-
-#endif //__SOCKET_H__
+#ifndef __DSU_SOCKET_H__
+#define __DSU_SOCKET_H__
+void socketserver_set_read_event(int fd_socket, int fd_dosing);
+void socketchild_set_write_event(int fd);
+void socketchild_set_read_event(int fd, int fd_dosing);
+bool socketchild_read_event_cb(int fd, void *data);
+bool socketchild_write_event_cb(int fd, void *data);
+bool socketserver_read_event_cb(int fd, void *data);
+#endif //__DSU_SOCKET_H__
