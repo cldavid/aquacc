@@ -123,13 +123,19 @@ void aquacc_write_fd_list_delete_by_fd(int fd) {
 	aquacc_fd_list_delete(list);
 }
 
-void aquacc_fd_list_delete(fd_list_t *fdlist) {
-	if (fdlist) {
+void aquacc_fd_list_clear_event(fd_list_t *fdlist) {
+	if (fdlist){
 		if (fdlist->type == FD_LIST_TYPE_READ_EVENT) {
 			clr_read_event(fdlist->fd);
 		} else if (fdlist->type == FD_LIST_TYPE_WRITE_EVENT) {
 			clr_write_event(fdlist->fd);
 		}
+	}
+}
+
+void aquacc_fd_list_delete(fd_list_t *fdlist) {
+	if (fdlist) {
+		aquacc_fd_list_clear_event(fdlist);
 
 		//Detach fd_list from linked list;
 		if (fdlist->prev) {
@@ -171,6 +177,7 @@ void aquacc_fd_list_destroy(void) {
 
 	while(fd_list) {
 		tmp = fd_list->next;
+		aquacc_fd_list_clear_event(fd_list);
 		free(fd_list);
 		fd_list = tmp;
 	}
