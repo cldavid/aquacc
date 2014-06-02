@@ -40,8 +40,6 @@
 #include "rrd_timer.h"
 #include "fd_event.h"
 
-extern aq_socket_t	socks[MAX_SOCKETS];
-
 unsigned 	int alive			= 1;
 extern 		int errno;
 
