@@ -1,0 +1,4 @@
+verbose 	= 9
+dsu_enable	= y
+dsu_socket_port	= 5000
+

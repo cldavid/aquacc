@@ -39,9 +39,11 @@
 #include "fd_list.h"
 #include "rrd_timer.h"
 #include "fd_event.h"
+#include "config.h"
 
 unsigned 	int alive			= 1;
 extern 		int errno;
+extern 		aquacc_config_t aquacc_config;
 
 void aquacc_log(const char *msg) {
 	syslog(LOG_INFO, "%s", msg);
@@ -57,6 +59,11 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	time_t	        	cur_time;
 	struct timeval 		stimeout;
 
+	if (0 > aquacc_parse_config("/etc/aquacc.conf")) {
+		exit(EXIT_FAILURE);
+	}
+
+	printf("Verbose level %d\n", aquacc_config.verbose);
 	daemonize();
 
 	/* Start DSU components */
