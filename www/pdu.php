@@ -18,7 +18,7 @@
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
 
-$SISPMCTL = "/usr/local/bin/sispmctl";
+$SISPMCTL = "/usr/bin/sispmctl";
 
 function pdu_parseCmd($cmd) {
 	switch($cmd) {

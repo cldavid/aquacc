@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
+ date_default_timezone_set('Europe/Brussels');
 	require "dosingunit.php";
 	require "pdu.php";
 	require "rrd.php";

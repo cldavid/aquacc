@@ -58,7 +58,7 @@ function driveMotor_form($id) {
 function driveMotor($fp, $id, $seconds) {
 	$milis = $seconds * 1000;
 	if ($milis > 0 && $id > 0) {
-		$out = "drive_motor_$id $milis\r\n";
+		$out = "drive_motor $id $milis\r\n";
 		fwrite($fp, $out);
 	} else {
 		echo "Error incorrect values";
@@ -69,7 +69,7 @@ function setMotorInfo($fp, $id, $start, $for, $every) {
 	$time = time();
 
 	if ($id > 0 && $for > 0 && $every > 0 && $start > $time) {
-		$out = "set_motor_$id start $start for $for every $every\r\n";
+		$out = "set_motor $id start $start for $for every $every\r\n";
 		fwrite($fp, $out);
 	} else {
 		echo "Error incorrect values";
@@ -78,7 +78,7 @@ function setMotorInfo($fp, $id, $start, $for, $every) {
 
 function disableMotor($fp, $id) {
 	if ($id > 0) {
-		$out = "disable_motor_$id\r\n";
+		$out = "disable_motor $id\r\n";
 		fwrite($fp, $out);
 	} else {
 		echo "Error incorrect values";
@@ -219,7 +219,7 @@ function getMotorInfo($fp, $id) {
 	$motor_every = 0;
 
 
-	$out = "get_motor_$id\r\n";
+	$out = "get_motor $id\r\n";
 	fwrite($fp, $out);
 	while (!feof($fp)) {
 		$line = fgets($fp, 128);

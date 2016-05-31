@@ -32,7 +32,7 @@ top:16px;
 #sis-pm{
 width:460px;
 height:139px;
-background:url(/images/sis-pm.jpg);
+background:url(/aquacc/images/sis-pm.jpg);
 position:relative;
 display:block;
 margin:auto;
@@ -53,7 +53,7 @@ display:block;
 
 /** switches power on*/
 #power-1-on,#power-2-on,#power-3-on,#power-4-on{
-background:url(/images/power-on.jpg);
+background:url(/aquacc/images/power-on.jpg);
 width:7px;
 height:42px;
 }
@@ -94,7 +94,7 @@ display:block;
 }
 
 #power-all-switch a:hover,#power-1-switch a:hover,#power-2-switch a:hover,#power-3-switch a:hover,#power-4-switch a:hover{
-background:url(/images/switch.gif);
+background:url(/aquacc/images/switch.gif);
 }
 
 #power-all-switch{
