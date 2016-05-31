@@ -24,10 +24,16 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "daemon.h"
+#include "config.h"
+
+extern aquacc_config_t aquacc_config;
+
 
 #if 1
 int daemonize(void) {
-	daemon(0, 0);
+	if (!aquacc_config.foreground) {
+		daemon(0, 0);
+	}
 	return 0;
 }
 #else

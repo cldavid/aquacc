@@ -24,7 +24,6 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <signal.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <time.h>
 #include <unistd.h>
@@ -36,15 +35,26 @@
 #include "dsu.h"
 #include "dsu_socket.h"
 #include "socket.h"
+#include "config.h"
 
 extern aq_socket_t  socks[MAX_SOCKETS];
+extern aquacc_config_t aquacc_config;
 
 static int fd_dosing;
 static int fd_socket;
 
 void dsu_init(void) {
-	fd_dosing   = openSerial(DOSINGUNIT_DEV, 8, 1, 'N');
-	fd_socket   = makeSocket(SOCKET_PORT);
+	char 	*serial_port 	= aquacc_config.dsu_tty_port;
+	int 	serial_baudrate = aquacc_config.dsu_tty_baudrate;
+	bool 	serial_rtscts  	= aquacc_config.dsu_tty_rtscts;
+
+	fd_dosing   = openSerial(serial_port, 8, 1, 'N', serial_baudrate, serial_rtscts);
+	fd_socket   = makeSocket(aquacc_config.dsu_socket_port);
+
+	if (fd_dosing <= 0) {
+		printd("Error opening serial port.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	initSocket();
 	if (listenSocket(fd_socket, 1) < 0) {
@@ -76,7 +86,7 @@ void dsu_exit(void) {
 void dsu_set_write_event(int fd_dosing, aq_socket_t *socks) {
 	fd_list_t *fdList = aquacc_fd_list_new();
 
-	fdList->fd		= fd_dosing;
+	fdList->fd	= fd_dosing;
 	fdList->type 	= FD_LIST_TYPE_WRITE_EVENT;
 	fdList->istimer	= false;
 	fdList->data    = socks;
@@ -86,7 +96,7 @@ void dsu_set_write_event(int fd_dosing, aq_socket_t *socks) {
 void dsu_set_read_event(int fd_dosing, aq_socket_t *socks) {
 	fd_list_t *fdList = aquacc_fd_list_new();
 
-	fdList->fd		= fd_dosing;
+	fdList->fd	= fd_dosing;
 	fdList->type 	= FD_LIST_TYPE_READ_EVENT;
 	fdList->istimer	= false;
 	fdList->data    = socks;
@@ -105,6 +115,7 @@ void dsu_set_unixtime_timer(int fd_dosing) {
 
 bool dsu_read_event_cb(int fd, void *data) {
 	aq_socket_t *socks = data;
+
 	syslog(LOG_INFO, "dsu_read_event_cb %d", fd);
 	dsu_read(fd, socks);
 	return true;
@@ -120,7 +131,7 @@ bool dsu_write_event_cb(int fd, void *data) {
 ssize_t dsu_setUnixTime(int fd, time_t cur_time) {
 	char    string[250];
 	int     len;
-	len = snprintf(string, sizeof(string), "setUnixTime %lu\n", cur_time);
+	len = snprintf(string, sizeof(string), "setUnixTime %lu\r\n", cur_time);
 	return(writen_ni(fd, string, len));
 }
 

@@ -1,4 +1,10 @@
-verbose 	= 9
-dsu_enable	= y
-dsu_socket_port	= 5000
-
+verbose 		= 9
+foreground		= y
+dsu_enable		= y
+dsu_socket_port		= 5000
+dsu_tty_port		= /dev/ttyATH0
+dsu_tty_baudrate	= 115200
+dsu_tty_rtscts		= yes
+phmeter_tty_port	= /dev/ttyATH0
+phmeter_tty_baudrate	= 115200
+phmeter_tty_rtscts	= yes

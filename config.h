@@ -18,6 +18,8 @@
  */
 
 #include <limits.h>
+#include <stdbool.h>
+
 #ifndef __AQUACC_CONFIG_H__
 #define __AQUACC_CONFIG_H__
 
@@ -40,23 +42,30 @@ typedef enum {
 } value_t;
 
 typedef enum {
-	NO_ERR 			= 0, 
+	NO_ERR 		= 0, 
 	BAD_KEYWORD 	= -1, 
 	BAD_PARAMETER 	= -2,
 } err_t;
 
-typedef struct          					/**< command table structure       */
+typedef struct      				/**< command table structure       */
 {
-	char    name[NAME_MAX];    				/**< name of command               */
-	value_t type;        				 	/**< type of variable              */
-	void   *value;        					/**< value                         */
-	void (*f)(value_t, void *, char*);  	/**< pointer to function     */
+	char    name[NAME_MAX];    		/**< name of command               */
+	value_t type;        		 	/**< type of variable              */
+	void   *value;        			/**< value                         */
+	void (*f)(value_t, void *, char*);  	/**< pointer to function     	   */
 } script_t;
 
 typedef struct {
 	int     verbose;
+	bool	foreground;
 	bool    dsu_enable;
 	int     dsu_socket_port;
+	char	dsu_tty_port[NAME_MAX];
+	int	dsu_tty_baudrate;
+	bool	dsu_tty_rtscts;
+	char	phmeter_tty_port[NAME_MAX];
+	int	phmeter_tty_baudrate;
+	bool	phmeter_tty_rtscts;
 } aquacc_config_t;
 
 int aquacc_parse_config(char *filename);

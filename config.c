@@ -26,11 +26,10 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <errno.h>
-#include <stdbool.h>
 #include "config.h"
 
 #define hexval(a) ( (((a)>='0')&&((a)<='9')) ? ((a)-'0') : ( (((a)>='A') && ((a) <='F')) ? ((a)-'A'+10) : 0 ) )
-int verbose;
+int verbose	= 0;
 
 aquacc_config_t aquacc_config;
 
@@ -39,9 +38,17 @@ void _init_script (void) {
 }
 
 const script_t script_tab[] = {
+	{"foreground",         		BOOL,   (void *)&aquacc_config.foreground,              NULL },
 	{"verbose",          		INT,    (void *)&aquacc_config.verbose,                 NULL },
 	{"dsu_enable",         		BOOL,   (void *)&aquacc_config.dsu_enable,              NULL },
-	{"dsu_socket_port",         INT,    (void *)&aquacc_config.dsu_socket_port,         NULL },
+	{"dsu_socket_port",         	INT,    (void *)&aquacc_config.dsu_socket_port,         NULL },
+	{"dsu_tty_port",   		STRING, (void *)&aquacc_config.dsu_tty_port,        	NULL },
+	{"dsu_tty_baudrate",		INT, 	(void *)&aquacc_config.dsu_tty_baudrate,    	NULL },
+	{"dsu_tty_rtscts",  		BOOL,   (void *)&aquacc_config.dsu_tty_rtscts,      	NULL },
+	{"phmeter_tty_port",   		STRING, (void *)&aquacc_config.phmeter_tty_port,       	NULL },
+	{"phmeter_tty_baudrate",	INT, 	(void *)&aquacc_config.phmeter_tty_baudrate,   	NULL },
+	{"phmeter_tty_rtscts", 		BOOL,   (void *)&aquacc_config.phmeter_tty_rtscts,     	NULL },
+
 };
 
 const size_t script_tab_len	= sizeof(script_tab) / sizeof(script_t);
@@ -70,14 +77,14 @@ void str2hex (char *out, char *in) {
 int aquacc_parse_config(char *filename)
 {
 	/* define local variales */
-	FILE *f;          			/**< file handle            */
+	FILE *f;          		/**< file handle            */
 	char line[LINE_LEN];      	/**< input line             */
 	char orig[LINE_LEN];      	/**< original input line    */
-	char res[LINE_LEN];         /**< result of conversion   */
-	char *p;          			/**< pointer to input line  */
-	void *q;          			/**< pointer to destination */
+	char res[LINE_LEN];         	/**< result of conversion   */
+	char *p;          		/**< pointer to input line  */
+	void *q;          		/**< pointer to destination */
 	err_t err = NO_ERR;     	/**< script error code      */
-	size_t i;            			/**< loop variable          */
+	size_t i;            		/**< loop variable          */
 	int found;            		/**< found flag             */
 	int running = 1;      		/**< if true, still running */
 
@@ -123,7 +130,7 @@ int aquacc_parse_config(char *filename)
 						break;
 
 					case BOOL:
-						*(int*)q = ((*p != 'n') && (*p != 'N') && (*p != '0')); 
+						*(bool*)q = ((*p != 'n') && (*p != 'N') && (*p != '0')); 
 						break;
 
 					case INT:

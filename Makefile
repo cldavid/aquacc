@@ -1,5 +1,8 @@
 CC	= gcc
-CFLAGS += -g -Wall -Wextra -lc -lm
+CC	= /home/sah5056/x-tools/mips-unknown-linux-uclibc/bin/mips-unknown-linux-uclibc-gcc
+#CC	= /build/arduino/openwrt-yun/staging_dir/toolchain-mips_r2_gcc-4.6-linaro_uClibc-0.9.33.2/bin/mips-openwrt-linux-gcc
+CFLAGS += -g -Wall -Wextra -lc -lm -static
+CFLAGS += -g -Wall -Wextra -lc -lm 
 LDFLAGS += 
 
 TARGET	= aquacc
@@ -10,12 +13,19 @@ TEMP_TARGET	= temp
 TEMP_SRCS	= temp.c
 TEMP_OBJS	= $(TEMP_SRCS:.c=.o)
 
+SERIALT_TARGET	= test_serial
+SERIALT_SRCS	= serial.c config.c test_serial.c
+SERIALT_OBJS	= $(SERIALT_SRCS:.c=.o)
+
 .PHONY: all clean install 
 
 .c.o:
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-all: $(SRCS) $(TARGET) $(TEMP_TARGET)
+all: $(SRCS) $(TARGET) $(TEMP_TARGET) 
+
+$(SERIALT_TARGET): $(SERIALT_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(SERIALT_OBJS) $(LDFLAGS)
 
 $(TEMP_TARGET): $(TEMP_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(TEMP_OBJS) $(LDFLAGS)

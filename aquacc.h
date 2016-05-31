@@ -21,7 +21,6 @@
 
 #define SET_TIME_INTERVAL               60
 #define printd                          printf
-#define SOCKET_PORT                     5000 
 #define MAXMSG                          8192
 #define MAX_SOCKETS                     10
 

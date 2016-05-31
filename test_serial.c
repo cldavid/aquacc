@@ -26,6 +26,7 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <stdint.h>
 #include "aquacc.h"
@@ -50,12 +51,11 @@ void aquacc_log(const char *msg) {
 }
 
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)), char *envp[] __attribute__ ((unused))) {
-	fd_set              read_fds;
-	fd_set				write_fds;
-	int		       		fd			= -1;
-	int		       		maxfd		= FD_SETSIZE;
-	int                 sres		= -1;
-	time_t	        	cur_time;
+	fd_set              	read_fds;
+	fd_set			write_fds;
+	int		       	fd		= -1;
+	int		       	maxfd		= FD_SETSIZE;
+	int                 	sres		= -1;
 	struct timeval 		stimeout;
 
 	if (0 > aquacc_parse_config("/etc/aquacc.conf")) {
@@ -63,17 +63,11 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 	}
 
 	printf("Verbose level %d\n", aquacc_config.verbose);
-	daemonize();
-
-	/* Start DSU components */
-	dsu_init();
-
-	/* RRD Timer */
-	rrd_set_temperature_timer();
-
-	openlog("aquacc", LOG_PID, LOG_USER);
-
-	time(&cur_time);
+	int fd_tty = fd_dosing   = openSerial(aquacc_config.tty_port, 8, 1, 'N');
+        if (fd_tty <= 0) {
+                printd("Error opening serial port.\n");
+                exit(EXIT_FAILURE);
+        }
 
 	zero_read_event();
 	zero_write_event();
@@ -109,8 +103,6 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 
 exit:
 	/* Cleanup */
-	dsu_exit();
-	aquacc_fd_list_destroy();
-	closelog();
+	closeSerial(fd_tty);
 	exit(EXIT_SUCCESS);
 }

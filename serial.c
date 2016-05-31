@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <time.h>
+#include <stdbool.h>
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -54,8 +55,63 @@ int closeSerial(int fd) {
     return(close(fd));
 }
 
-int openSerial(const char *port, unsigned int bits __attribute__ ((unused)), unsigned int stop __attribute__ ((unused)), char parity __attribute__ ((unused))) {
+static speed_t _convertBaudRate(int baudrate) {
+	speed_t speed	= 0;
+
+	switch(baudrate) {
+		case 300:
+		speed = B300;
+		break;
+
+		case 600:
+		speed = B600;
+		break;
+
+		case 1200:
+		speed = B1200;
+		break;
+
+		case 2400:
+		speed = B2400;
+		break;
+
+		case 4800:
+		speed = B4800;
+		break;
+
+		case 9600:
+		speed = B9600;
+		break;
+
+		case 19200:
+		speed = B19200;
+		break;
+	
+		case 38400:
+		speed = B38400;
+		break;
+
+		case 57600:
+		speed = B57600;
+		break;
+
+		case 115200:
+		speed = B115200;
+		break;
+
+		default:
+		speed = B9600;
+	}
+
+	return speed;
+} 
+
+int openSerial(const char *port, unsigned int bits __attribute__ ((unused)), unsigned int stop __attribute__ ((unused)), char parity __attribute__ ((unused)),
+		int baudrate, bool rtscts) {
 	struct termios 	tty;
+
+	printd("Opening serial port %s baudrate %d rtscts %d\n", port, baudrate, rtscts);
+	speed_t	speed = _convertBaudRate(baudrate);
 
 	int fd 	= open(port, O_RDWR | O_NOCTTY | O_NDELAY | O_NONBLOCK);
 	if (0 > fd) {
@@ -71,10 +127,10 @@ int openSerial(const char *port, unsigned int bits __attribute__ ((unused)), uns
 	cfmakeraw(&tty);
 
 	/*
-	 * Set the baud rates to 19200...
+	 * Set the baud rates to ...
 	 */
-	cfsetispeed(&tty, B115200);
-	cfsetospeed(&tty, B115200);
+	cfsetispeed(&tty, speed);
+	cfsetospeed(&tty, speed);
 
 	/*
 	 * Enable the receiver and set local mode...
@@ -85,7 +141,12 @@ int openSerial(const char *port, unsigned int bits __attribute__ ((unused)), uns
 	tty.c_cflag |= CLOCAL | CREAD;
 	tty.c_cflag &= ~HUPCL;          
 
-	tty.c_cflag |= CRTSCTS;
+	if (rtscts) {
+		tty.c_cflag |= CRTSCTS;
+	} else {
+		tty.c_cflag &= ~CRTSCTS;
+	}
+
 	tty.c_iflag &= ~(IXON | IXOFF | IXANY); 
 
 	tty.c_cc[VMIN]  = 1;

@@ -34,7 +34,10 @@ ssize_t writen_ni(int fd, const void *buff, size_t n) {
                 do {
                         nw = write(fd, p, nl);
                 } while ( nw < 0 && errno == EINTR );
-                if ( nw <= 0 ) break;
+                if ( nw <= 0 ) {
+			perror("Error writing to fd");
+			break;
+		}
                 nl -= nw; 
                 p += nw; 
         }   
