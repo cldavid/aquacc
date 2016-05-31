@@ -10,4 +10,4 @@ Web interface for my DIY dosing unit (ds_motor) and GEMBIRD SIS-PM power distrib
 - DS18b20 one wire temperature logging.
 - RRD Temperature graphs.
 
-David Cluytes <david.cluytens@gmail.com>
+David Cluytens <david.cluytens@gmail.com>
