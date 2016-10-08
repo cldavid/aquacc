@@ -1,6 +1,6 @@
 #!/bin/bash
-RRDPATH=/home/pi/aquacc
-GRAPHPATH=/var/www/rrd
+RRDPATH=/www
+GRAPHPATH=/www/rrd
 RAWCOLOUR1="#00FF00"
 RAWCOLOUR2="#BBFF00"
 MINCOLOUR1="#0000FF"
