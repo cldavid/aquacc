@@ -66,17 +66,17 @@
 						<tr>
 							<td>
 							<?php
+								driveMotor_form(0);
+							?>
+							</td>
+							<td>
+							<?php
 								driveMotor_form(1);
 							?>
 							</td>
 							<td>
 							<?php
 								driveMotor_form(2);
-							?>
-							</td>
-							<td>
-							<?php
-								driveMotor_form(3);
 							?>
 							</td>
 						</tr>

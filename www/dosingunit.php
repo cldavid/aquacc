@@ -29,11 +29,11 @@ function driveMotor_form($id) {
 		<center>
 		<form action=\"aquacc.php?app=dosingunit&cmd=drivemotor\" method=\"post\">
 		<table>
-			<tr>
-				<td><label>Motor</label></td>
-				<td>
-					<select name=\"motor_id\">";
-	for ($i = 0; $i < $MAXMOTOR+1; $i++) {
+		<tr>
+		<td><label>Motor</label></td>
+		<td>
+		<select name=\"motor_id\">";
+	for ($i = 0; $i < $MAXMOTOR; $i++) {
 		if ($i == $id) {
 			echo "<option value=\"$i\" selected>$i</option>";
 		} else {
@@ -41,14 +41,14 @@ function driveMotor_form($id) {
 		}
 	}
 	echo "
-					</select>
-				</td>
-				<td><label>Volume</label></td>
-				<td><input type=\"text\" name=\"motor_volume\"></td>
-			</tr>
-			<tr>
-				<td colspan=\"8\" align=\"right\"><input type=\"submit\" value=\"Submit\"></td>
-			</tr>
+		</select>
+		</td>
+		<td><label>Volume</label></td>
+		<td><input type=\"text\" name=\"motor_volume\"></td>
+		</tr>
+		<tr>
+		<td colspan=\"8\" align=\"right\"><input type=\"submit\" value=\"Submit\"></td>
+		</tr>
 		</table>
 		</form>
 		</center>
@@ -93,11 +93,11 @@ function setMotorInfo_form($id) {
 		<center>
 		<form id=\"setMotorInfo\" action=\"aquacc.php?app=dosingunit&cmd=setmotorinfo\" method=\"post\">
 		<table>
-			<tr>
-				<td><label>Motor</label></td>
-				<td>
-					<select name=\"motor_id\">";
-	for ($i = 0; $i < $MAXMOTOR+1; $i++) {
+		<tr>
+		<td><label>Motor</label></td>
+		<td>
+		<select name=\"motor_id\">";
+	for ($i = 0; $i < $MAXMOTOR; $i++) {
 		if ($i == $id) {
 			echo "<option value=\"$i\" selected>$i</option>";
 		} else {
@@ -106,42 +106,42 @@ function setMotorInfo_form($id) {
 	}
 	$today = getdate();
 	echo "
-					</select>
-				</td>
-				<td><label>Start</label></td>
-				<td><input type=\"text\" name=\"day\"   size=\"2\" maxlength=\"2\" value=\"$today[mday]\"   >-</td>
-				<td><input type=\"text\" name=\"month\" size=\"2\" maxlength=\"2\" value=\"$today[mon]\"    >-</td>
-				<td><input type=\"text\" name=\"year\"  size=\"4\" maxlength=\"4\" value=\"$today[year]\"   ></td>
-				<td><input type=\"text\" name=\"hours\" size=\"2\" maxlength=\"2\" value=\"$today[hours]\"  >:</td>
-				<td><input type=\"text\" name=\"min\"   size=\"2\" maxlength=\"2\" value=\"$today[minutes]\">:</td>
-				<td><input type=\"text\" name=\"sec\"   size=\"2\" maxlength=\"2\" value=\"$today[seconds]\"></td>
-				<td><label>For</label></td>
-				<td>
-					<select name=\"motor_for\">";
+		</select>
+		</td>
+		<td><label>Start</label></td>
+		<td><input type=\"text\" name=\"day\"   size=\"2\" maxlength=\"2\" value=\"$today[mday]\"   >-</td>
+		<td><input type=\"text\" name=\"month\" size=\"2\" maxlength=\"2\" value=\"$today[mon]\"    >-</td>
+		<td><input type=\"text\" name=\"year\"  size=\"4\" maxlength=\"4\" value=\"$today[year]\"   ></td>
+		<td><input type=\"text\" name=\"hours\" size=\"2\" maxlength=\"2\" value=\"$today[hours]\"  >:</td>
+		<td><input type=\"text\" name=\"min\"   size=\"2\" maxlength=\"2\" value=\"$today[minutes]\">:</td>
+		<td><input type=\"text\" name=\"sec\"   size=\"2\" maxlength=\"2\" value=\"$today[seconds]\"></td>
+		<td><label>For</label></td>
+		<td>
+		<select name=\"motor_for\">";
 	for ($i = 0; $i < 11; $i++) {
 		echo "<option value=\"$i\">$i</option>";
 	}
 	echo "			</select>
-				</td>
-				<td><label>Every</label></td>
-				<td>
-					<select name=\"motor_every\">
-						<option value=\"3600\"  >1h</option>
-						<option value=\"7200\"  >2h</option>
-						<option value=\"10800\" >3h</option>
-						<option value=\"14400\" >4h</option>
-						<option value=\"21600\" >6h</option>
-						<option value=\"28800\" >8h</option>
-						<option value=\"43200\" >12h</option>
-						<option value=\"86400\" >1d</option>
-						<option value=\"172800\">2d</option>
-						<option value=\"604800\">1w</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan=\"8\" align=\"right\"><input type=\"submit\" onclick=\"set_motor_start(this.form)\" value=\"Submit\"></td>
-			</tr>
+		</td>
+		<td><label>Every</label></td>
+		<td>
+		<select name=\"motor_every\">
+		<option value=\"3600\"  >1h</option>
+		<option value=\"7200\"  >2h</option>
+		<option value=\"10800\" >3h</option>
+		<option value=\"14400\" >4h</option>
+		<option value=\"21600\" >6h</option>
+		<option value=\"28800\" >8h</option>
+		<option value=\"43200\" >12h</option>
+		<option value=\"86400\" >1d</option>
+		<option value=\"172800\">2d</option>
+		<option value=\"604800\">1w</option>
+		</select>
+		</td>
+		</tr>
+		<tr>
+		<td colspan=\"8\" align=\"right\"><input type=\"submit\" onclick=\"set_motor_start(this.form)\" value=\"Submit\"></td>
+		</tr>
 		</table>
 		</form>
 		</center>
@@ -258,11 +258,11 @@ function getMotorInfo($fp, $id) {
 	echo "<form action=\"aquacc.php?app=dosingunit&cmd=disablemotor\" method=\"post\">";
 	echo "<table>";
 	echo "<tr><td>Motor:</td><td>$motor_id</td>
-			  <td>
-			  	<input type=\"hidden\" name=\"motor_id\" value=\"$motor_id\"/>
-				<input type=\"submit\" value=\"Disable\"/>
-			  </td>
-		  </tr>\n";
+		<td>
+		<input type=\"hidden\" name=\"motor_id\" value=\"$motor_id\"/>
+		<input type=\"submit\" value=\"Disable\"/>
+		</td>
+		</tr>\n";
 	echo "<tr><td>Start:</td><td colspan\"2\">" . date('d-m-Y H:i:s', $motor_start) . "</td></tr>\n";
 	echo "<tr><td>Stop:</td><td colspan\"2\">" . date('d-m-Y H:i:s', $motor_stop) . "</td></tr>\n";
 	echo "<tr><td>Duration:</td><td colspan\"2\">$motor_for seconds (". dosingTimeToVolume($motor_for)  . "ml )</td></tr>\n";
@@ -288,11 +288,11 @@ function dosingShowSchedule() {
 	echo "<table width=\"100%\">
 		<tr><td colspan=\"3\" align=\"center\"><b>Schedule dosing unit</b></td></tr>
 		<tr><td>";
+	getMotorInfo($fp, 0);
+	echo "</td><td>";
 	getMotorInfo($fp, 1);
 	echo "</td><td>";
 	getMotorInfo($fp, 2);
-	echo "</td><td>";
-	getMotorInfo($fp, 3);
 	echo "</td></tr></table>";
 	echo "</center>";
 	fclose($fp);
