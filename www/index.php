@@ -98,7 +98,7 @@
 			<tr>
 				<td align="center">
 				<?php
-					printPDUinfo();
+					printPDUinfo2();
 				?>
 				</td>
 			</tr>

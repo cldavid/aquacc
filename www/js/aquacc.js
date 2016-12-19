@@ -26,28 +26,28 @@ function set_motor_start(theForm) {
 	theForm.appendChild(hiddenField);
 }
 
-function switch_outlet(no, state) {
+function switch_outlet(serial, no, state) {
 	if (state == "off") {
-		outlet_off(no, state);
+		outlet_off(serial, no, state);
 	} else if (state == "on") {
-		outlet_on(no, state);
+		outlet_on(serial, no, state);
 	}
 }
 
-function outlet_on(outlet_no) {
+function outlet_on(serial, outlet_no) {
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_on",
-			data: { outlet_no: outlet_no },
+			data: { serial: serial, outlet_no: outlet_no },
 			success: reload_outlet_status
 		});
 }
 
-function outlet_off(outlet_no) {
+function outlet_off(serial, outlet_no) {
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_off",
-			data: { outlet_no: outlet_no },
+			data: { serial: serial, outlet_no: outlet_no },
 			success: reload_outlet_status
 		});
 }

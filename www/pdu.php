@@ -23,19 +23,25 @@ $SISPMCTL = "/usr/bin/sispmctl";
 function pdu_parseCmd($cmd) {
 	switch($cmd) {
 		case 'outlet_on':
-			$outlet  = isset($_POST['outlet_no'])  ? $_POST['outlet_no'] : 0;
-			$result  = setPDU_outlet_on($outlet);
-			echo ("Enabling output $outlet result $result");
+			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
+			$outlet  = isset($_POST['outlet_no'])  	? $_POST['outlet_no'] : 0;
+			$result  = setPDU_outlet_on($serial, $outlet);
+			echo ("Enabling serial $serial output $outlet result $result");
 			break;
 
 		case 'outlet_off':
-			$outlet  = isset($_POST['outlet_no'])  ? $_POST['outlet_no'] : 0;
-			$result  = setPDU_outlet_off($outlet);
-			echo ("Disabling output $outlet result $result");
+			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
+			$outlet  = isset($_POST['outlet_no'])  	? $_POST['outlet_no'] : 0;
+			$result  = setPDU_outlet_off($serial, $outlet);
+			echo ("Disabling serial $serial output $outlet result $result");
 			break;
 
 		case 'status':
 			printPDUstatus();
+			break;
+	
+		case 'scan':
+			scanPDU();
 			break;
 
 		default:
@@ -44,10 +50,10 @@ function pdu_parseCmd($cmd) {
 }
 
 
-function setPDU_outlet_off($outlet) {
+function setPDU_outlet_off($serial, $outlet) {
 	global $SISPMCTL;
 
-	$output = exec($SISPMCTL . " -f $outlet", $arr);
+	$output = exec($SISPMCTL . " -D $serial -f $outlet", $arr);
 	foreach ($arr as &$value) {
 		$pattern = "/^Switched outlet\s(\d+)\soff/";
 		if (preg_match($pattern, $value, $matches)) {
@@ -61,10 +67,10 @@ function setPDU_outlet_off($outlet) {
 	return 0;
 }
 
-function setPDU_outlet_on($outlet) {
+function setPDU_outlet_on($serial, $outlet) {
 	global $SISPMCTL;
 
-	$output = exec($SISPMCTL . " -o $outlet", $arr);
+	$output = exec($SISPMCTL . " -D $serial -o $outlet", $arr);
 	foreach ($arr as &$value) {
 		$pattern = "/^Switched outlet\s(\d+)\son/";
 		if (preg_match($pattern, $value, $matches)) {
@@ -78,10 +84,9 @@ function setPDU_outlet_on($outlet) {
 	return 0;
 }
 
-function getPDU_outlet_status() {
+function getPDU_outlet_status($serial) {
 	global $SISPMCTL;
-
-	$output = exec($SISPMCTL . " -g all", $arr);
+	$output = exec($SISPMCTL . " -D " . $serial . " -g all", $arr);
 	foreach ($arr as &$value) {
 		$pattern = "/^Status of outlet (\d+):\s(\w+)/";
 		if (preg_match($pattern, $value, $matches)) {
@@ -93,7 +98,22 @@ function getPDU_outlet_status() {
 	return $status;
 }
 
-function getPDU_outlet_plannification($outlet) {
+function scanPDU() {
+	global $SISPMCTL;
+	$status = array();
+	$output = exec($SISPMCTL . " -s", $arr);
+	foreach ($arr as &$value) {
+		$pattern = "/^serial\snumber:\s+([\w:]+)/";
+		if (preg_match($pattern, $value, $matches)) {
+			$serial = $matches[1];
+			array_push($status, $serial);
+		}   
+	}   
+	unset($value);
+	return $status;
+}
+
+function getPDU_outlet_plannification($serial, $outlet) {
 	global $SISPMCTL;
 	$plan = array();
 
@@ -101,7 +121,7 @@ function getPDU_outlet_plannification($outlet) {
 		return null;
 	}
 	$index = 0;
-	$output = exec($SISPMCTL . " -a$outlet", $arr);
+	$output = exec($SISPMCTL . " -D $serial -a$outlet", $arr);
 	foreach ($arr as &$value) {
 		$pattern = "/\s+On\s+([\w-]+)\s+([\w:]+)\s+switch\s+(\w+)/";
 		if (preg_match($pattern, $value, $matches)) {
@@ -119,39 +139,30 @@ function getPDU_outlet_plannification($outlet) {
 }
 
 function printPDUstatus() {
-	$status = getPDU_outlet_status();
-	for ($i = 0; $i < 4; $i++) {
-		$outlet = $i + 1;
-		if ($status[$i]) {
-			echo "<li id=\"power-$outlet-switch\"><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'off')\"></a></li>\n";
-			echo "<li id=\"power-$outlet-on\"></li>\n";
-		} else {
-			echo "<li id=\"power-$outlet-switch\"><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'on')\"></a></li>\n";
+	$ser_arr = scanPDU();
+	for ($dev = 0; $dev < count($ser_arr); $dev++) {	
+		$serial = $ser_arr[$dev];
+		$status = getPDU_outlet_status($serial);
+		echo "<br/>\n";
+		echo "<table border=\"1\" width=\"90%\">\n";
+		echo "<tr><th colspan=\"4\">PDU-$serial</th></tr>\n";
+		for ($i = 0; $i < 4; $i++) {
+			echo "<tr>\n";	
+			$outlet = $i + 1;
+			if ($status[$i]) {
+				echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'off')\">";
+				echo "Switch $i <img src=\"/aquacc/images/on.png\" width=\"75\" height=\"75\"/></a></td>\n";
+			} else {
+				echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'on')\">";
+				echo "Switch $i <img src=\"/aquacc/images/off.png\" width=\"75\" height=\"75\"/></a></td>\n";
+			}
+			echo "</tr>\n";
 		}
+		echo "</table>\n";
 	}
 }
 
-function printPDUstatus2() {
-	$status = getPDU_outlet_status();
-        echo "<br/>\n";
-        echo "<table border=\"1\" width=\"90%\">\n";
-        echo "<tr><th colspan=\"4\">PDU-x</th></tr>\n";
-	for ($i = 0; $i < 4; $i++) {
-        	echo "<tr>\n";	
-		$outlet = $i + 1;
-		if ($status[$i]) {
-			echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'off')\">";
-			echo "<img src=\"images/on.png\"></a></td>\n";
-		} else {
-			echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'on')\">";
-			echo "<img src=\"images/off.png\"></a></td>\n";
-		}
-        	echo "</tr>\n";
-	}
-        echo "</table>\n";
-}
-
-function printPDU_outlet_plannification() {
+function printPDU_outlet_plannification($serial) {
 	echo "<br/>\n";
 	echo "<table border=\"1\" width=\"90%\">\n";
 	echo "<tr><th colspan=\"4\">Planification</th></tr>\n";
@@ -159,7 +170,7 @@ function printPDU_outlet_plannification() {
 	for ($i = 1; $i < 5; $i++) {
 		echo "<td valign=\"top\" align=\"center\">\n";
 		echo "<table  width=\"100%\">\n";
-		$plan = getPDU_outlet_plannification($i);
+		$plan = getPDU_outlet_plannification($serial, $i);
 		if ($plan) {
 			echo "<tr><th colspan=\"4\">Outlet $i</th></tr>\n";
 			foreach($plan as $key => $value) {
@@ -180,17 +191,10 @@ function printPDU_outlet_plannification() {
 	echo "</table>\n";
 }
 
-function printPDUinfo() {
-	?>
-		<ul id="sis-pm">
-			<div id="div-sis-pm">
-				<?php
-					//printPDUstatus();
-					printPDUstatus2();
-				?>
-			</div>
-		</ul>
-	<?php
-	printPDU_outlet_plannification();
+function printPDUinfo2() {
+	echo "<div id=\"div-sis-pm\">";
+	printPDUstatus();
+	echo "</div>";
+	printPDU_outlet_plannification("01:01:54:47:ba");
 }
 ?>
