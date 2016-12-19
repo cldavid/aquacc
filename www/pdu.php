@@ -149,12 +149,16 @@ function printPDUstatus() {
 		for ($i = 0; $i < 4; $i++) {
 			echo "<tr>\n";	
 			$outlet = $i + 1;
+			echo "<td width=\"20\"><center><b>$outlet</b></center></td><td>";
+			printPDU_outlet_plannification($serial, $outlet);
+			echo "</td>";
+
 			if ($status[$i]) {
-				echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'off')\">";
-				echo "Switch $i <img src=\"/aquacc/images/on.png\" width=\"75\" height=\"75\"/></a></td>\n";
+				echo "<td width=\"75\" height=\"75\"><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'off')\">";
+				echo "<img src=\"/aquacc/images/on.png\" width=\"75\" height=\"75\"/></a></td>\n";
 			} else {
-				echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'on')\">";
-				echo "Switch $i <img src=\"/aquacc/images/off.png\" width=\"75\" height=\"75\"/></a></td>\n";
+				echo "<td width=\"75\" height=\"75\"><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'on')\">";
+				echo "<img src=\"/aquacc/images/off.png\" width=\"75\" height=\"75\"/></a></td>\n";
 			}
 			echo "</tr>\n";
 		}
@@ -162,29 +166,33 @@ function printPDUstatus() {
 	}
 }
 
-function printPDU_outlet_plannification($serial) {
+function printPDU_outlet_plannification($serial, $outlet) {
+	echo "<table width=\"100%\">\n";
+	$plan = getPDU_outlet_plannification($serial, $outlet);
+	if ($plan) {
+		echo "<tr><th colspan=\"4\">Scheduler</th></tr>\n";
+		foreach($plan as $key => $value) {
+			$date 	= $plan[$key]['date'];
+			$time 	= $plan[$key]['time'];
+			$status = $plan[$key]['status'];
+			$status = $status ? "on" : "off";
+			echo "<tr><td><b>Date</b></td><td>$date $time</td><td><b>Status</b></td><td>$status</td></tr>\n";
+		}
+	} else {
+		echo "<tr><th>Scheduler</th></tr>\n";
+		echo "<tr><th>Disabled</th></tr>\n";
+	}
+	echo "</table>\n";
+}
+
+function printPDU_outlet_plannifications($serial) {
 	echo "<br/>\n";
 	echo "<table border=\"1\" width=\"90%\">\n";
 	echo "<tr><th colspan=\"4\">Planification</th></tr>\n";
 	echo "<tr>\n";
 	for ($i = 1; $i < 5; $i++) {
 		echo "<td valign=\"top\" align=\"center\">\n";
-		echo "<table  width=\"100%\">\n";
-		$plan = getPDU_outlet_plannification($serial, $i);
-		if ($plan) {
-			echo "<tr><th colspan=\"4\">Outlet $i</th></tr>\n";
-			foreach($plan as $key => $value) {
-				$date 	= $plan[$key]['date'];
-				$time 	= $plan[$key]['time'];
-				$status = $plan[$key]['status'];
-				$status = $status ? "on" : "off";
-				echo "<tr><td><b>Date</b></td><td>$date $time</td><td><b>Status</b></td><td>$status</td></tr>\n";
-			}
-		} else {
-			echo "<tr><th>Outlet $i</th></tr>\n";
-			echo "<tr><th>Disabled</th></tr>\n";
-		}
-		echo "</table>\n";
+		printPDU_outlet_plannification($serial, $i);
 		echo "</td>\n";
 	}
 	echo "</tr>\n";
@@ -195,6 +203,5 @@ function printPDUinfo2() {
 	echo "<div id=\"div-sis-pm\">";
 	printPDUstatus();
 	echo "</div>";
-	printPDU_outlet_plannification("01:01:54:47:ba");
 }
 ?>
