@@ -131,6 +131,26 @@ function printPDUstatus() {
 	}
 }
 
+function printPDUstatus2() {
+	$status = getPDU_outlet_status();
+        echo "<br/>\n";
+        echo "<table border=\"1\" width=\"90%\">\n";
+        echo "<tr><th colspan=\"4\">PDU-x</th></tr>\n";
+	for ($i = 0; $i < 4; $i++) {
+        	echo "<tr>\n";	
+		$outlet = $i + 1;
+		if ($status[$i]) {
+			echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'off')\">";
+			echo "<img src=\"images/on.png\"></a></td>\n";
+		} else {
+			echo "<td><a title=\"Switch $outlet\" onClick=\"switch_outlet($outlet, 'on')\">";
+			echo "<img src=\"images/off.png\"></a></td>\n";
+		}
+        	echo "</tr>\n";
+	}
+        echo "</table>\n";
+}
+
 function printPDU_outlet_plannification() {
 	echo "<br/>\n";
 	echo "<table border=\"1\" width=\"90%\">\n";
@@ -165,7 +185,8 @@ function printPDUinfo() {
 		<ul id="sis-pm">
 			<div id="div-sis-pm">
 				<?php
-					printPDUstatus();
+					//printPDUstatus();
+					printPDUstatus2();
 				?>
 			</div>
 		</ul>
