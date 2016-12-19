@@ -45,6 +45,7 @@
 		</script>
 	</head>
 	<body bgcolor="#C6CED9">
+		<div id="loader"></div>
 		<div id="tabs">
 		<ul>
 			<li><a href="#tabs-1">Dosing Unit</a></li>

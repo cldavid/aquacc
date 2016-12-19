@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
-
+$pdu_config_file = "/www/aquacc/config/pdu.db";
 $SISPMCTL = "/usr/bin/sispmctl";
 
 function pdu_parseCmd($cmd) {
@@ -42,6 +42,10 @@ function pdu_parseCmd($cmd) {
 	
 		case 'scan':
 			scanPDU();
+			break;
+
+		case 'save':
+			writePDUconfig($pdu_config);
 			break;
 
 		default:
@@ -139,17 +143,21 @@ function getPDU_outlet_plannification($serial, $outlet) {
 }
 
 function printPDUstatus() {
+	$pdu_config = readPDUconfig();
 	$ser_arr = scanPDU();
 	for ($dev = 0; $dev < count($ser_arr); $dev++) {	
 		$serial = $ser_arr[$dev];
 		$status = getPDU_outlet_status($serial);
 		echo "<br/>\n";
 		echo "<table border=\"1\" width=\"90%\">\n";
-		echo "<tr><th colspan=\"4\">PDU-$serial</th></tr>\n";
+		echo "<tr><th colspan=\"5\">PDU-$serial</th></tr>\n";
 		for ($i = 0; $i < 4; $i++) {
 			echo "<tr>\n";	
 			$outlet = $i + 1;
-			echo "<td width=\"20\"><center><b>$outlet</b></center></td><td>";
+			$port_name = $pdu_config[$serial]["port-$outlet"]['name'];
+			echo "<td width=\"20\"><center><b>$outlet</b></center></td>";
+			echo "<td><center><b>" . $port_name . "</b></center></td>";
+			echo "<td>";
 			printPDU_outlet_plannification($serial, $outlet);
 			echo "</td>";
 
@@ -170,7 +178,6 @@ function printPDU_outlet_plannification($serial, $outlet) {
 	echo "<table width=\"100%\">\n";
 	$plan = getPDU_outlet_plannification($serial, $outlet);
 	if ($plan) {
-		echo "<tr><th colspan=\"4\">Scheduler</th></tr>\n";
 		foreach($plan as $key => $value) {
 			$date 	= $plan[$key]['date'];
 			$time 	= $plan[$key]['time'];
@@ -179,8 +186,7 @@ function printPDU_outlet_plannification($serial, $outlet) {
 			echo "<tr><td><b>Date</b></td><td>$date $time</td><td><b>Status</b></td><td>$status</td></tr>\n";
 		}
 	} else {
-		echo "<tr><th>Scheduler</th></tr>\n";
-		echo "<tr><th>Disabled</th></tr>\n";
+		echo "<tr><th>Scheduler disabled</th></tr>\n";
 	}
 	echo "</table>\n";
 }
@@ -204,4 +210,56 @@ function printPDUinfo2() {
 	printPDUstatus();
 	echo "</div>";
 }
+
+function readPDUconfig(){
+	global $pdu_config_file;
+	return unserialize(file_get_contents($pdu_config_file));
+}
+
+function writePDUconfig($config) {
+	global $pdu_config_file;
+	$pdu_config = array(
+			"01:01:54:47:ba" => array(
+				"name" => "PDU-1",
+				"port-1" => array(
+					"name" => "Voorste lampen",
+					"type" => "lamp",
+					"icon" => "unknown"),
+				"port-2" => array(
+					"name" => "Achterste lampen",
+					"type" => "lamp",
+					"icon" => "unknown"),
+				"port-3" => array(
+					"name" => "Verwarmer",
+					"type" => "lamp",
+					"icon" => "unknown"),
+				"port-4" => array(
+					"name" => "Eheim Filter",
+					"type" => "filter",
+					"icon" => "unknown"),
+				),
+			"01:01:53:c8:20" => array(
+				"name" => "PDU-2",
+				"port-1" => array(
+					"name" => "Voeding 1",
+					"type" => "lamp",
+					"icon" => "unknown"),
+				"port-2" => array(
+					"name" => "Voeding 2",
+					"type" => "lamp",
+					"icon" => "unknown"),
+				"port-3" => array(
+					"name" => "Voeding 3",
+					"type" => "lamp",
+					"icon" => "unknown"),
+				"port-4" => array(
+					"name" => "Voeding 4",
+					"type" => "lamp",
+					"icon" => "unknown"),
+				),
+			);
+	$config = $pdu_config;
+	file_put_contents($pdu_config_file,serialize($config));
+}
+
 ?>

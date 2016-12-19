@@ -35,50 +35,62 @@ function switch_outlet(serial, no, state) {
 }
 
 function outlet_on(serial, outlet_no) {
+        	$('#loader').show();
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_on",
 			data: { serial: serial, outlet_no: outlet_no },
-			success: reload_outlet_status
+			success: reload_outlet_status,
+			complete: function(){
+        			$('#loader').hide();
+      			}
 		});
 }
 
 function outlet_off(serial, outlet_no) {
+        	$('#loader').show();
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_off",
 			data: { serial: serial, outlet_no: outlet_no },
-			success: reload_outlet_status
+			success: reload_outlet_status,
+			complete: function(){
+        			$('#loader').hide();
+      			}
 		});
 }
 
 function reload_outlet_status() {
+        $('#loader').show();
 	$.ajax({
 		type: "POST",
 		cache: false,
 		url: "aquacc.php?app=pdu&cmd=status",
 		success: function(html) {
 			$('#div-sis-pm').html(html);
-		}
+		},
+		complete: function(){
+        		$('#loader').hide();
+      		}
 	});
-
 }
 
+setTimer_example();
 function setTimer_example() {
 	$(document).ready(function () {
-			var interval = 10000;   //number of mili seconds between each call
-			var refresh = function() {
-				$.ajax({
-					url: "aquacc.php?app=pdu&cmd=status",
-					cache: false,
-					success: function(html) {
-						$('#div-sis-pm').html(html);
-						setTimeout(function() {
-							refresh();
-						}, interval);
-					}
-				});
-			};
+		var interval = 10000;   //number of mili seconds between each call
+		var refresh = function() {
+			$.ajax({
+				url: "aquacc.php?app=pdu&cmd=status",
+				cache: false,
+				success: function(html) {
+					$('#div-sis-pm').html(html);
+					setTimeout(function() {
+						refresh();
+					}, interval);
+				}
+			});
+		};
 			refresh();
 	});
 }
