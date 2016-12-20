@@ -17,20 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
+ require "dosingunit.php";
+ require "pdu.php";
+ require "rrd.php";
+
+ $app 					= isset($_GET['app']) ? $_GET['app'] : "unknown";
+ $cmd 					= isset($_GET['cmd']) ? $_GET['cmd'] : "unknown";
+ $html_header 	= isset($_POST['html_header']) ? $_POST['html_header'] : 1;
+ if ($html_header) {
 ?>
 <html>
 	<head>
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 		<title>Aquarium Control Center</title>
 	</head>
-	<body bgcolor="#C6CED9">
+	<body>
 <?php
-require "dosingunit.php";
-require "pdu.php";
-require "rrd.php";
-
-$app = isset($_GET['app']) ? $_GET['app'] : "unknown";
-$cmd = isset($_GET['cmd']) ? $_GET['cmd'] : "unknown";
+}
 
 switch($app) {
 	case 'dosingunit':
@@ -53,6 +56,13 @@ switch($app) {
 
 	default:
 		break;
+}
+
+if ($html_header) {
+?>
+	</body>
+</html>
+<?php
 }
 
 function goHome() {
@@ -115,6 +125,3 @@ function parseDisableMotor($fp) {
 		echo "invalid input detected";
 	}
 }
-?>
-	</body>
-</html>

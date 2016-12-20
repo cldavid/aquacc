@@ -24,17 +24,23 @@ function pdu_parseCmd($cmd) {
 	switch($cmd) {
 		case 'outlet_on':
 			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
-			$outlet  = isset($_POST['outlet_no'])  	? $_POST['outlet_no'] : 0;
+			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
 			$result  = setPDU_outlet_on($serial, $outlet);
 			echo ("Enabling serial $serial output $outlet result $result");
 			break;
 
 		case 'outlet_off':
 			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
-			$outlet  = isset($_POST['outlet_no'])  	? $_POST['outlet_no'] : 0;
+			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
 			$result  = setPDU_outlet_off($serial, $outlet);
 			echo ("Disabling serial $serial output $outlet result $result");
 			break;
+
+			case 'get_plannification':
+				$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
+				$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
+				$result  = getPDU_plannifcation($serial, $outlet);
+				break;
 
 		case 'status':
 			printPDUstatus();
@@ -117,6 +123,12 @@ function scanPDU() {
 	return $status;
 }
 
+function getPDU_plannifcation($serial, $outlet) {
+	$plan = getPDU_outlet_plannification($serial, $outlet);
+	$json_string = json_encode($plan);
+	echo($json_string);
+}
+
 function getPDU_outlet_plannification($serial, $outlet) {
 	global $SISPMCTL;
 	$plan = array();
@@ -156,7 +168,7 @@ function printPDUstatus() {
 			$outlet = $i + 1;
 			$port_name = $pdu_config[$serial]["port-$outlet"]['name'];
 			echo "<td width=\"20\"><center><b>$outlet</b></center></td>";
-			echo "<td><center><b>" . $port_name . "</b></center></td>";
+			echo "<td><center><b><div id=\"set-scheduler\" onClick=\"get_plannification('$serial', '$outlet')\">" . $port_name . "</div></b></center></td>";
 			echo "<td>";
 			printPDU_outlet_plannification($serial, $outlet);
 			echo "</td>";
@@ -189,7 +201,6 @@ function printPDU_outlet_plannification($serial, $outlet) {
 		echo "<tr><th>Scheduler disabled</th></tr>\n";
 	}
 	echo "</table>\n";
-	echo "<div id=\"slider-range\"></div>";
 }
 
 function printPDU_outlet_plannifications($serial) {

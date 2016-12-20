@@ -41,7 +41,13 @@
 	</head>
 	<body>
     <header><h1>Aquarium Control Center</h1></header>
-    <div id="slider-range"></div>
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Start time: <div id="pdu-start"></div> Stop time: <div id="pdu-stop"></div></p>
+        <div id="slider-range"></div>
+      </div>
+    </div>
 		<div id="loader"></div>
 		<div id="tabs">
 		<ul>
@@ -95,9 +101,7 @@
 			<table border="1" width="100%">
 			<tr>
 				<td align="center">
-          <div id="pdu-page">
-            <div id="div-sis-pm">
-          </div>
+          <div id="pdu-page"></div>
 				</td>
 			</tr>
 			</table>
@@ -106,7 +110,7 @@
 			<table border="1" width="100%">
 			<tr>
 				<td align="center">
-          <div id="rrd-page">
+          <div id="rrd-page"></div>
 				</td>
 			</tr>
 			</table>
