@@ -6,7 +6,7 @@
  *
  * Aquarium Control Center (aquacc) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, 
+ * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * Aquarium Control Center (aquacc) is distributed in the hope that it will be useful,
@@ -27,6 +27,7 @@
 <?php
 require "dosingunit.php";
 require "pdu.php";
+require "rrd.php";
 
 $app = isset($_GET['app']) ? $_GET['app'] : "unknown";
 $cmd = isset($_GET['cmd']) ? $_GET['cmd'] : "unknown";
@@ -45,6 +46,10 @@ switch($app) {
 	case 'pdu':
 		pdu_parseCmd($cmd);
 		break;
+
+	case 'rrd':
+			rrd_parseCmd($cmd);
+			break;
 
 	default:
 		break;

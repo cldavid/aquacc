@@ -1,4 +1,16 @@
 <?php
+
+function rrd_parseCmd($cmd) {
+	switch($cmd) {
+		case 'show-rrd':
+			printRRD();
+			break;
+
+		default:
+			break;
+	}
+}
+
 function	printRRD() {
 	?>
 <table>

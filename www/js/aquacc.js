@@ -61,7 +61,7 @@ function outlet_off(serial, outlet_no) {
 }
 
 function reload_outlet_status() {
-        $('#loader').show();
+  $('#loader').show();
 	$.ajax({
 		type: "POST",
 		cache: false,
@@ -71,7 +71,37 @@ function reload_outlet_status() {
 		},
 		complete: function(){
         		$('#loader').hide();
-      		}
+    }
+	});
+}
+
+function load_pdu_page() {
+  $('#loader').show();
+	$.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=pdu&cmd=status",
+		success: function(html) {
+			$('#div-sis-pm').html(html);
+		},
+		complete: function(){
+			$('#loader').hide();
+    }
+	});
+}
+
+function load_rrd_page() {
+	$('#loader').show();
+	$.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=rrd&cmd=show-rrd",
+		success: function(html) {
+			$('#rrd-page').html(html);
+		},
+		complete: function(){
+						$('#loader').hide();
+					}
 	});
 }
 
@@ -95,8 +125,14 @@ function setTimer_example() {
 	});
 }
 
+$(function() {
+	$("#tabs").tabs();
+	$("#PDU").click(load_pdu_page);
+	$("#RRD").click(load_rrd_page);
+});
+
 $( function() {
-	$( "#slider-range" ).slider({
+	$("#slider-range").slider({
 		range: true,
 		min: 0,
 		max: 500,

@@ -206,12 +206,6 @@ function printPDU_outlet_plannifications($serial) {
 	echo "</table>\n";
 }
 
-function printPDUinfo2() {
-	echo "<div id=\"div-sis-pm\">";
-	printPDUstatus();
-	echo "</div>";
-}
-
 function readPDUconfig(){
 	global $pdu_config_file;
 	return unserialize(file_get_contents($pdu_config_file));

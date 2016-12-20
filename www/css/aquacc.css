@@ -1,3 +1,17 @@
+body {
+  color: #b8ec79;
+  background-color: black;
+}
+
+header, footer {
+    padding: 1em;
+    color: inherit;;
+    background-color: inherit;;
+    clear: left;
+    text-align: center;
+}
+
+
 #loader {
   position: fixed;
   top: 100;
@@ -17,6 +31,10 @@
   display: none;
   -webkit-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
+}
+
+#slider-range {
+  z-index: 1;
 }
 
 @-webkit-keyframes spin {

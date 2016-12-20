@@ -38,20 +38,16 @@
 		<link rel="stylesheet" type="text/css" href="framework/jquery-ui-1.12.1.custom/jquery-ui.css">
 		<link rel="stylesheet" type="text/css" href="css/aquacc.css">
 		<title>Aqua Control Center</title>
-		<script>
-			$(function() {
-				$( "#tabs" ).tabs();
-			});
-		</script>
 	</head>
-	<body bgcolor="#C6CED9">
+	<body>
+    <header><h1>Aquarium Control Center</h1></header>
     <div id="slider-range"></div>
 		<div id="loader"></div>
 		<div id="tabs">
 		<ul>
-			<li><a href="#tabs-1">Dosing Unit</a></li>
-			<li><a href="#tabs-2">PDU</a></li>
-			<li><a href="#tabs-3">RRD</a></li>
+			<li id="DSU"><a href="#tabs-1">Dosing Unit</a></li>
+			<li id="PDU"><a href="#tabs-2">PDU</a></li>
+			<li id="RRD"><a href="#tabs-3">RRD</a></li>
 		</ul>
 		<div id="tabs-1">
 		<table border="1" width="100%">
@@ -99,9 +95,9 @@
 			<table border="1" width="100%">
 			<tr>
 				<td align="center">
-				<?php
-					printPDUinfo2();
-				?>
+          <div id="pdu-page">
+            <div id="div-sis-pm">
+          </div>
 				</td>
 			</tr>
 			</table>
@@ -110,13 +106,12 @@
 			<table border="1" width="100%">
 			<tr>
 				<td align="center">
-				<?php
-					printRRD();
-				?>
+          <div id="rrd-page">
 				</td>
 			</tr>
 			</table>
 			</div>
 		</div>
+    <footer>Copyright &copy; David Cluytens</footer>
 	</body>
 </html>
