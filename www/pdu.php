@@ -6,7 +6,7 @@
  *
  * Aquarium Control Center (aquacc) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, 
+ * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * Aquarium Control Center (aquacc) is distributed in the hope that it will be useful,
@@ -39,7 +39,7 @@ function pdu_parseCmd($cmd) {
 		case 'status':
 			printPDUstatus();
 			break;
-	
+
 		case 'scan':
 			scanPDU();
 			break;
@@ -65,8 +65,8 @@ function setPDU_outlet_off($serial, $outlet) {
 			if($outlet == $port) {
 				return 1;
 			}
-		}   
-	}   
+		}
+	}
 	unset($value);
 	return 0;
 }
@@ -82,8 +82,8 @@ function setPDU_outlet_on($serial, $outlet) {
 			if($outlet == $port) {
 				return 1;
 			}
-		}   
-	}   
+		}
+	}
 	unset($value);
 	return 0;
 }
@@ -96,8 +96,8 @@ function getPDU_outlet_status($serial) {
 		if (preg_match($pattern, $value, $matches)) {
 			$port   = $matches[1] - 1;
 			$status[$port]  = $matches[2] == "on" ? 1 : 0;
-		}   
-	}   
+		}
+	}
 	unset($value);
 	return $status;
 }
@@ -111,8 +111,8 @@ function scanPDU() {
 		if (preg_match($pattern, $value, $matches)) {
 			$serial = $matches[1];
 			array_push($status, $serial);
-		}   
-	}   
+		}
+	}
 	unset($value);
 	return $status;
 }
@@ -136,8 +136,8 @@ function getPDU_outlet_plannification($serial, $outlet) {
 								  'time' 		=> $time,
 								  'status' 	=> $status);
 			$index++;
-		} 
-	}   
+		}
+	}
 	unset($value);
 	return $plan;
 }
@@ -145,14 +145,14 @@ function getPDU_outlet_plannification($serial, $outlet) {
 function printPDUstatus() {
 	$pdu_config = readPDUconfig();
 	$ser_arr = scanPDU();
-	for ($dev = 0; $dev < count($ser_arr); $dev++) {	
+	for ($dev = 0; $dev < count($ser_arr); $dev++) {
 		$serial = $ser_arr[$dev];
 		$status = getPDU_outlet_status($serial);
 		echo "<br/>\n";
 		echo "<table border=\"1\" width=\"90%\">\n";
 		echo "<tr><th colspan=\"5\">PDU-$serial</th></tr>\n";
 		for ($i = 0; $i < 4; $i++) {
-			echo "<tr>\n";	
+			echo "<tr>\n";
 			$outlet = $i + 1;
 			$port_name = $pdu_config[$serial]["port-$outlet"]['name'];
 			echo "<td width=\"20\"><center><b>$outlet</b></center></td>";
@@ -189,6 +189,7 @@ function printPDU_outlet_plannification($serial, $outlet) {
 		echo "<tr><th>Scheduler disabled</th></tr>\n";
 	}
 	echo "</table>\n";
+	echo "<div id=\"slider-range\"></div>";
 }
 
 function printPDU_outlet_plannifications($serial) {

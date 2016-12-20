@@ -6,7 +6,7 @@
  *
  * Aquarium Control Center (aquacc) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, 
+ * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * Aquarium Control Center (aquacc) is distributed in the hope that it will be useful,
@@ -32,10 +32,10 @@
 		<meta name="description" content=""/>
 		<meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-		<script src="js/jquery-2.1.0.min.js" type="text/javascript"></script>
-		<script src="js/jquery-ui-1.10.4.custom.min.js"></script>
+		<script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
+		<script src="framework/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
 		<script src="js/aquacc.js" language="javascript" type="text/javascript"></script>
-		<link rel="stylesheet" type="text/css" href="css/cupertino/jquery-ui-1.10.4.custom.css">
+		<link rel="stylesheet" type="text/css" href="framework/jquery-ui-1.12.1.custom/jquery-ui.css">
 		<link rel="stylesheet" type="text/css" href="css/aquacc.css">
 		<title>Aqua Control Center</title>
 		<script>
@@ -45,6 +45,7 @@
 		</script>
 	</head>
 	<body bgcolor="#C6CED9">
+    <div id="slider-range"></div>
 		<div id="loader"></div>
 		<div id="tabs">
 		<ul>
@@ -57,7 +58,7 @@
 			<tr>
 				<td>
 				<?php
-					dosingShowSchedule();	
+					dosingShowSchedule();
 				?>
 				</td>
 			</tr>
