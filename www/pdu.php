@@ -36,11 +36,17 @@ function pdu_parseCmd($cmd) {
 			echo ("Disabling serial $serial output $outlet result $result");
 			break;
 
-			case 'get_plannification':
-				$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
-				$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
-				$result  = getPDU_plannifcation($serial, $outlet);
-				break;
+		case 'get_plannification':
+			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
+			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
+			$result  = getPDU_plannifcation($serial, $outlet);
+			break;
+
+		case 'set_plannification':
+			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
+			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
+			$result  = getPDU_plannifcation($serial, $outlet);
+			break;
 
 		case 'status':
 			printPDUstatus();
