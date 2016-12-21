@@ -125,7 +125,8 @@ function scanPDU() {
 
 function getPDU_plannifcation($serial, $outlet) {
 	$plan = getPDU_outlet_plannification($serial, $outlet);
-	$json_string = json_encode($plan);
+	$dev_plan = array("serial" => $serial, "outlet" => $outlet, "scheduler" => $plan);
+	$json_string = json_encode($dev_plan);
 	echo($json_string);
 }
 

@@ -152,7 +152,6 @@ $(function() {
 
 function handle_scheduler_button_ok(event) {
 	event.preventDefault();
-	alert("OK");
 	var modal = document.getElementById('myModal');
 	modal.style.display = "none";
 }
@@ -185,7 +184,8 @@ function cTimeString2Minutes(timeString) {
 }
 
 function show_plannification(data) {
-	var plan = JSON.parse(data);
+	var dev_plan = JSON.parse(data);
+	var plan  = dev_plan.scheduler;
 	var modal = document.getElementById('myModal');
 	var span = document.getElementsByClassName("close")[0];
 	modal.style.display = "block";
@@ -195,9 +195,21 @@ function show_plannification(data) {
 	    modal.style.display = "none";
 	}
 
-	var startTime = cTimeString2Minutes(plan[0].time);
-	var endTime   = cTimeString2Minutes(plan[1].time);
-	$("#pdu-schedule-time").text(plan[0].time + '-' + plan[1].time);
+	var startTime_str;
+	var endTime_str;
+	if (plan.length) {
+		startTime_str = plan[0].time;
+		endTime_str   = plan[1].time;
+	} else {
+		startTime_str = '00:00';
+		endTime_str   = '00:00';
+	}
+
+	var startTime = cTimeString2Minutes(startTime_str);
+	var endTime   = cTimeString2Minutes(endTime_str);
+	$("#pdu-schedule-serial").text(dev_plan.serial);
+	$("#pdu-schedule-outlet").text(dev_plan.outlet);
+	$("#pdu-schedule-time").text(startTime_str + '-' + endTime_str);
 	$("#slider-range").slider({
 		range: true,
 		min: 0,

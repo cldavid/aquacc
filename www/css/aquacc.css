@@ -32,21 +32,6 @@ header, footer {
   animation: spin 2s linear infinite;
 }
 
-#scheduler-button-ok {
-  display: inline-block;
-  float:right;
-}
-
-#scheduler-button-cancel {
-  display: inline-block;
-  float:right;
-}
-
-#scheduler-button-apply {
-  display: inline-block;
-  float:right;
-}
-
 @-webkit-keyframes spin {
   0% { -webkit-transform: rotate(0deg); }
   100% { -webkit-transform: rotate(360deg); }
@@ -128,6 +113,11 @@ header, footer {
 
 .modal-body {
   padding: .2em .2em .2em .2em;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content:flex-end;
 }
 
 .modal-footer {

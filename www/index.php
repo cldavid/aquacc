@@ -53,9 +53,11 @@
           <p>Time: <span id="pdu-schedule-time"></span></p>
           <div id="slider-range"></div>
           <br/>
-          <button id="scheduler-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
-          <button id="scheduler-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
-          <button id="scheduler-button-apply" class="ui-button ui-widget ui-corner-all">Apply</button>
+          <div class="modal-buttons">
+            <button id="scheduler-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
+            <button id="scheduler-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
+            <button id="scheduler-button-apply" class="ui-button ui-widget ui-corner-all">Apply</button>
+          </div>
         </div>
         <div class="modal-footer"></div>
       </div>
