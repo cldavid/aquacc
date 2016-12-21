@@ -43,9 +43,21 @@
     <header><h1>Aquarium Control Center</h1></header>
     <div id="myModal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>Start time: <div id="pdu-start"></div> Stop time: <div id="pdu-stop"></div></p>
-        <div id="slider-range"></div>
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Scheduler</h2>
+        </div>
+        <div class="modal-body">
+          <p>Serial: <span id="pdu-schedule-serial"></span></p>
+          <p>Outlet: <span id="pdu-schedule-outlet"></span></p>
+          <p>Time: <span id="pdu-schedule-time"></span></p>
+          <div id="slider-range"></div>
+          <br/>
+          <button id="scheduler-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
+          <button id="scheduler-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
+          <button id="scheduler-button-apply" class="ui-button ui-widget ui-corner-all">Apply</button>
+        </div>
+        <div class="modal-footer"></div>
       </div>
     </div>
 		<div id="loader"></div>

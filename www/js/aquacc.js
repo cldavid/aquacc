@@ -142,11 +142,37 @@ $(function() {
 	$("#tabs").tabs();
 	$("#PDU").click(load_pdu_page);
 	$("#RRD").click(load_rrd_page);
+	$("#scheduler-button-ok").button();
+	$("#scheduler-button-cancel").button();
+	$("#scheduler-button-apply").button();
+	$("#scheduler-button-ok").click(handle_scheduler_button_ok);
+	$("#scheduler-button-cancel").click(handle_scheduler_button_cancel);
+	$("#scheduler-button-apply").click(handle_scheduler_button_apply);
 });
 
+function handle_scheduler_button_ok(event) {
+	event.preventDefault();
+	alert("OK");
+	var modal = document.getElementById('myModal');
+	modal.style.display = "none";
+}
+
+function handle_scheduler_button_cancel(event) {
+	event.preventDefault();
+	var modal = document.getElementById('myModal');
+	modal.style.display = "none";
+}
+
+function handle_scheduler_button_apply(event) {
+	event.preventDefault();
+	alert("APPLY");
+}
+
 function cMinutes2TimeString(minutes) {
-	var h 	= Math.floor(minutes / 60);
-	var m = ui.values[0] - (h * 60);
+	var h = Math.floor(minutes / 60);
+	var m = minutes - (h * 60);
+	if(h.toString().length == 1) h = '0' + h;
+	if(m.toString().length == 1) m = '0' + m;
 	return(h +':' + m);
 }
 
@@ -171,8 +197,7 @@ function show_plannification(data) {
 
 	var startTime = cTimeString2Minutes(plan[0].time);
 	var endTime   = cTimeString2Minutes(plan[1].time);
-	$("#pdu-start").html(plan[0].time);
-	$("#pdu-stop").html(plan[1].time);
+	$("#pdu-schedule-time").text(plan[0].time + '-' + plan[1].time);
 	$("#slider-range").slider({
 		range: true,
 		min: 0,
@@ -180,20 +205,11 @@ function show_plannification(data) {
 		step: 15,
 		values: [ startTime, endTime ],
 		slide: function(event, ui ) {
-			var s_hours 	= Math.floor(ui.values[0] / 60);
-			var s_minutes = ui.values[0] - (s_hours * 60);
-			var e_hours 	= Math.floor(ui.values[1] / 60);
-			var e_minutes = ui.values[1] - (e_hours * 60);
-
-			if(s_hours.toString().length == 1) s_hours = '0' + s_hours;
-			if(s_minutes.toString().length == 1) s_minutes = '0' + s_minutes;
-			if(e_hours.toString().length == 1) e_hours = '0' + e_hours;
-			if(e_minutes.toString().length == 1) e_minutes = '0' + e_minutes;
-
+			var start = cMinutes2TimeString(ui.values[0]);
+			var stop  = cMinutes2TimeString(ui.values[1]);
 
 			//Example:[{"date":"2016-12-21","time":"08:00","status":1},{"date":"2016-12-21","time":"20:00","status":0}]
-			$("#pdu-start").html(s_hours +':' + s_minutes);
-			$("#pdu-stop").html(e_hours +':' + e_minutes);
+			$("#pdu-schedule-time").text(start + '-' + stop);
 		}
 	});
 }
