@@ -26,6 +26,47 @@ function set_motor_start(theForm) {
 	theForm.appendChild(hiddenField);
 }
 
+function getDateString(d) {
+	var mday	= d.getDate();
+	var month = d.getMonth()+1;
+
+	if(mday.toString().length == 1) mday = '0' + mday;
+	if(month.toString().length == 1) month = '0' + month;
+
+	var curDate =  d.getFullYear() + '-' + month  + '-' + mday;
+	return curDate;
+}
+
+function getTimeString(d) {
+	var h	= d.getHours();
+	var m = d.getMinutes()+1;
+
+	if(h.toString().length == 1) h = '0' + h;
+	if(m.toString().length == 1) m = '0' + m;
+
+	var curTime =  h + ':' + m;
+	return curTime;
+}
+
+function set_plannification(serial, outlet_no, scheduler, loopMinutes) {
+	$('#loader').show();
+	$.ajax({
+		type: "POST",
+		url: "aquacc.php?app=pdu&cmd=set_plannification",
+		data: {
+			html_header: 0,
+			serial: serial,
+			outlet_no: outlet_no,
+			scheduler: JSON.stringify(scheduler),
+			loop_min: loopMinutes,
+		 },
+		success: function(html) {$('#debug-message').text(html);},
+		complete: function(){
+			$('#loader').hide();
+		}
+	});
+}
+
 function get_plannification(serial, outlet_no) {
     $('#loader').show();
 		$.ajax({
@@ -61,15 +102,15 @@ function outlet_on(serial, outlet_no) {
 }
 
 function outlet_off(serial, outlet_no) {
-        	$('#loader').show();
+    $('#loader').show();
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_off",
 			data: { serial: serial, outlet_no: outlet_no },
 			success: reload_outlet_status,
 			complete: function(){
-        			$('#loader').hide();
-      			}
+      	$('#loader').hide();
+      }
 		});
 }
 
@@ -150,9 +191,69 @@ $(function() {
 	$("#scheduler-button-apply").click(handle_scheduler_button_apply);
 });
 
+function create_scheduler_data(startTime, endTime) {
+		var curDate			= new Date();
+		var arr_sTime 	= startTime.split(':');
+		var arr_eTime 	=	endTime.split(':');
+		var	sDate 			= new Date(curDate.getFullYear(), curDate.getMonth(), curDate.getDate(), arr_sTime[0], arr_sTime[1], 0, 0);
+		var	eDate 			= new Date(curDate.getFullYear(), curDate.getMonth(), curDate.getDate(), arr_eTime[0], arr_eTime[1], 0, 0);
+
+		/*
+		 * For simplicity I've hardcoded everything to resemble basic scheduling functionality
+		 */
+		var on 	= 1;
+		var off = 0;
+		var loopMinutes	= 1440;
+
+		/*
+		 * Swap dates if current time equals or greater then start or end time
+		 */
+		if (curDate.getTime() >= sDate.getTime()) {
+			if (curDate.getTime() >= eDate.getTime()) {
+				var tomorrow = new Date();
+				tomorrow.setDate(curDate.getDate() + 1);
+				var date1 	= getDateString(tomorrow);
+				var date2 	= getDateString(tomorrow);
+				var time1 	= startTime;
+				var time2 	= endTime;
+				var status1 = on;
+				var status2 = off;
+			} else {
+				var tomorrow = new Date();
+				tomorrow.setDate(curDate.getDate() + 1);
+				var date1 	= getDateString(curDate);
+				var date2 	= getDateString(tomorrow);
+				var time1 	= endTime;
+				var time2 	= startTime;
+				var status1 = off;
+				var status2 = on;
+			}
+		} else {
+			var date1 	= getDateString(curDate);
+			var date2 	= getDateString(curDate);
+			var time1 	= startTime;
+			var time2 	= endTime;
+			var status1 = on;
+			var status2 = off;
+		}
+		var scheduler = [ {date: date1, time: time1, status: status1},
+											{date: date2, time: time2, status: status2}];
+		return scheduler;
+}
+
 function handle_scheduler_button_ok(event) {
 	event.preventDefault();
 	var modal = document.getElementById('myModal');
+	var serial 		= $("#pdu-schedule-serial").text();
+	var outlet_no = $("#pdu-schedule-outlet").text();
+	var dTime 		= $("#pdu-schedule-time").text();
+
+	var aTime 		= dTime.split('-');
+	var startTime = aTime[0];
+	var endTime 	= aTime[1];
+	var loopMinutes	= 1440;
+	var scheduler = create_scheduler_data(startTime, endTime, loopMinutes)
+	set_plannification(serial, outlet_no, scheduler);
 	modal.style.display = "none";
 }
 
@@ -164,7 +265,16 @@ function handle_scheduler_button_cancel(event) {
 
 function handle_scheduler_button_apply(event) {
 	event.preventDefault();
-	alert("APPLY");
+	var serial 		= $("#pdu-schedule-serial").text();
+	var outlet_no = $("#pdu-schedule-outlet").text();
+	var dTime 		= $("#pdu-schedule-time").text();
+
+	var aTime 		= dTime.split('-');
+	var startTime = aTime[0];
+	var endTime 	= aTime[1];
+	var loopMinutes	= 1440;
+	var scheduler = create_scheduler_data(startTime, endTime)
+	set_plannification(serial, outlet_no, scheduler, loopMinutes);
 }
 
 function cMinutes2TimeString(minutes) {
@@ -183,6 +293,22 @@ function cTimeString2Minutes(timeString) {
 	return m;
 }
 
+/*
+ * dev_plan.scheduler contains following data structure
+ * Example:
+ * [
+ *	{
+ *		"date":"2016-12-21",
+ *		"time":"08:00",
+ *		"status":1
+ *	},
+ *	{
+ *		"date":"2016-12-21",
+ *		"time":"20:00",
+ *		"status":0
+ *	}
+ * ]
+*/
 function show_plannification(data) {
 	var dev_plan = JSON.parse(data);
 	var plan  = dev_plan.scheduler;
@@ -210,7 +336,7 @@ function show_plannification(data) {
 	$("#pdu-schedule-serial").text(dev_plan.serial);
 	$("#pdu-schedule-outlet").text(dev_plan.outlet);
 	$("#pdu-schedule-time").text(startTime_str + '-' + endTime_str);
-	$("#slider-range").slider({
+	$("#pdu-schedule-slider").slider({
 		range: true,
 		min: 0,
 		max: 1440,
@@ -220,7 +346,6 @@ function show_plannification(data) {
 			var start = cMinutes2TimeString(ui.values[0]);
 			var stop  = cMinutes2TimeString(ui.values[1]);
 
-			//Example:[{"date":"2016-12-21","time":"08:00","status":1},{"date":"2016-12-21","time":"20:00","status":0}]
 			$("#pdu-schedule-time").text(start + '-' + stop);
 		}
 	});

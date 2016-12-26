@@ -18,7 +18,7 @@
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
 $pdu_config_file = "/www/aquacc/config/pdu.db";
-$SISPMCTL = "/usr/bin/sispmctl";
+$SISPMCTL = "/opt/apps/sispmctl/bin/sispmctl";
 
 function pdu_parseCmd($cmd) {
 	switch($cmd) {
@@ -43,9 +43,15 @@ function pdu_parseCmd($cmd) {
 			break;
 
 		case 'set_plannification':
-			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
-			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
-			$result  = getPDU_plannifcation($serial, $outlet);
+			$serial  			= isset($_POST['serial'])  		? $_POST['serial'] : 0;
+			$outlet  			= isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
+			$scheduler  	= isset($_POST['scheduler'])	? $_POST['scheduler'] : null;
+			$loopMinutes  = isset($_POST['loop_min'])		? $_POST['loop_min'] : 1440;
+			$plan		 			= json_decode($scheduler, true);
+
+			if ($plan) {
+				$result  = setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes);
+			}
 			break;
 
 		case 'status':
@@ -127,6 +133,19 @@ function scanPDU() {
 	}
 	unset($value);
 	return $status;
+}
+
+function setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes) {
+	global $SISPMCTL;
+
+	$cmdString = $SISPMCTL . " -A" . $outlet . " ";
+	for ($i = 0; $i < count($plan); $i++) {
+		$dateString = $plan[$i]['date'] . ' ' . $plan[$i]['time'];
+		$status 		= $plan[$i]['status'] ? "on" : "off";
+		$cmdString .= "--Aat \"" . $dateString . "\" --Ado " . $status . " ";
+	}
+	$cmdString .= " --Aloop " . $loopMinutes;
+	echo ($cmdString);
 }
 
 function getPDU_plannifcation($serial, $outlet) {

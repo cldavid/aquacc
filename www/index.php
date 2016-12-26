@@ -41,6 +41,7 @@
 	</head>
 	<body>
     <header><h1>Aquarium Control Center</h1></header>
+    <div id="debug-message"></div>
     <div id="myModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -51,7 +52,7 @@
           <p>Serial: <span id="pdu-schedule-serial"></span></p>
           <p>Outlet: <span id="pdu-schedule-outlet"></span></p>
           <p>Time: <span id="pdu-schedule-time"></span></p>
-          <div id="slider-range"></div>
+          <div id="pdu-schedule-slider"></div>
           <br/>
           <div class="modal-buttons">
             <button id="scheduler-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
