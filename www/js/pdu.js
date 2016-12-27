@@ -57,7 +57,7 @@ function switch_outlet(serial, no, state) {
 }
 
 function outlet_on(serial, outlet_no) {
-        	$('#loader').show();
+  $('#loader').show();
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_on",
@@ -80,6 +80,23 @@ function outlet_off(serial, outlet_no) {
       	$('#loader').hide();
       }
 		});
+}
+
+function disable_plannification(serial, outlet_no) {
+	$('#loader').show();
+	$.ajax({
+		type: "POST",
+		url: "aquacc.php?app=pdu&cmd=disable_plannification",
+		data: {
+			html_header: 0,
+			serial: serial,
+			outlet_no: outlet_no,
+		},
+		success: function(html) {$('#debug-message').text(html);},
+		complete: function(){
+			$('#loader').hide();
+		}
+	});
 }
 
 function set_plannification(serial, outlet_no, scheduler, loopMinutes) {
@@ -229,6 +246,17 @@ function create_scheduler_data(startTime, endTime) {
 		var scheduler = [ {date: date1, time: time1, status: status1},
 											{date: date2, time: time2, status: status2}];
 		return scheduler;
+}
+
+function handle_scheduler_button_disable(event) {
+	event.preventDefault();
+	var modal = document.getElementById('myModal');
+  var serial 		= $("#pdu-schedule-serial").text();
+  var outlet_no = $("#pdu-schedule-outlet").text();
+
+  disable_plannification(serial, outlet_no);
+
+  modal.style.display = "none";
 }
 
 function handle_scheduler_button_ok(event) {

@@ -55,6 +55,7 @@
           <div id="pdu-schedule-slider"></div>
           <br/>
           <div class="modal-buttons">
+            <button id="scheduler-button-disable" class="ui-button ui-widget ui-corner-all">Disable</button>
             <button id="scheduler-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
             <button id="scheduler-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
             <button id="scheduler-button-apply" class="ui-button ui-widget ui-corner-all">Apply</button>
