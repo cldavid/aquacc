@@ -36,6 +36,12 @@ function pdu_parseCmd($cmd) {
 			echo ("Disabling serial $serial output $outlet result $result");
 			break;
 
+		case 'disable_plannification':
+			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
+			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
+			$result  = disablePDU_plannifcation($serial, $outlet);
+			break;
+
 		case 'get_plannification':
 			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
 			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
@@ -138,13 +144,20 @@ function scanPDU() {
 function setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes) {
 	global $SISPMCTL;
 
-	$cmdString = $SISPMCTL . " -A" . $outlet . " ";
+	$cmdString = $SISPMCTL . " -D ". $serial . " -A" . $outlet . " ";
 	for ($i = 0; $i < count($plan); $i++) {
 		$dateString = $plan[$i]['date'] . ' ' . $plan[$i]['time'];
 		$status 		= $plan[$i]['status'] ? "on" : "off";
 		$cmdString .= "--Aat \"" . $dateString . "\" --Ado " . $status . " ";
 	}
 	$cmdString .= " --Aloop " . $loopMinutes;
+	echo ($cmdString);
+}
+
+function disablePDU_plannifcation($serial, $outlet) {
+	global $SISPMCTL;
+
+	$cmdString = $SISPMCTL . " -D " . $serial . " -A" . $outlet;
 	echo ($cmdString);
 }
 

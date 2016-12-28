@@ -83,6 +83,7 @@ function outlet_off(serial, outlet_no) {
 }
 
 function disable_plannification(serial, outlet_no) {
+  alert("disable_plannification");
 	$('#loader').show();
 	$.ajax({
 		type: "POST",
@@ -253,7 +254,7 @@ function handle_scheduler_button_disable(event) {
 	var modal = document.getElementById('myModal');
   var serial 		= $("#pdu-schedule-serial").text();
   var outlet_no = $("#pdu-schedule-outlet").text();
-
+  alert("handle_scheduler_button_disable");
   disable_plannification(serial, outlet_no);
 
   modal.style.display = "none";

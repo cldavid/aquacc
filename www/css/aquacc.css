@@ -129,6 +129,6 @@ header, footer {
 }
 
 #pdu-schedule-slider {
+  margin: auto;
   width: 80%;
-  height:1em;
 }
