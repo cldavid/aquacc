@@ -67,6 +67,7 @@ function pdu_appendRow(data) {
     cell.setAttribute("id",    "pdu-table-scheduler-" + id);
     cell.setAttribute("class", "pdu-table-scheduler");
     if(plan.length) {
+      cell.innerHTML = "";
       plan.forEach(function(p){
         cell.innerHTML += "Date: " + p.date + " Time: " + p.time + " Status: " + p.status + "<br/>";
       });
@@ -195,13 +196,24 @@ function outlet_off(serial, outlet_no) {
 		});
 }
 
-function parse_set_plannification_result(data) {
-  var  result = JSON.parse(data);
-
-  console.log(data);
+function parse_set_plannification_result(event) {
+  var result  = JSON.parse(event);
+  var serial  = result.data.serial;
+  var outlet  = result.data.outlet;
+  var plan    = result.data.scheduler;
 
   if (result.rcode) {
     alert("Error updating scheduler:\n" + result.command + "\nOutput:" + result.output);
+  }
+
+  if(plan.length) {
+    var sserial = serial.replace(/\:/g, '');
+    var id      = sserial + outlet;
+    var cell    = document.getElementById("pdu-table-scheduler-" + id);
+    cell.innerHTML = "";
+    plan.forEach(function(p){
+      cell.innerHTML += "Date: " + p.date + " Time: " + p.time + " Status: " + p.status + "<br/>";
+    });
   }
 }
 

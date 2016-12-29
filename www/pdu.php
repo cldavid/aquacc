@@ -81,10 +81,6 @@ function pdu_parseCmd($cmd) {
 			echo($json_string);
 			break;
 
-		case 'status':
-			printPDUstatus();
-			break;
-
 		case 'scan':
 			scanPDU();
 			break;
@@ -189,7 +185,7 @@ function setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes) {
 	$cmdString .= " --Aloop " . $loopMinutes;
 	exec($cmdString, $arr, $rc);
 
-	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc);
+	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "scheduler" => $plan));
 	$json_string = json_encode($cmdOut);
 	echo($json_string);
 	return $cmdOut;
@@ -237,55 +233,6 @@ function getPDU_outlet_plannification($serial, $outlet) {
 	}
 	unset($value);
 	return $plan;
-}
-
-function printPDUstatus() {
-	$pdu_config = readPDUconfig();
-	$ser_arr = scanPDU();
-	for ($dev = 0; $dev < count($ser_arr); $dev++) {
-		$serial = $ser_arr[$dev];
-		$status = getPDU_outlet_status($serial);
- 		echo "<br/>\n";
-		echo "<table border=\"1\" width=\"90%\">\n";
-		echo "<tr><th colspan=\"5\">PDU-$serial</th></tr>\n";
-		for ($i = 0; $i < 4; $i++) {
-			echo "<tr>\n";
-			$outlet = $i + 1;
-			$port_name = $pdu_config[$serial]["port-$outlet"]['name'];
-			echo "<td width=\"20\"><center><b>$outlet</b></center></td>";
-			echo "<td><center><b><div id=\"set-scheduler\" onClick=\"edit_scheduler('$serial', '$outlet')\">" . $port_name . "</div></b></center></td>";
-			echo "<td>";
-			printPDU_outlet_plannification($serial, $outlet);
-			echo "</td>";
-
-			if ($status[$i]) {
-				echo "<td width=\"75\" height=\"75\"><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'off')\">";
-				echo "<img src=\"/aquacc/images/on.png\" width=\"75\" height=\"75\"/></a></td>\n";
-			} else {
-				echo "<td width=\"75\" height=\"75\"><a title=\"Switch $outlet\" onClick=\"switch_outlet('$serial', '$outlet', 'on')\">";
-				echo "<img src=\"/aquacc/images/off.png\" width=\"75\" height=\"75\"/></a></td>\n";
-			}
-			echo "</tr>\n";
-		}
-		echo "</table>\n";
-	}
-}
-
-function printPDU_outlet_plannification($serial, $outlet) {
-	echo "<table width=\"100%\">\n";
-	$plan = getPDU_outlet_plannification($serial, $outlet);
-	if ($plan) {
-		foreach($plan as $key => $value) {
-			$date 	= $plan[$key]['date'];
-			$time 	= $plan[$key]['time'];
-			$status = $plan[$key]['status'];
-			$status = $status ? "on" : "off";
-			echo "<tr><td><b>Date</b></td><td>$date $time</td><td><b>Status</b></td><td>$status</td></tr>\n";
-		}
-	} else {
-		echo "<tr><th>Scheduler disabled</th></tr>\n";
-	}
-	echo "</table>\n";
 }
 
 function readPDUconfig(){
