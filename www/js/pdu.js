@@ -1,16 +1,22 @@
-function reload_outlet_status() {
-  $('#loader').show();
-	$.ajax({
-		type: "POST",
-		cache: false,
-		url: "aquacc.php?app=pdu&cmd=getStatus",
-		success: function(html) {
-			$('#pdu-page').html(html);
-		},
-		complete: function(){
-      $('#loader').hide();
-    }
-	});
+function reload_outlet_status(event) {
+  var json_data = JSON.parse(event);
+  var serial    = json_data.data.serial;
+  var sserial   = serial.replace(/\:/g, '');
+  var outlet    = json_data.data.outlet;
+  var status    = json_data.data.status;
+  var id        = sserial + outlet;
+
+  var div_status = document.getElementById("pdu-div-status-" + id);
+  if (div_status == null) {
+    alert("Element not found");
+    return;
+  }
+
+  if (status) {
+    div_status.className   = "pdu-table-status-on";
+  } else {
+    div_status.className   = "pdu-table-status-off";
+  }
 }
 
 function pdu_createTable(data) {
@@ -38,22 +44,27 @@ function pdu_appendRow(data) {
   var json_data = JSON.parse(data);
   var serial    = json_data.serial;
   var outlets   = json_data.outlet;
+  var sserial   = serial.replace(/\:/g, '');
 
   var table   = document.getElementById("pdu-table-" + serial);
   var outlet    = 1;
   outlets.forEach(function(s) {
+    var id      = sserial + outlet;
     var plan    = s.scheduler;
     var row     = table.insertRow();
     var cell    = row.insertCell();
+    cell.setAttribute("id",    "pdu-table-id-" + id);
     cell.setAttribute("class", "pdu-table-id");
     cell.innerHTML = outlet;
 
     cell  = row.insertCell();
+    cell.setAttribute("id",    "pdu-table-name-" + id);
     cell.setAttribute("class", "pdu-table-name");
     $(cell).click({serial: serial, outlet: outlet}, edit_scheduler);
     cell.innerHTML  = "Outlet-" + outlet;
 
     cell  = row.insertCell();
+    cell.setAttribute("id",    "pdu-table-scheduler-" + id);
     cell.setAttribute("class", "pdu-table-scheduler");
     if(plan.length) {
       plan.forEach(function(p){
@@ -64,18 +75,18 @@ function pdu_appendRow(data) {
     }
 
     cell  = row.insertCell();
+    cell.setAttribute("id",    "pdu-table-status-" + id);
     cell.setAttribute("class", "pdu-table-status");
+
+    var div_status = document.createElement('div');
+    div_status.setAttribute("id",    "pdu-div-status-" + id);
     if (s.status) {
-      var div_status_on   = document.createElement('div');
-      div_status_on.setAttribute("class", "pdu-table-status-on");
-      cell.appendChild(div_status_on);
-      $(cell).click({serial: serial, outlet: outlet, state: 'off'}, switch_outlet);
+      div_status.setAttribute("class", "pdu-table-status-on");
     } else {
-      var div_status_off   = document.createElement('div');
-      div_status_off.setAttribute("class", "pdu-table-status-off");
-      cell.appendChild(div_status_off);
-      $(cell).click({serial: serial, outlet: outlet, state: 'on'}, switch_outlet);
+      div_status.setAttribute("class", "pdu-table-status-off");
     }
+    cell.appendChild(div_status);
+    $(cell).click({id: id, serial: serial, outlet: outlet}, switch_outlet);
     outlet++;
   });
 }
@@ -145,15 +156,17 @@ function setTimer_reload_pdu_page() {
 }
 
 function switch_outlet(event) {
-  var serial  = event.data.serial;
-  var no      = event.data.outlet;
-  var state   = event.data.state;
+  var id          = event.data.id;
+  var serial      = event.data.serial;
+  var outlet      = event.data.outlet;
+  var state       = event.data.state;
+  var div_status  = document.getElementById("pdu-div-status-" + id);
 
-	if (state == "off") {
-		outlet_off(serial, no, state);
-	} else if (state == "on") {
-		outlet_on(serial, no, state);
-	}
+  if (div_status.className == "pdu-table-status-on") {
+    outlet_off(serial, outlet);
+  } else {
+    outlet_on(serial, outlet);
+  }
 }
 
 function outlet_on(serial, outlet_no) {
@@ -161,7 +174,7 @@ function outlet_on(serial, outlet_no) {
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_on",
-			data: { serial: serial, outlet_no: outlet_no },
+			data: { html_header: 0, serial: serial, outlet_no: outlet_no },
 			success: reload_outlet_status,
 			complete: function(){
         			$('#loader').hide();
@@ -174,7 +187,7 @@ function outlet_off(serial, outlet_no) {
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=outlet_off",
-			data: { serial: serial, outlet_no: outlet_no },
+			data: { html_header: 0, serial: serial, outlet_no: outlet_no },
 			success: reload_outlet_status,
 			complete: function(){
       	$('#loader').hide();

@@ -102,14 +102,14 @@ function pdu_parseCmd($cmd) {
 function setPDU_outlet_off($serial, $outlet) {
 	global $SISPMCTL;
 
-	$data = 0;
+	$data = 1;
 	$output = exec($SISPMCTL . " -D $serial -f $outlet", $arr, $rc);
 	foreach ($arr as &$value) {
 		$pattern = "/^Switched outlet\s(\d+)\soff/";
 		if (preg_match($pattern, $value, $matches)) {
 			$port = $matches[1];
 			if($outlet == $port) {
-				$data = 1;
+				$data = 0;
 				break;
 			}
 		}
