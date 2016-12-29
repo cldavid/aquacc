@@ -28,6 +28,7 @@ function pdu_createTable(data) {
       var table   = document.createElement('table');
       table.setAttribute("id", "pdu-table-" + pdu);
       table.setAttribute("class", "pdu-table-class");
+      table.setAttribute("pdu-serial", pdu);
 
       var row     = table.insertRow();
       var cell    = row.insertCell();
@@ -38,6 +39,44 @@ function pdu_createTable(data) {
       $('#pdu-page').append(table);
       pdu_getStatus(pdu);
     });
+    setTimer_reload_pdu_page();
+}
+
+function pdu_refresh_table(event) {
+  var json_data = JSON.parse(event);
+  var serial    = json_data.serial;
+  var outlets   = json_data.outlet;
+  var sserial   = serial.replace(/\:/g, '');
+
+  var outlet    = 1;
+  outlets.forEach(function(s) {
+    var id        = sserial + outlet;
+    var plan      = s.scheduler;
+    var f_id      = document.getElementById("pdu-table-id-" + id);
+    var f_name    = document.getElementById("pdu-table-name-" + id);
+    var f_sched   = document.getElementById("pdu-table-scheduler-" + id);
+    var f_status  = document.getElementById("pdu-div-status-" + id);
+
+    f_id.innerHTML    = outlet;
+    f_name.innerHTML  = "Outlet-" + outlet;
+
+    if(plan.length) {
+      f_sched.innerHTML = "";
+      plan.forEach(function(p){
+        f_sched.innerHTML += "Date: " + p.date + " Time: " + p.time + " Status: " + p.status + "<br/>";
+      });
+    } else {
+      f_sched.innerHTML = "Scheduler disabled";
+    }
+
+    if (s.status) {
+      f_status.setAttribute("class", "pdu-table-status-on");
+    } else {
+      f_status.setAttribute("class", "pdu-table-status-off");
+    }
+    outlet++;
+
+  });
 }
 
 function pdu_appendRow(data) {
@@ -46,7 +85,7 @@ function pdu_appendRow(data) {
   var outlets   = json_data.outlet;
   var sserial   = serial.replace(/\:/g, '');
 
-  var table   = document.getElementById("pdu-table-" + serial);
+  var table     = document.getElementById("pdu-table-" + serial);
   var outlet    = 1;
   outlets.forEach(function(s) {
     var id      = sserial + outlet;
@@ -136,23 +175,23 @@ function pdu_scan() {
   });
 }
 
-//setTimer_reload_pdu_page();
 function setTimer_reload_pdu_page() {
 	$(document).ready(function () {
 		var interval = 10000;   //number of mili seconds between each call
-		var refresh = function() {
-			$.ajax({
-				url: "aquacc.php?app=pdu&cmd=status",
-				cache: false,
-				success: function(html) {
-					$('#pdu-page').html(html);
-					setTimeout(function() {
-						refresh();
-					}, interval);
-				}
-			});
-		};
-		refresh();
+    var tables = $.find("table[pdu-serial]");
+    tables.forEach(function(table) {
+      var serial = table.getAttribute("pdu-serial");
+      $.ajax({
+        type: "POST",
+        url: "aquacc.php?app=pdu&cmd=getStatus",
+        cache: false,
+        data: { html_header: 0, serial: serial },
+        success: function(event) {
+          pdu_refresh_table(event);
+        }
+      });
+    });
+    setTimeout(setTimer_reload_pdu_page, interval);
 	});
 }
 
@@ -206,14 +245,16 @@ function parse_set_plannification_result(event) {
     alert("Error updating scheduler:\n" + result.command + "\nOutput:" + result.output);
   }
 
+  var sserial = serial.replace(/\:/g, '');
+  var id      = sserial + outlet;
+  var cell    = document.getElementById("pdu-table-scheduler-" + id);
   if(plan.length) {
-    var sserial = serial.replace(/\:/g, '');
-    var id      = sserial + outlet;
-    var cell    = document.getElementById("pdu-table-scheduler-" + id);
     cell.innerHTML = "";
     plan.forEach(function(p){
       cell.innerHTML += "Date: " + p.date + " Time: " + p.time + " Status: " + p.status + "<br/>";
     });
+  } else {
+    cell.innerHTML = "Scheduler disabled";
   }
 }
 
