@@ -71,14 +71,27 @@ function pdu_parseCmd($cmd) {
 		case 'getStatus':
 			$serial = isset($_POST['serial'])  		? $_POST['serial'] : 0;
 			$status = getPDU_outlet_status($serial);
-			$data 	= array("serial" => $serial, "outlet" => array());
+
+			if (!is_array($status)) {
+				$data = array("rcode" => 1, "data" => array("serial" => $serial));
+				goto error;
+			}
+
+			$res 	= array("serial" => $serial, "outlets" => array());
 			for ($outlet = 1; $outlet < 5; $outlet++)
 			{
 				$plan = getPDU_outlet_plannification($serial, $outlet);
-				array_push($data["outlet"], array("status" => $status[$outlet-1], "scheduler" => $plan));
+				if (!is_array($plan)) {
+					$data = array("rcode" => 1, "data" => array("serial" => $serial));
+					goto error;
+				}
+				array_push($res["outlets"], array("status" => $status[$outlet-1], "scheduler" => $plan));
 			}
-			$json_string = json_encode($data);
-			echo($json_string);
+
+			$data = array("rcode" => 0, "data" => $res);
+			error:
+				$json_string = json_encode($data);
+				echo($json_string);
 			break;
 
 		case 'scan':
@@ -112,7 +125,7 @@ function setPDU_outlet_off($serial, $outlet) {
 	}
 	unset($value);
 
-	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "status" => $data));
+	$cmdOut = array("rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "status" => $data));
 	$json_string = json_encode($cmdOut);
 	echo($json_string);
 	return $cmdOut;
@@ -134,7 +147,7 @@ function setPDU_outlet_on($serial, $outlet) {
 	}
 	unset($value);
 
-	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "status" => $data));
+	$cmdOut = array("rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "status" => $data));
 	$json_string = json_encode($cmdOut);
 	echo($json_string);
 	return $cmdOut;
@@ -142,7 +155,7 @@ function setPDU_outlet_on($serial, $outlet) {
 
 function getPDU_outlet_status($serial) {
 	global $SISPMCTL;
-	$output = exec($SISPMCTL . " -D " . $serial . " -g all", $arr);
+	$output = exec($SISPMCTL . " -D " . $serial . " -g all", $arr, $rc);
 	foreach ($arr as &$value) {
 		$pattern = "/^Status of outlet (\d+):\s(\w+)/";
 		if (preg_match($pattern, $value, $matches)) {
@@ -151,7 +164,7 @@ function getPDU_outlet_status($serial) {
 		}
 	}
 	unset($value);
-	return $status;
+	return !$rc ? $status : -1;
 }
 
 function scanPDU() {
@@ -167,7 +180,7 @@ function scanPDU() {
 	}
 	unset($value);
 
-	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => $status);
+	$cmdOut = array("rcode" => $rc, "data" => $status);
 	$json_string = json_encode($cmdOut);
 	echo($json_string);
 	return $json_string;
@@ -185,7 +198,7 @@ function setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes) {
 	$cmdString .= " --Aloop " . $loopMinutes;
 	exec($cmdString, $arr, $rc);
 
-	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "scheduler" => $plan));
+	$cmdOut = array("rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "scheduler" => $plan));
 	$json_string = json_encode($cmdOut);
 	echo($json_string);
 	return $cmdOut;
@@ -197,15 +210,19 @@ function disablePDU_plannifcation($serial, $outlet) {
 	$cmdString = $SISPMCTL . " -D " . $serial . " -A" . $outlet;
 	exec($cmdString, $arr, $rc);
 
-	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc);
+	$cmdOut = array("rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "scheduler" => array()));
 	$json_string = json_encode($cmdOut);
 	echo($json_string);
 	return $cmdOut;
 }
 
 function getPDU_plannifcation($serial, $outlet) {
+	$rc = 1;
 	$plan = getPDU_outlet_plannification($serial, $outlet);
-	$dev_plan = array("serial" => $serial, "outlet" => $outlet, "scheduler" => $plan);
+	if (is_array($plan)) {
+		$rc = 0;
+	}
+	$dev_plan = array("rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "scheduler" => $plan));
 	$json_string = json_encode($dev_plan);
 	echo($json_string);
 }
@@ -218,7 +235,7 @@ function getPDU_outlet_plannification($serial, $outlet) {
 		return null;
 	}
 	$index = 0;
-	$output = exec($SISPMCTL . " -D $serial -a$outlet", $arr);
+	$output = exec($SISPMCTL . " -D $serial -a$outlet", $arr, $rc);
 	foreach ($arr as &$value) {
 		$pattern = "/\s+On\s+([\w-]+)\s+([\w:]+)\s+switch\s+(\w+)/";
 		if (preg_match($pattern, $value, $matches)) {
@@ -232,7 +249,7 @@ function getPDU_outlet_plannification($serial, $outlet) {
 		}
 	}
 	unset($value);
-	return $plan;
+	return !$rc ? $plan : -1;
 }
 
 function readPDUconfig(){

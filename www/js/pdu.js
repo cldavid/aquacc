@@ -1,5 +1,12 @@
 function reload_outlet_status(event) {
   var json_data = JSON.parse(event);
+  var rcode     = json_data.rcode;
+  if (rcode) {
+    /*
+     * Error, unable to fetch outlet status
+     */
+     return;
+  }
   var serial    = json_data.data.serial;
   var sserial   = serial.replace(/\:/g, '');
   var outlet    = json_data.data.outlet;
@@ -21,6 +28,13 @@ function reload_outlet_status(event) {
 
 function pdu_createTable(data) {
     var json_data = JSON.parse(data);
+    var rcode     = json_data.rcode;
+    if (rcode) {
+      /*
+       * Error, unable to fetch outlet status
+       */
+       return;
+    }
     var pdus = json_data.data;
 
     $('#pdu-page').empty();
@@ -44,8 +58,15 @@ function pdu_createTable(data) {
 
 function pdu_refresh_table(event) {
   var json_data = JSON.parse(event);
-  var serial    = json_data.serial;
-  var outlets   = json_data.outlet;
+  var rcode     = json_data.rcode;
+  if (rcode) {
+    /*
+     * Error, unable to fetch outlet status
+     */
+     return;
+  }
+  var serial    = json_data.data.serial;
+  var outlets   = json_data.data.outlets;
   var sserial   = serial.replace(/\:/g, '');
 
   var outlet    = 1;
@@ -81,8 +102,15 @@ function pdu_refresh_table(event) {
 
 function pdu_appendRow(data) {
   var json_data = JSON.parse(data);
-  var serial    = json_data.serial;
-  var outlets   = json_data.outlet;
+  var rcode     = json_data.rcode;
+  if (rcode) {
+    /*
+     * Error, unable to fetch outlet status
+     */
+     return;
+  }
+  var serial    = json_data.data.serial;
+  var outlets   = json_data.data.outlets;
   var sserial   = serial.replace(/\:/g, '');
 
   var table     = document.getElementById("pdu-table-" + serial);
@@ -243,6 +271,7 @@ function parse_set_plannification_result(event) {
 
   if (result.rcode) {
     alert("Error updating scheduler:\n" + result.command + "\nOutput:" + result.output);
+    return;
   }
 
   var sserial = serial.replace(/\:/g, '');
@@ -314,7 +343,7 @@ function edit_scheduler(event) {
 }
 
 /*
- * dev_plan.scheduler contains following data structure
+ * data.scheduler contains following data structure
  * Example:
  * [
  *	{
@@ -329,11 +358,19 @@ function edit_scheduler(event) {
  *	}
  * ]
 */
-function show_plannification(data) {
-	var dev_plan = JSON.parse(data);
-	var plan  = dev_plan.scheduler;
-	var modal = document.getElementById('myModal');
-	var span = document.getElementsByClassName("close")[0];
+function show_plannification(event) {
+  var json_data   = JSON.parse(event);
+  var rcode       = json_data.rcode;
+  if (rcode) {
+    /*
+     * Error, unable to fetch outlet status
+     */
+     return;
+  }
+  var data     = json_data.data;
+	var plan     = data.scheduler;
+	var modal    = document.getElementById('myModal');
+	var span     = document.getElementsByClassName("close")[0];
 	modal.style.display = "block";
 
 	// When the user clicks on <span> (x), close the modal
@@ -362,8 +399,8 @@ function show_plannification(data) {
 		endTime_str = startTime_str;
 		startTime_str = tmp;
 	}
-	$("#pdu-schedule-serial").text(dev_plan.serial);
-	$("#pdu-schedule-outlet").text(dev_plan.outlet);
+	$("#pdu-schedule-serial").text(data.serial);
+	$("#pdu-schedule-outlet").text(data.outlet);
 	$("#pdu-schedule-time").text(startTime_str + '-' + endTime_str);
 	$("#pdu-schedule-slider").slider({
 		range: true,
