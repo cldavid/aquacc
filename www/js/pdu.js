@@ -1,3 +1,5 @@
+var pduReloadTimer = null;
+
 function reload_outlet_status(event) {
   var json_data = JSON.parse(event);
   var rcode     = json_data.rcode;
@@ -174,6 +176,7 @@ function pdu_getStatus(serial) {
 }
 
 function load_pdu_page() {
+  clearTimeout(pduReloadTimer);
   $('#loader').show();
 	$.ajax({
 		type: "POST",
@@ -204,7 +207,6 @@ function pdu_scan() {
 }
 
 function setTimer_reload_pdu_page() {
-	$(document).ready(function () {
 		var interval = 10000;   //number of mili seconds between each call
     var tables = $.find("table[pdu-serial]");
     tables.forEach(function(table) {
@@ -219,8 +221,7 @@ function setTimer_reload_pdu_page() {
         }
       });
     });
-    setTimeout(setTimer_reload_pdu_page, interval);
-	});
+    pduReloadTimer = setTimeout(setTimer_reload_pdu_page, interval);
 }
 
 function switch_outlet(event) {

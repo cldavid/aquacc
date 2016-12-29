@@ -1,4 +1,5 @@
 function load_rrd_page() {
+	clearTimeout(pduReloadTimer);
 	$('#loader').show();
 	$.ajax({
 		type: "POST",
