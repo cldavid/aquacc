@@ -132,3 +132,45 @@ header, footer {
   margin: auto;
   width: 80%;
 }
+
+.pdu-table-class {
+  width: 90%;
+  border: 1px solid green;
+}
+
+.pdu-table-header {
+  text-align: center;
+}
+
+.pdu-table-class td {
+  border: 1px solid green;
+}
+
+.pdu-table-id {
+  text-align: center;
+  width: 20px;
+}
+
+.pdu-table-name {
+  text-align: center;
+}
+
+.pdu-table-scheduler {
+  padding-left: 2em;
+}
+
+.pdu-table-status {
+  width: 75px;
+}
+
+.pdu-table-status-off {
+  width: 75;
+  height: 75;
+  content:url("/aquacc/images/off.png");
+}
+
+.pdu-table-status-on {
+  width: 75;
+  height: 75;
+  content:url("/aquacc/images/on.png");
+}

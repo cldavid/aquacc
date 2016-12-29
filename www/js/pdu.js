@@ -3,7 +3,7 @@ function reload_outlet_status() {
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: "aquacc.php?app=pdu&cmd=status",
+		url: "aquacc.php?app=pdu&cmd=getStatus",
 		success: function(html) {
 			$('#pdu-page').html(html);
 		},
@@ -13,22 +13,118 @@ function reload_outlet_status() {
 	});
 }
 
-function load_pdu_page() {
+function pdu_createTable(data) {
+    var json_data = JSON.parse(data);
+    var pdus = json_data.data;
+
+    $('#pdu-page').empty();
+    pdus.forEach(function(pdu) {
+      var table   = document.createElement('table');
+      table.setAttribute("id", "pdu-table-" + pdu);
+      table.setAttribute("class", "pdu-table-class");
+
+      var row     = table.insertRow();
+      var cell    = row.insertCell();
+      cell.setAttribute("class", "pdu-table-header");
+      cell.innerHTML = "<b>PDU-" + pdu + "</b>";
+      cell.colSpan = 4;
+
+      $('#pdu-page').append(table);
+      pdu_getStatus(pdu);
+    });
+}
+
+function pdu_appendRow(data) {
+  var json_data = JSON.parse(data);
+  var serial    = json_data.serial;
+  var outlets   = json_data.outlet;
+
+  var table   = document.getElementById("pdu-table-" + serial);
+  var outlet    = 1;
+  outlets.forEach(function(s) {
+    var plan    = s.scheduler;
+    var row     = table.insertRow();
+    var cell    = row.insertCell();
+    cell.setAttribute("class", "pdu-table-id");
+    cell.innerHTML = outlet;
+
+    cell  = row.insertCell();
+    cell.setAttribute("class", "pdu-table-name");
+    $(cell).click({serial: serial, outlet: outlet}, edit_scheduler);
+    cell.innerHTML  = "Outlet-" + outlet;
+
+    cell  = row.insertCell();
+    cell.setAttribute("class", "pdu-table-scheduler");
+    if(plan.length) {
+      plan.forEach(function(p){
+        cell.innerHTML += "Date: " + p.date + " Time: " + p.time + " Status: " + p.status + "<br/>";
+      });
+    } else {
+      cell.innerHTML = "Scheduler disabled";
+    }
+
+    cell  = row.insertCell();
+    cell.setAttribute("class", "pdu-table-status");
+    if (s.status) {
+      var div_status_on   = document.createElement('div');
+      div_status_on.setAttribute("class", "pdu-table-status-on");
+      cell.appendChild(div_status_on);
+      $(cell).click({serial: serial, outlet: outlet, state: 'off'}, switch_outlet);
+    } else {
+      var div_status_off   = document.createElement('div');
+      div_status_off.setAttribute("class", "pdu-table-status-off");
+      cell.appendChild(div_status_off);
+      $(cell).click({serial: serial, outlet: outlet, state: 'on'}, switch_outlet);
+    }
+    outlet++;
+  });
+}
+
+function pdu_getStatus(serial) {
   $('#loader').show();
 	$.ajax({
 		type: "POST",
 		cache: false,
-		url: "aquacc.php?app=pdu&cmd=status",
-		success: function(html) {
-			$('#pdu-page').html(html);
-		},
+		url: "aquacc.php?app=pdu&cmd=getStatus",
+    data: { html_header: 0, serial: serial },
+    success: pdu_appendRow,
 		complete: function(){
 			$('#loader').hide();
     }
 	});
 }
 
-setTimer_reload_pdu_page();
+function load_pdu_page() {
+  $('#loader').show();
+	$.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=pdu&cmd=scan",
+    data: { html_header: 0 },
+    success: pdu_createTable,
+		complete: function(){
+			$('#loader').hide();
+    }
+	});
+}
+
+function pdu_scan() {
+  $('#loader').show();
+  $.ajax({
+    type: "POST",
+    cache: false,
+    async: false,
+    url: "aquacc.php?app=pdu&cmd=status",
+    success: function(html) {
+      $('#pdu-page').html(html);
+    },
+    complete: function(){
+      $('#loader').hide();
+    }
+  });
+}
+
+//setTimer_reload_pdu_page();
 function setTimer_reload_pdu_page() {
 	$(document).ready(function () {
 		var interval = 10000;   //number of mili seconds between each call
@@ -48,7 +144,11 @@ function setTimer_reload_pdu_page() {
 	});
 }
 
-function switch_outlet(serial, no, state) {
+function switch_outlet(event) {
+  var serial  = event.data.serial;
+  var no      = event.data.outlet;
+  var state   = event.data.state;
+
 	if (state == "off") {
 		outlet_off(serial, no, state);
 	} else if (state == "on") {
@@ -82,8 +182,17 @@ function outlet_off(serial, outlet_no) {
 		});
 }
 
+function parse_set_plannification_result(data) {
+  var  result = JSON.parse(data);
+
+  console.log(data);
+
+  if (result.rcode) {
+    alert("Error updating scheduler:\n" + result.command + "\nOutput:" + result.output);
+  }
+}
+
 function disable_plannification(serial, outlet_no) {
-  alert("disable_plannification");
 	$('#loader').show();
 	$.ajax({
 		type: "POST",
@@ -93,7 +202,7 @@ function disable_plannification(serial, outlet_no) {
 			serial: serial,
 			outlet_no: outlet_no,
 		},
-		success: function(html) {$('#debug-message').text(html);},
+		success: parse_set_plannification_result,
 		complete: function(){
 			$('#loader').hide();
 		}
@@ -112,24 +221,30 @@ function set_plannification(serial, outlet_no, scheduler, loopMinutes) {
 			scheduler: JSON.stringify(scheduler),
 			loop_min: loopMinutes,
 		 },
-		success: function(html) {$('#debug-message').text(html);},
+		success: parse_set_plannification_result,
 		complete: function(){
 			$('#loader').hide();
 		}
 	});
 }
 
-function get_plannification(serial, outlet_no) {
+function get_plannification(serial, outlet_no, cb) {
     $('#loader').show();
 		$.ajax({
 			type: "POST",
 			url: "aquacc.php?app=pdu&cmd=get_plannification",
 			data: { html_header: 0, serial: serial, outlet_no: outlet_no },
-			success: show_plannification,
+			success: cb,
 			complete: function(){
       	$('#loader').hide();
       }
 		});
+}
+
+function edit_scheduler(event) {
+    var serial = event.data.serial;
+    var outlet_no = event.data.outlet;
+    get_plannification(serial, outlet_no, show_plannification);
 }
 
 /*
@@ -254,7 +369,7 @@ function handle_scheduler_button_disable(event) {
 	var modal = document.getElementById('myModal');
   var serial 		= $("#pdu-schedule-serial").text();
   var outlet_no = $("#pdu-schedule-outlet").text();
-  alert("handle_scheduler_button_disable");
+
   disable_plannification(serial, outlet_no);
 
   modal.style.display = "none";

@@ -25,27 +25,35 @@ function pdu_parseCmd($cmd) {
 		case 'outlet_on':
 			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
 			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
-			$result  = setPDU_outlet_on($serial, $outlet);
-			echo ("Enabling serial $serial output $outlet result $result");
+			if ($outlet >=1 && $outlet <= 4) {
+				$result  = setPDU_outlet_on($serial, $outlet);
+			}
 			break;
 
 		case 'outlet_off':
 			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
 			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
-			$result  = setPDU_outlet_off($serial, $outlet);
-			echo ("Disabling serial $serial output $outlet result $result");
+			if ($outlet >=1 && $outlet <= 4) {
+				$result  = setPDU_outlet_off($serial, $outlet);
+			}
 			break;
 
 		case 'disable_plannification':
 			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
 			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
-			$result  = disablePDU_plannifcation($serial, $outlet);
+
+			if ($outlet >=1 && $outlet <= 4) {
+				$result  = disablePDU_plannifcation($serial, $outlet);
+			}
 			break;
 
 		case 'get_plannification':
 			$serial  = isset($_POST['serial'])  	? $_POST['serial'] : 0;
 			$outlet  = isset($_POST['outlet_no'])	? $_POST['outlet_no'] : 0;
-			$result  = getPDU_plannifcation($serial, $outlet);
+
+			if ($outlet >=1 && $outlet <= 4) {
+				$result  = getPDU_plannifcation($serial, $outlet);
+			}
 			break;
 
 		case 'set_plannification':
@@ -58,6 +66,19 @@ function pdu_parseCmd($cmd) {
 			if ($plan) {
 				$result  = setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes);
 			}
+			break;
+
+		case 'getStatus':
+			$serial = isset($_POST['serial'])  		? $_POST['serial'] : 0;
+			$status = getPDU_outlet_status($serial);
+			$data 	= array("serial" => $serial, "outlet" => array());
+			for ($outlet = 1; $outlet < 5; $outlet++)
+			{
+				$plan = getPDU_outlet_plannification($serial, $outlet);
+				array_push($data["outlet"], array("status" => $status[$outlet-1], "scheduler" => $plan));
+			}
+			$json_string = json_encode($data);
+			echo($json_string);
 			break;
 
 		case 'status':
@@ -81,35 +102,46 @@ function pdu_parseCmd($cmd) {
 function setPDU_outlet_off($serial, $outlet) {
 	global $SISPMCTL;
 
-	$output = exec($SISPMCTL . " -D $serial -f $outlet", $arr);
+	$data = 0;
+	$output = exec($SISPMCTL . " -D $serial -f $outlet", $arr, $rc);
 	foreach ($arr as &$value) {
 		$pattern = "/^Switched outlet\s(\d+)\soff/";
 		if (preg_match($pattern, $value, $matches)) {
 			$port = $matches[1];
 			if($outlet == $port) {
-				return 1;
+				$data = 1;
+				break;
 			}
 		}
 	}
 	unset($value);
-	return 0;
+
+	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "status" => $data));
+	$json_string = json_encode($cmdOut);
+	echo($json_string);
+	return $cmdOut;
 }
 
 function setPDU_outlet_on($serial, $outlet) {
 	global $SISPMCTL;
 
-	$output = exec($SISPMCTL . " -D $serial -o $outlet", $arr);
+	$data = 0;
+	$output = exec($SISPMCTL . " -D $serial -o $outlet", $arr, $rc);
 	foreach ($arr as &$value) {
 		$pattern = "/^Switched outlet\s(\d+)\son/";
 		if (preg_match($pattern, $value, $matches)) {
 			$port = $matches[1];
 			if($outlet == $port) {
-				return 1;
+				$data = 1;
 			}
 		}
 	}
 	unset($value);
-	return 0;
+
+	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => array("serial" => $serial, "outlet" => $outlet, "status" => $data));
+	$json_string = json_encode($cmdOut);
+	echo($json_string);
+	return $cmdOut;
 }
 
 function getPDU_outlet_status($serial) {
@@ -129,7 +161,7 @@ function getPDU_outlet_status($serial) {
 function scanPDU() {
 	global $SISPMCTL;
 	$status = array();
-	$output = exec($SISPMCTL . " -s", $arr);
+	$output = exec($SISPMCTL . " -s", $arr, $rc);
 	foreach ($arr as &$value) {
 		$pattern = "/^serial\snumber:\s+([\w:]+)/";
 		if (preg_match($pattern, $value, $matches)) {
@@ -138,7 +170,11 @@ function scanPDU() {
 		}
 	}
 	unset($value);
-	return $status;
+
+	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc, "data" => $status);
+	$json_string = json_encode($cmdOut);
+	echo($json_string);
+	return $json_string;
 }
 
 function setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes) {
@@ -151,14 +187,24 @@ function setPDU_plannifcation($serial, $outlet, $plan, $loopMinutes) {
 		$cmdString .= "--Aat \"" . $dateString . "\" --Ado " . $status . " ";
 	}
 	$cmdString .= " --Aloop " . $loopMinutes;
-	echo ($cmdString);
+	exec($cmdString, $arr, $rc);
+
+	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc);
+	$json_string = json_encode($cmdOut);
+	echo($json_string);
+	return $cmdOut;
 }
 
 function disablePDU_plannifcation($serial, $outlet) {
 	global $SISPMCTL;
 
 	$cmdString = $SISPMCTL . " -D " . $serial . " -A" . $outlet;
-	echo ($cmdString);
+	exec($cmdString, $arr, $rc);
+
+	$cmdOut = array("command" => $cmdString, "output" => $arr, "rcode" => $rc);
+	$json_string = json_encode($cmdOut);
+	echo($json_string);
+	return $cmdOut;
 }
 
 function getPDU_plannifcation($serial, $outlet) {
@@ -199,7 +245,7 @@ function printPDUstatus() {
 	for ($dev = 0; $dev < count($ser_arr); $dev++) {
 		$serial = $ser_arr[$dev];
 		$status = getPDU_outlet_status($serial);
-		echo "<br/>\n";
+ 		echo "<br/>\n";
 		echo "<table border=\"1\" width=\"90%\">\n";
 		echo "<tr><th colspan=\"5\">PDU-$serial</th></tr>\n";
 		for ($i = 0; $i < 4; $i++) {
@@ -207,7 +253,7 @@ function printPDUstatus() {
 			$outlet = $i + 1;
 			$port_name = $pdu_config[$serial]["port-$outlet"]['name'];
 			echo "<td width=\"20\"><center><b>$outlet</b></center></td>";
-			echo "<td><center><b><div id=\"set-scheduler\" onClick=\"get_plannification('$serial', '$outlet')\">" . $port_name . "</div></b></center></td>";
+			echo "<td><center><b><div id=\"set-scheduler\" onClick=\"edit_scheduler('$serial', '$outlet')\">" . $port_name . "</div></b></center></td>";
 			echo "<td>";
 			printPDU_outlet_plannification($serial, $outlet);
 			echo "</td>";
@@ -239,20 +285,6 @@ function printPDU_outlet_plannification($serial, $outlet) {
 	} else {
 		echo "<tr><th>Scheduler disabled</th></tr>\n";
 	}
-	echo "</table>\n";
-}
-
-function printPDU_outlet_plannifications($serial) {
-	echo "<br/>\n";
-	echo "<table border=\"1\" width=\"90%\">\n";
-	echo "<tr><th colspan=\"4\">Planification</th></tr>\n";
-	echo "<tr>\n";
-	for ($i = 1; $i < 5; $i++) {
-		echo "<td valign=\"top\" align=\"center\">\n";
-		printPDU_outlet_plannification($serial, $i);
-		echo "</td>\n";
-	}
-	echo "</tr>\n";
 	echo "</table>\n";
 }
 
