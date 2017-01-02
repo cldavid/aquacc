@@ -40,20 +40,54 @@ function pdu_createTable(data) {
     var pdus = json_data.data;
 
     $('#pdu-page').empty();
-    pdus.forEach(function(pdu) {
+    pdus.forEach(function(serial) {
+      var sserial = serial.replace(/\:/g, '');
       var table   = document.createElement('table');
-      table.setAttribute("id", "pdu-table-" + pdu);
+      table.setAttribute("id", "pdu-table-" + sserial);
       table.setAttribute("class", "pdu-table-class");
-      table.setAttribute("pdu-serial", pdu);
+      table.setAttribute("pdu-serial", serial);
 
       var row     = table.insertRow();
       var cell    = row.insertCell();
       cell.setAttribute("class", "pdu-table-header");
-      cell.innerHTML = "<b>PDU-" + pdu + "</b>";
+      cell.innerHTML = "<b>PDU-" + serial + "</b>";
       cell.colSpan = 4;
 
+      for (var outlet = 1; outlet < 5; outlet++) {
+        var id = sserial + outlet;
+        /* Create new row for each outlet*/
+        row   = table.insertRow();
+
+        /* Create TD ID */
+        cell  = row.insertCell();
+        cell.setAttribute("id",    "pdu-table-id-" + id);
+        cell.setAttribute("class", "pdu-table-id");
+
+        /* Create TD Name */
+        cell  = row.insertCell();
+        cell.setAttribute("id",    "pdu-table-name-" + id);
+        cell.setAttribute("class", "pdu-table-name");
+        $(cell).click({serial: serial, outlet: outlet}, edit_scheduler);
+        cell.innerHTML  = "Outlet-" + outlet;
+
+        /* Create TD Scheduler */
+        cell  = row.insertCell();
+        cell.setAttribute("id",    "pdu-table-scheduler-" + id);
+        cell.setAttribute("class", "pdu-table-scheduler");
+
+        /* Create TD Status */
+        cell  = row.insertCell();
+        cell.setAttribute("id",    "pdu-table-status-" + id);
+        cell.setAttribute("class", "pdu-table-status");
+
+        /* Create DIV Status */
+        var div_status = document.createElement('div');
+        div_status.setAttribute("id",    "pdu-div-status-" + id);
+        cell.appendChild(div_status);
+        $(cell).click({id: id, serial: serial, outlet: outlet}, switch_outlet);
+      }
       $('#pdu-page').append(table);
-      pdu_getStatus(pdu);
+      pdu_getStatus(serial);
     });
     setTimer_reload_pdu_page();
 }
@@ -98,67 +132,9 @@ function pdu_refresh_table(event) {
       f_status.setAttribute("class", "pdu-table-status-off");
     }
     outlet++;
-
   });
-}
-
-function pdu_appendRow(data) {
-  var json_data = JSON.parse(data);
-  var rcode     = json_data.rcode;
-  if (rcode) {
-    /*
-     * Error, unable to fetch outlet status
-     */
-     return;
-  }
-  var serial    = json_data.data.serial;
-  var outlets   = json_data.data.outlets;
-  var sserial   = serial.replace(/\:/g, '');
-
-  var table     = document.getElementById("pdu-table-" + serial);
-  var outlet    = 1;
-  outlets.forEach(function(s) {
-    var id      = sserial + outlet;
-    var plan    = s.scheduler;
-    var row     = table.insertRow();
-    var cell    = row.insertCell();
-    cell.setAttribute("id",    "pdu-table-id-" + id);
-    cell.setAttribute("class", "pdu-table-id");
-    cell.innerHTML = outlet;
-
-    cell  = row.insertCell();
-    cell.setAttribute("id",    "pdu-table-name-" + id);
-    cell.setAttribute("class", "pdu-table-name");
-    $(cell).click({serial: serial, outlet: outlet}, edit_scheduler);
-    cell.innerHTML  = "Outlet-" + outlet;
-
-    cell  = row.insertCell();
-    cell.setAttribute("id",    "pdu-table-scheduler-" + id);
-    cell.setAttribute("class", "pdu-table-scheduler");
-    if(plan.length) {
-      cell.innerHTML = "";
-      plan.forEach(function(p){
-        cell.innerHTML += "Date: " + p.date + " Time: " + p.time + " Status: " + p.status + "<br/>";
-      });
-    } else {
-      cell.innerHTML = "Scheduler disabled";
-    }
-
-    cell  = row.insertCell();
-    cell.setAttribute("id",    "pdu-table-status-" + id);
-    cell.setAttribute("class", "pdu-table-status");
-
-    var div_status = document.createElement('div');
-    div_status.setAttribute("id",    "pdu-div-status-" + id);
-    if (s.status) {
-      div_status.setAttribute("class", "pdu-table-status-on");
-    } else {
-      div_status.setAttribute("class", "pdu-table-status-off");
-    }
-    cell.appendChild(div_status);
-    $(cell).click({id: id, serial: serial, outlet: outlet}, switch_outlet);
-    outlet++;
-  });
+  var pdu_table = document.getElementById("pdu-table-" + sserial);
+  pdu_table.style.display = "table";
 }
 
 function pdu_getStatus(serial) {
@@ -168,7 +144,7 @@ function pdu_getStatus(serial) {
 		cache: false,
 		url: "aquacc.php?app=pdu&cmd=getStatus",
     data: { html_header: 0, serial: serial },
-    success: pdu_appendRow,
+    success: pdu_refresh_table,
 		complete: function(){
 			$('#loader').hide();
     }
