@@ -13,7 +13,7 @@ function rrd_parseCmd($cmd) {
 
 function	printRRD() {
 	?>
-<table>
+<table class="rrd-table-class">
 	<tr>
 		<td align="center">
 			<b>Hour</b>

@@ -67,24 +67,22 @@
 		<div id="loader"></div>
 		<div id="tabs">
       <ul>
-        <li id="DSU"><a href="#tabs-1">Dosing Unit</a></li>
-        <li id="PDU"><a href="#tabs-2">PDU</a></li>
-        <li id="RRD"><a href="#tabs-3">RRD</a></li>
+        <li id="HOME"><a href="#tabs-1">Home</a></li>
+        <li id="DSU"><a href="#tabs-2">Dosing Unit</a></li>
+        <li id="PDU"><a href="#tabs-3">PDU</a></li>
+        <li id="RRD"><a href="#tabs-4">RRD</a></li>
       </ul>
       <div id="tabs-1">
-        <div id="dsu-page"></div>
+        <div id="home-page"></div>
       </div>
       <div id="tabs-2">
-        <div id="pdu-page"></div>
+        <div id="dsu-page"></div>
       </div>
       <div id="tabs-3">
-        <table border="1" width="100%">
-          <tr>
-            <td align="center">
-              <div id="rrd-page"></div>
-            </td>
-          </tr>
-        </table>
+        <div id="pdu-page"></div>
+      </div>
+      <div id="tabs-4">
+        <div id="rrd-page"></div>
 			</div>
 		</div>
     <footer>Copyright &copy; David Cluytens</footer>
