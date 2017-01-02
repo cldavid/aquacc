@@ -1,3 +1,20 @@
+function load_dsu_page() {
+  clearTimeout(pduReloadTimer);
+  $('#loader').show();
+	$.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=dsu&cmd=show-dsu",
+    data: { html_header: 0 },
+		success: function(html) {
+			$('#dsu-page').html(html);
+		},
+		complete: function(){
+			$('#loader').hide();
+    }
+	});
+}
+
 function humanToTime(theForm) {
 	var humDate = new Date(theForm.year.value,
 			(stripLeadingZeroes(theForm.month.value)-1),

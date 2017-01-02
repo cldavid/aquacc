@@ -6,7 +6,7 @@
  *
  * Aquarium Control Center (aquacc) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, 
+ * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * Aquarium Control Center (aquacc) is distributed in the hope that it will be useful,
@@ -20,6 +20,73 @@
 
 $DOSINGCONSTANT = 0.6; /* 5s = 3ml */
 $MAXMOTOR = 3;
+
+function dsu_parseCmd($cmd) {
+	$fp = dosingOpenSocket();
+	if (!$fp) {
+		return;
+	}
+
+	switch($cmd) {
+    case 'show-dsu':
+      printDSU();
+      break;
+
+		case 'drivemotor':
+			parseDriveMotor($fp);
+			break;
+
+		case 'setmotorinfo':
+			parseSetMotorInfo($fp);
+			break;
+
+		case 'disablemotor':
+			parseDisableMotor($fp);
+			break;
+
+		default:
+			break;
+	}
+	fclose($fp);
+}
+
+function parseSetMotorInfo($fp) {
+	$id 	= isset($_POST['motor_id']) 	? $_POST['motor_id'] 	: 0;
+	$start  = isset($_POST['motor_start']) 	? $_POST['motor_start'] : 0;
+	$for    = isset($_POST['motor_for']) 	? $_POST['motor_for'] 	: 0;
+	$every  = isset($_POST['motor_every']) 	? $_POST['motor_every'] : 0;
+
+	echo "Scheduling drive_motor_$id start $start for $for every $every<br/>";
+	if ($fp && $id && $start && $for && $every) {
+			setMotorInfo($fp, $id, $start, $for, $every);
+	} else {
+		echo "invalid input detected";
+	}
+}
+
+function parseDriveMotor($fp) {
+	$motorid = isset($_POST['motor_id']) 		? $_POST['motor_id'] : 0;
+	$volume  = isset($_POST['motor_volume']) 	? $_POST['motor_volume'] : 0;
+	$t = dosingVolumeToTime($volume);
+	echo "Driving motor $motorid for $t seconds<br/>";
+	if ($fp && $motorid && $t) {
+		if (10 > $t) {
+			driveMotor($fp, $motorid, $t);
+		}
+	} else {
+		echo "invalid input detected";
+	}
+}
+
+function parseDisableMotor($fp) {
+	$motorid = isset($_POST['motor_id']) 		? $_POST['motor_id'] : 0;
+	echo "Disabling motor $motorid<br/>";
+	if ($fp && $motorid) {
+		disableMotor($fp, $motorid);
+	} else {
+		echo "invalid input detected";
+	}
+}
 
 function driveMotor_form($id) {
 	global $MAXMOTOR;
@@ -296,5 +363,49 @@ function dosingShowSchedule() {
 	echo "</td></tr></table>";
 	echo "</center>";
 	fclose($fp);
+}
+
+function printDSU() {
+	?>
+	<table border="1" width="100%">
+		<tr>
+			<td>
+			<?php
+				dosingShowSchedule();
+			?>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table width="100%" vallign="top" allign="left">
+					<tr>
+						<td>
+						<?php
+							driveMotor_form(0);
+						?>
+						</td>
+						<td>
+						<?php
+							driveMotor_form(1);
+						?>
+						</td>
+						<td>
+						<?php
+							driveMotor_form(2);
+						?>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td align="center">
+			<?php
+				setMotorInfo_form(0);
+			?>
+			</td>
+		</tr>
+		</table>
+	<?php
 }
 ?>

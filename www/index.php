@@ -66,70 +66,25 @@
     </div>
 		<div id="loader"></div>
 		<div id="tabs">
-		<ul>
-			<li id="DSU"><a href="#tabs-1">Dosing Unit</a></li>
-			<li id="PDU"><a href="#tabs-2">PDU</a></li>
-			<li id="RRD"><a href="#tabs-3">RRD</a></li>
-		</ul>
-		<div id="tabs-1">
-		<table border="1" width="100%">
-			<tr>
-				<td>
-				<?php
-					dosingShowSchedule();
-				?>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table width="100%" vallign="top" allign="left">
-						<tr>
-							<td>
-							<?php
-								driveMotor_form(0);
-							?>
-							</td>
-							<td>
-							<?php
-								driveMotor_form(1);
-							?>
-							</td>
-							<td>
-							<?php
-								driveMotor_form(2);
-							?>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td align="center">
-				<?php
-					setMotorInfo_form(0);
-				?>
-				</td>
-			</tr>
-			</table>
-			</div>
-
-			<div id="tabs-2">
-			<table border="1" width="100%">
-			<tr>
-				<td align="center">
-          <div id="pdu-page"></div>
-				</td>
-			</tr>
-			</table>
-			</div>
-			<div id="tabs-3">
-			<table border="1" width="100%">
-			<tr>
-				<td align="center">
-          <div id="rrd-page"></div>
-				</td>
-			</tr>
-			</table>
+      <ul>
+        <li id="DSU"><a href="#tabs-1">Dosing Unit</a></li>
+        <li id="PDU"><a href="#tabs-2">PDU</a></li>
+        <li id="RRD"><a href="#tabs-3">RRD</a></li>
+      </ul>
+      <div id="tabs-1">
+        <div id="dsu-page"></div>
+      </div>
+      <div id="tabs-2">
+        <div id="pdu-page"></div>
+      </div>
+      <div id="tabs-3">
+        <table border="1" width="100%">
+          <tr>
+            <td align="center">
+              <div id="rrd-page"></div>
+            </td>
+          </tr>
+        </table>
 			</div>
 		</div>
     <footer>Copyright &copy; David Cluytens</footer>

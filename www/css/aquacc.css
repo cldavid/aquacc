@@ -135,7 +135,8 @@ header, footer {
 
 .pdu-table-class {
   display: none;
-  width: 90%;
+  margin: auto;
+  width: 100%;
   border: 1px solid green;
 }
 
