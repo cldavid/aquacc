@@ -18,7 +18,7 @@ function getDateString(d) {
 
 function getTimeString(d) {
 	var h	= d.getHours();
-	var m = d.getMinutes()+1;
+	var m = d.getMinutes();
 
 	if(h.toString().length == 1) h = '0' + h;
 	if(m.toString().length == 1) m = '0' + m;

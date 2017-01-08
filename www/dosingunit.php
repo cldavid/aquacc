@@ -36,6 +36,14 @@ function dsu_parseCmd($cmd) {
 			parseDriveMotor($fp);
 			break;
 
+		case 'getMotorInfo':
+			$id = isset($_POST['motor_id'])  	? $_POST['motor_id'] : 0;
+
+			$cmdOut = getMotorInfo($fp, $id);
+			$json_string = json_encode($cmdOut);
+			echo($json_string);
+			break;
+
 		case 'setmotorinfo':
 			parseSetMotorInfo($fp);
 			break;
@@ -124,7 +132,7 @@ function driveMotor_form($id) {
 
 function driveMotor($fp, $id, $seconds) {
 	$milis = $seconds * 1000;
-	if ($milis > 0 && $id > 0) {
+	if ($milis > 0 && $id >= 0) {
 		$out = "drive_motor $id $milis\r\n";
 		fwrite($fp, $out);
 	} else {
@@ -135,7 +143,7 @@ function driveMotor($fp, $id, $seconds) {
 function setMotorInfo($fp, $id, $start, $for, $every) {
 	$time = time();
 
-	if ($id > 0 && $for > 0 && $every > 0 && $start > $time) {
+	if ($id >= 0 && $for > 0 && $every > 0 && $start > $time) {
 		$out = "set_motor $id start $start for $for every $every\r\n";
 		fwrite($fp, $out);
 	} else {
@@ -144,7 +152,9 @@ function setMotorInfo($fp, $id, $start, $for, $every) {
 }
 
 function disableMotor($fp, $id) {
-	if ($id > 0) {
+	global $MAXMOTOR;
+
+	if (($id >= 0) && ($id <= $MAXMOTOR)) {
 		$out = "disable_motor $id\r\n";
 		fwrite($fp, $out);
 	} else {
@@ -226,66 +236,13 @@ function dosingTimeToVolume($t) {
 	return round($t * $DOSINGCONSTANT);
 }
 
-function displayEvery($id) {
-	switch($id) {
-		case 1:
-			$every = "second";
-			break;
-
-		case 60:
-			$every = "min";
-			break;
-
-		case 3600:
-			$every = "hour";
-			break;
-
-		case 7200:
-			$every = "two hours";
-			break;
-
-		case 14400:
-			$every = "four hours";
-			break;
-
-		case 28800:
-			$every = "eight hours";
-			break;
-
-		case 43200:
-			$every = "twelve hours";
-			break;
-
-		case 86400:
-			$every = "day";
-			break;
-
-		case 172800:
-			$every = "two days";
-			break;
-
-		case 604800:
-			$every = "week";
-			break;
-
-		case 1209600:
-			$every = "two weeks";
-			break;
-
-		default:
-			$every=$id;
-	}
-	return $every;
-}
-
 function getMotorInfo($fp, $id) {
 	$motor_id 	 = 0;
 	$motor_start = 0;
 	$motor_stop  = 0;
 	$motor_for	 = 0;
 	$motor_every = 0;
-
-
+	$rc				   = 0;
 	$out = "get_motor $id\r\n";
 	fwrite($fp, $out);
 	while (!feof($fp)) {
@@ -321,21 +278,8 @@ function getMotorInfo($fp, $id) {
 			continue;
 		}
 	}
-	date_default_timezone_set('Europe/Brussels');
-	echo "<form action=\"aquacc.php?app=dosingunit&cmd=disablemotor\" method=\"post\">";
-	echo "<table>";
-	echo "<tr><td>Motor:</td><td>$motor_id</td>
-		<td>
-		<input type=\"hidden\" name=\"motor_id\" value=\"$motor_id\"/>
-		<input type=\"submit\" value=\"Disable\"/>
-		</td>
-		</tr>\n";
-	echo "<tr><td>Start:</td><td colspan\"2\">" . date('d-m-Y H:i:s', $motor_start) . "</td></tr>\n";
-	echo "<tr><td>Stop:</td><td colspan\"2\">" . date('d-m-Y H:i:s', $motor_stop) . "</td></tr>\n";
-	echo "<tr><td>Duration:</td><td colspan\"2\">$motor_for seconds (". dosingTimeToVolume($motor_for)  . "ml )</td></tr>\n";
-	echo "<tr><td>Frequency:</td><td colspan\"2\">every " . displayEvery($motor_every) . "</td></tr>\n";
-	echo "</table>";
-	echo "</form>";
+	$arrayName = array('rcode' => $rc, 'data' => array('motorid' => $motor_id, 'starttime' => $motor_start, 'endtime' => $motor_stop, 'duration' => $motor_for, 'frequency' => $motor_every));
+	return $arrayName;
 }
 
 function dosingOpenSocket() {
@@ -346,66 +290,64 @@ function dosingOpenSocket() {
 	return $fp;
 }
 
-function dosingShowSchedule() {
-	$fp = dosingOpenSocket();
-	if (!$fp) {
-		return;
-	}
-	echo "<center>";
-	echo "<table width=\"100%\">
-		<tr><td colspan=\"3\" align=\"center\"><b>Schedule dosing unit</b></td></tr>
-		<tr><td>";
-	getMotorInfo($fp, 0);
-	echo "</td><td>";
-	getMotorInfo($fp, 1);
-	echo "</td><td>";
-	getMotorInfo($fp, 2);
-	echo "</td></tr></table>";
-	echo "</center>";
-	fclose($fp);
-}
-
 function printDSU() {
 	?>
-	<table border="1" width="100%">
-		<tr>
-			<td>
-			<?php
-				dosingShowSchedule();
-			?>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<table width="100%" vallign="top" allign="left">
-					<tr>
-						<td>
-						<?php
-							driveMotor_form(0);
-						?>
-						</td>
-						<td>
-						<?php
-							driveMotor_form(1);
-						?>
-						</td>
-						<td>
-						<?php
-							driveMotor_form(2);
-						?>
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td align="center">
-			<?php
-				setMotorInfo_form(0);
-			?>
-			</td>
-		</tr>
-		</table>
+	<div id="dsu-tabs">
+		<ul>
+			<li id="dsu-tabs-pump1"><a href="#dsu-show-pump">Pump 1</a></li>
+			<li id="dsu-tabs-pump2"><a href="#dsu-show-pump">Pump 2</a></li>
+			<li id="dsu-tabs-pump3"><a href="#dsu-show-pump">Pump 3</a></li>
+		</ul>
+		<div id="dsu-show-pump">
+			<p>Motor: <span id="dsu-show-motor"></span></p>
+			<p>Start: <span id="dsu-show-starttime"></span></p>
+			<p>Stop: <span id="dsu-show-endtime"></span></p>
+			<p>Duration: <span id="dsu-show-duration"></span></p>
+			<p>Frequency: <span id="dsu-show-frequency"></span></p>
+			<button id="dsu-button-edit" class="ui-button ui-widget ui-corner-all">Edit</button>
+		</div>
+	</div>
+	<div id="dsuModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>Pump Configuration</h2>
+			</div>
+			<div class="modal-body">
+				<p>Motor: <span id="dsu-edit-motor"></span></p>
+				<p>
+					<label for="dsu-edit-starttime">Start time:</label>
+  				<input id="dsu-edit-starttime" name="dsu-edit-starttime" class="ui-spinner ui-widget ui-corner-all ui-widget-content">
+				</p>
+				<p>
+					<label for="dsu-edit-duration">Duration:</label>
+					<input name="dsu-edit-duration" id="dsu-edit-duration" value="0">
+				</p>
+				<p>
+					<label for="dsu-edit-frequency">Frequency:</label>
+					<select id="dsu-edit-frequency" name="dsu-edit-frequency">
+						<option value="3600"  >1h</option>
+						<option value="7200"  >2h</option>
+						<option value="10800" >3h</option>
+						<option value="14400" >4h</option>
+						<option value="21600" >6h</option>
+						<option value="28800" >8h</option>
+						<option value="43200" >12h</option>
+						<option value="86400" >1d</option>
+						<option value="172800">2d</option>
+						<option value="604800">1w</option>
+					</select>
+				</p>
+				<br/>
+				<div class="modal-buttons">
+					<button id="dsu-button-disable" class="ui-button ui-widget ui-corner-all">Disable</button>
+					<button id="dsu-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
+					<button id="dsu-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
+				</div>
+			</div>
+			<div class="modal-footer"></div>
+		</div>
+	</div>
 	<?php
 }
 ?>

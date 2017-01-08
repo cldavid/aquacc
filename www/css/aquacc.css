@@ -133,6 +133,10 @@ header, footer {
   content:url("/aquacc/images/green-fish.png");
 }
 
+#dsu-show-pump {
+  display: none;
+}
+
 #pdu-schedule-slider {
   margin: auto;
   width: 80%;

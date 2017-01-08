@@ -34,8 +34,10 @@
 		<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 		<script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
 		<script src="framework/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <script src="js/jquery.timepicker.js" type="text/javascript"></script>
 		<script src="js/aquacc.js" language="javascript" type="text/javascript"></script>
 		<link rel="stylesheet" type="text/css" href="framework/jquery-ui-1.12.1.custom/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery.timepicker.css">
 		<link rel="stylesheet" type="text/css" href="css/aquacc.css">
 		<title>Aqua Control Center</title>
 	</head>
