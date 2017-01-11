@@ -21,7 +21,10 @@ function dsu_handle_button_edit(event) {
     'step': 5
   });
 
-  $('#dsu-edit-startdate').datepicker();
+  $('#dsu-edit-startdate').datepicker({
+    minDate: 0,
+    maxDate: "+1M +10D"
+  });
   $('#dsu-edit-frequency').selectmenu().selectmenu("menuWidget").addClass("dsu-edit-frequency-button-overflow");
   $('#dsu-edit-duration').spinner({
     min: -1,
