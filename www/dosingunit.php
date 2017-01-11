@@ -37,7 +37,7 @@ function dsu_parseCmd($cmd) {
 			break;
 
 		case 'getMotorInfo':
-			$id = isset($_POST['motor_id'])  	? $_POST['motor_id'] : 0;
+			$id = isset($_POST['motor_id']) ? $_POST['motor_id'] : 0;
 
 			$cmdOut = getMotorInfo($fp, $id);
 			$json_string = json_encode($cmdOut);
@@ -48,8 +48,9 @@ function dsu_parseCmd($cmd) {
 			parseSetMotorInfo($fp);
 			break;
 
-		case 'disablemotor':
-			parseDisableMotor($fp);
+		case 'disableMotor':
+			$motor_id = isset($_POST['motor_id']) ? $_POST['motor_id'] : 0;
+			parseDisableMotor($fp, $motor_id);
 			break;
 
 		default:
@@ -75,7 +76,7 @@ function parseSetMotorInfo($fp) {
 }
 
 function parseDriveMotor($fp) {
-	$motorid = isset($_POST['motor_id']) 		? $_POST['motor_id'] : 0;
+	$motorid = isset($_POST['motor_id']) 			? $_POST['motor_id'] : 0;
 	$volume  = isset($_POST['motor_volume']) 	? $_POST['motor_volume'] : 0;
 	$t = dosingVolumeToTime($volume);
 	echo "Driving motor $motorid for $t seconds<br/>";
@@ -88,10 +89,11 @@ function parseDriveMotor($fp) {
 	}
 }
 
-function parseDisableMotor($fp) {
-	$motorid = isset($_POST['motor_id']) 		? $_POST['motor_id'] : 0;
+function parseDisableMotor($fp, $motorid) {
+	global $MAXMOTOR;
+
 	echo "Disabling motor $motorid<br/>";
-	if ($fp && $motorid) {
+	if ($fp && ($motorid >=0) && ($motorid <=$MAXMOTOR)) {
 		disableMotor($fp, $motorid);
 	} else {
 		echo "invalid input detected";
@@ -133,8 +135,10 @@ function driveMotor_form($id) {
 }
 
 function driveMotor($fp, $id, $seconds) {
+	global $MAXMOTOR;
+
 	$milis = $seconds * 1000;
-	if ($milis > 0 && $id >= 0) {
+	if (($milis > 0) && ($id >=0) && ($id <=$MAXMOTOR)) {
 		$out = "drive_motor $id $milis\r\n";
 		fwrite($fp, $out);
 	} else {
@@ -143,9 +147,10 @@ function driveMotor($fp, $id, $seconds) {
 }
 
 function setMotorInfo($fp, $id, $start, $for, $every) {
+	global $MAXMOTOR;
 	$time = time();
 
-	if ($id >= 0 && $for > 0 && $every > 0 && $start > $time) {
+	if (($id >=0) && ($id <=$MAXMOTOR) && $for > 0 && $every > 0 && $start > $time) {
 		$out = "set_motor $id start $start for $for every $every\r\n";
 		fwrite($fp, $out);
 	} else {

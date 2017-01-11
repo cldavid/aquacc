@@ -57,17 +57,21 @@ function dsu_handle_button_ok(event) {
   var motor_every = $('#dsu-edit-frequency').val();
   var motor_start = parseInt(starttime.getTime() / 1000);
 
-  dsu_set_pump_info(motor_id, motor_start, motor_for, motor_every)
+  dsu_set_pump_info(motor_id, motor_start, motor_for, motor_every);
   $('#dsuModal').css('display', 'none');
 }
 
 function dsu_handle_button_cancel(event) {
   event.preventDefault();
+
   $('#dsuModal').css('display', 'none');
 }
 
 function dsu_handle_button_disable(event) {
   event.preventDefault();
+  var motor_id  = $('#dsu-edit-motor').val();
+
+  dsu_disable_motor(motor_id);
   $('#dsuModal').css('display', 'none');
 }
 
@@ -93,6 +97,25 @@ function dsu_show_pump_info(data) {
   $('#dsu-show-endtime').text(endtime.toString());
   $('#dsu-show-duration').text(data.duration);
   $('#dsu-show-frequency').text(every);
+}
+
+function dsu_disable_motor(motor_id) {
+  $('#loader').show();
+  $.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=dsu&cmd=disableMotor",
+    data: {
+      html_header: 0,
+      motor_id: motor_id,
+    },
+		success: function () {
+      $("#dsu-tabs-pump1").trigger("click",{motor_id: motor_id, callback: dsu_show_pump_info});
+    },
+		complete: function(){
+			$('#loader').hide();
+    }
+	});
 }
 
 function dsu_set_pump_info(motor_id, motor_start, motor_for, motor_every) {
