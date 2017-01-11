@@ -162,70 +162,6 @@ function disableMotor($fp, $id) {
 	}
 }
 
-function setMotorInfo_form($id) {
-	global $MAXMOTOR;
-
-	echo "
-		<br/>
-		<center>
-		<form id=\"setMotorInfo\" action=\"aquacc.php?app=dosingunit&cmd=setmotorinfo\" method=\"post\">
-		<table>
-		<tr>
-		<td><label>Motor</label></td>
-		<td>
-		<select name=\"motor_id\">";
-	for ($i = 0; $i < $MAXMOTOR; $i++) {
-		if ($i == $id) {
-			echo "<option value=\"$i\" selected>$i</option>";
-		} else {
-			echo "<option value=\"$i\">$i</option>";
-		}
-	}
-	$today = getdate();
-	echo "
-		</select>
-		</td>
-		<td><label>Start</label></td>
-		<td><input type=\"text\" name=\"day\"   size=\"2\" maxlength=\"2\" value=\"$today[mday]\"   >-</td>
-		<td><input type=\"text\" name=\"month\" size=\"2\" maxlength=\"2\" value=\"$today[mon]\"    >-</td>
-		<td><input type=\"text\" name=\"year\"  size=\"4\" maxlength=\"4\" value=\"$today[year]\"   ></td>
-		<td><input type=\"text\" name=\"hours\" size=\"2\" maxlength=\"2\" value=\"$today[hours]\"  >:</td>
-		<td><input type=\"text\" name=\"min\"   size=\"2\" maxlength=\"2\" value=\"$today[minutes]\">:</td>
-		<td><input type=\"text\" name=\"sec\"   size=\"2\" maxlength=\"2\" value=\"$today[seconds]\"></td>
-		<td><label>For</label></td>
-		<td>
-		<select name=\"motor_for\">";
-	for ($i = 0; $i < 11; $i++) {
-		echo "<option value=\"$i\">$i</option>";
-	}
-	echo "			</select>
-		</td>
-		<td><label>Every</label></td>
-		<td>
-		<select name=\"motor_every\">
-		<option value=\"3600\"  >1h</option>
-		<option value=\"7200\"  >2h</option>
-		<option value=\"10800\" >3h</option>
-		<option value=\"14400\" >4h</option>
-		<option value=\"21600\" >6h</option>
-		<option value=\"28800\" >8h</option>
-		<option value=\"43200\" >12h</option>
-		<option value=\"86400\" >1d</option>
-		<option value=\"172800\">2d</option>
-		<option value=\"604800\">1w</option>
-		</select>
-		</td>
-		</tr>
-		<tr>
-		<td colspan=\"8\" align=\"right\"><input type=\"submit\" onclick=\"set_motor_start(this.form)\" value=\"Submit\"></td>
-		</tr>
-		</table>
-		</form>
-		</center>
-		";
-
-}
-
 function dosingVolumeToTime($v) {
 	global $DOSINGCONSTANT;
 	return round($v / $DOSINGCONSTANT);
@@ -298,12 +234,27 @@ function printDSU() {
 			<li id="dsu-tabs-pump2"><a href="#dsu-show-pump">Pump 2</a></li>
 			<li id="dsu-tabs-pump3"><a href="#dsu-show-pump">Pump 3</a></li>
 		</ul>
-		<div id="dsu-show-pump">
-			<p>Motor: <span id="dsu-show-motor"></span></p>
-			<p>Start: <span id="dsu-show-starttime"></span></p>
-			<p>Stop: <span id="dsu-show-endtime"></span></p>
-			<p>Duration: <span id="dsu-show-duration"></span></p>
-			<p>Frequency: <span id="dsu-show-frequency"></span></p>
+		<div id="dsu-show-pump" class="dsu-class">
+			<p>
+				<label for="dsu-show-motor">Motor:</label>
+				<span id="dsu-show-motor"></span>
+			</p>
+			<p>
+				<label for="dsu-show-starttime">Start:</label>
+				<span id="dsu-show-starttime"></span>
+			</p>
+			<p>
+				<label for="dsu-show-stoptime">Stop:</label>
+				<span id="dsu-show-endtime"></span>
+			</p>
+			<p>
+				<label for="dsu-show-duration">Duration:</label>
+				<span id="dsu-show-duration"></span>
+			</p>
+			<p>
+				<label for="dsu-show-frequency">Frequency:</label>
+				<span id="dsu-show-frequency"></span>
+			</p>
 			<button id="dsu-button-edit" class="ui-button ui-widget ui-corner-all">Edit</button>
 		</div>
 	</div>
@@ -321,11 +272,11 @@ function printDSU() {
 						<input id="dsu-edit-motor" name="dsu-edit-motor" class="ui-widget ui-corner-all ui-widget-content">
 					</p>
 					<p>
-						<label for="dsu-edit-startdate">Start time:</label>
+						<label for="dsu-edit-startdate">Date:</label>
 						<input id="dsu-edit-startdate" name="dsu-edit-startdate" class="ui-widget ui-corner-all ui-widget-content">
 					</p>
 					<p>
-						<label for="dsu-edit-starttime">Start time:</label>
+						<label for="dsu-edit-starttime">Time:</label>
 	  				<input id="dsu-edit-starttime" name="dsu-edit-starttime" class="ui-widget ui-corner-all ui-widget-content">
 					</p>
 					<p>
@@ -334,7 +285,7 @@ function printDSU() {
 					</p>
 					<p>
 						<label for="dsu-edit-frequency">Frequency:</label>
-						<select id="dsu-edit-frequency" name="dsu-edit-frequency" size="5">
+						<select id="dsu-edit-frequency" name="dsu-edit-frequency">
 							<option value="3600"  >1h</option>
 							<option value="7200"  >2h</option>
 							<option value="10800" >3h</option>

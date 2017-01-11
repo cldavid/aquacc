@@ -24,7 +24,7 @@ function dsu_handle_button_edit(event) {
 //  $('#dsu-edit-endtime').text(endtime);
   //$('#dsu-edit-duration').selectmenu();
   $('#dsu-edit-startdate').datepicker();
-  $('#dsu-edit-frequency').selectmenu({width: '160px'});
+  $('#dsu-edit-frequency').selectmenu().selectmenu("menuWidget").addClass("dsu-edit-frequency-button-overflow");
   $('#dsu-edit-duration').spinner({
     min: 0,
     max: 12,

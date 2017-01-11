@@ -239,7 +239,6 @@ header, footer {
   direction: rtl;
 }
 
-
 #dsu-edit-duration {
   padding-right: 1em;
   height: 1em;
@@ -254,7 +253,14 @@ header, footer {
   text-align: right;
 }
 
-#dsu-edit-frequency option {
+#dsu-edit-frequency-button {
+  padding-right: 1em;
   text-align: right;
-  direction: rtl;
+  width: 125px;
+}
+
+.dsu-edit-frequency-button-overflow {
+  padding-right: 1em;
+  height: 5em;
+  text-align: right;
 }
