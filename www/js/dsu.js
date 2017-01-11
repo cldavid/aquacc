@@ -109,6 +109,8 @@ function load_dsu_page() {
       $("#dsu-tabs-pump1").click({motor_id: 0, callback: dsu_show_pump_info}, dsu_get_pump_info);
       $("#dsu-tabs-pump2").click({motor_id: 1, callback: dsu_show_pump_info}, dsu_get_pump_info);
       $("#dsu-tabs-pump3").click({motor_id: 2, callback: dsu_show_pump_info}, dsu_get_pump_info);
+      $("#dsu-tabs-pump1").trigger("click",{motor_id: 0, callback: dsu_show_pump_info});
+
       $("#dsu-button-edit").button();
       $("#dsu-button-edit").click(dsu_handle_button_edit);
       $("#dsu-button-ok").button();
