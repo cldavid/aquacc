@@ -1,5 +1,7 @@
 function dsu_handle_button_edit(event) {
   event.preventDefault();
+  var currDate = new Date();
+
   $('#dsuModal').css('display', 'block');
 
   $(".close").click(function () {
@@ -20,11 +22,14 @@ function dsu_handle_button_edit(event) {
     'timeFormat': 'H:i:s',
     'step': 5
   });
+  $("#dsu-edit-starttime").timepicker('setTime', currDate);
 
   $('#dsu-edit-startdate').datepicker({
     minDate: 0,
     maxDate: "+1M +10D"
   });
+  $("#dsu-edit-startdate").datepicker('setDate', "+1d");
+
   $('#dsu-edit-frequency').selectmenu().selectmenu("menuWidget").addClass("dsu-edit-frequency-button-overflow");
   $('#dsu-edit-duration').spinner({
     min: -1,
@@ -45,6 +50,14 @@ function dsu_handle_button_edit(event) {
 
 function dsu_handle_button_ok(event) {
   event.preventDefault();
+  var motor_id  = $('#dsu-edit-motor').val();
+  var startdate = $('#dsu-edit-startdate').datepicker("getDate");
+  var starttime = $('#dsu-edit-starttime').timepicker('getTime', startdate);
+  var duration  = $('#dsu-edit-duration').val();
+  var frequency = $('#dsu-edit-frequency').val();
+  var progtime  = parseInt(starttime.getTime() / 1000);
+
+  alert("set motor " + motor_id + " start " + progtime + " for " + duration + " repeat " + frequency);
   $('#dsuModal').css('display', 'none');
 }
 
