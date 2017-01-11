@@ -15,19 +15,17 @@ function dsu_handle_button_edit(event) {
   $('#dsu-edit-motor').val(motorid);
   $('#dsu-edit-motor').prop("disabled", true);
 
-//  $('#dsu-edit-starttime').text(starttime);
   $("#dsu-edit-starttime").timepicker({
     'scrollDefault': 'now',
     'timeFormat': 'H:i:s',
     'step': 5
   });
-//  $('#dsu-edit-endtime').text(endtime);
-  //$('#dsu-edit-duration').selectmenu();
+
   $('#dsu-edit-startdate').datepicker();
   $('#dsu-edit-frequency').selectmenu().selectmenu("menuWidget").addClass("dsu-edit-frequency-button-overflow");
   $('#dsu-edit-duration').spinner({
-    min: 0,
-    max: 12,
+    min: -1,
+    max: 11,
     start: 1,
     numberFormat: "s",
     spin: function( event, ui ) {
@@ -40,8 +38,6 @@ function dsu_handle_button_edit(event) {
       }
     }
   });
-//  $('#dsu-edit-duration').text(duration);
-//  $('#dsu-edit-frequency').text(frequency);
 }
 
 function dsu_handle_button_ok(event) {
