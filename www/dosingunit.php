@@ -307,42 +307,52 @@ function printDSU() {
 			<button id="dsu-button-edit" class="ui-button ui-widget ui-corner-all">Edit</button>
 		</div>
 	</div>
-	<div id="dsuModal" class="modal">
+	<div id="dsuModal" class="dsu-class modal">
 		<div class="modal-content">
 			<div class="modal-header">
 				<span class="close">&times;</span>
 				<h2>Pump Configuration</h2>
 			</div>
 			<div class="modal-body">
-				<p>Motor: <span id="dsu-edit-motor"></span></p>
-				<p>
-					<label for="dsu-edit-starttime">Start time:</label>
-  				<input id="dsu-edit-starttime" name="dsu-edit-starttime" class="ui-spinner ui-widget ui-corner-all ui-widget-content">
-				</p>
-				<p>
-					<label for="dsu-edit-duration">Duration:</label>
-					<input name="dsu-edit-duration" id="dsu-edit-duration" value="0">
-				</p>
-				<p>
-					<label for="dsu-edit-frequency">Frequency:</label>
-					<select id="dsu-edit-frequency" name="dsu-edit-frequency">
-						<option value="3600"  >1h</option>
-						<option value="7200"  >2h</option>
-						<option value="10800" >3h</option>
-						<option value="14400" >4h</option>
-						<option value="21600" >6h</option>
-						<option value="28800" >8h</option>
-						<option value="43200" >12h</option>
-						<option value="86400" >1d</option>
-						<option value="172800">2d</option>
-						<option value="604800">1w</option>
-					</select>
-				</p>
-				<br/>
-				<div class="modal-buttons">
-					<button id="dsu-button-disable" class="ui-button ui-widget ui-corner-all">Disable</button>
-					<button id="dsu-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
-					<button id="dsu-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
+				<div id="maatbeker-img"></div>
+				<div id="dsu-form">
+					<p>
+						<label for="dsu-edit-motor">Motor:</label>
+						<input id="dsu-edit-motor" name="dsu-edit-motor" class="ui-widget ui-corner-all ui-widget-content">
+					</p>
+					<p>
+						<label for="dsu-edit-startdate">Start time:</label>
+						<input id="dsu-edit-startdate" name="dsu-edit-startdate" class="ui-widget ui-corner-all ui-widget-content">
+					</p>
+					<p>
+						<label for="dsu-edit-starttime">Start time:</label>
+	  				<input id="dsu-edit-starttime" name="dsu-edit-starttime" class="ui-widget ui-corner-all ui-widget-content">
+					</p>
+					<p>
+						<label for="dsu-edit-duration">Duration:</label>
+						<input name="dsu-edit-duration" id="dsu-edit-duration" value="0">
+					</p>
+					<p>
+						<label for="dsu-edit-frequency">Frequency:</label>
+						<select id="dsu-edit-frequency" name="dsu-edit-frequency" size="5">
+							<option value="3600"  >1h</option>
+							<option value="7200"  >2h</option>
+							<option value="10800" >3h</option>
+							<option value="14400" >4h</option>
+							<option value="21600" >6h</option>
+							<option value="28800" >8h</option>
+							<option value="43200" >12h</option>
+							<option value="86400" >1d</option>
+							<option value="172800">2d</option>
+							<option value="604800">1w</option>
+						</select>
+					</p>
+					<br/>
+					<div class="modal-buttons">
+						<button id="dsu-button-disable" class="ui-button ui-widget ui-corner-all">Disable</button>
+						<button id="dsu-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
+						<button id="dsu-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
+					</div>
 				</div>
 			</div>
 			<div class="modal-footer"></div>

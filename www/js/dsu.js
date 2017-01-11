@@ -12,7 +12,9 @@ function dsu_handle_button_edit(event) {
   var duration  = $('#dsu-show-duration').text();
   var frequency = $('#dsu-show-frequency').text();
 
-  $('#dsu-edit-motor').text(motorid);
+  $('#dsu-edit-motor').val(motorid);
+  $('#dsu-edit-motor').prop("disabled", true);
+
 //  $('#dsu-edit-starttime').text(starttime);
   $("#dsu-edit-starttime").timepicker({
     'scrollDefault': 'now',
@@ -21,7 +23,8 @@ function dsu_handle_button_edit(event) {
   });
 //  $('#dsu-edit-endtime').text(endtime);
   //$('#dsu-edit-duration').selectmenu();
-  $('#dsu-edit-frequency').selectmenu();
+  $('#dsu-edit-startdate').datepicker();
+  $('#dsu-edit-frequency').selectmenu({width: '160px'});
   $('#dsu-edit-duration').spinner({
     min: 0,
     max: 12,

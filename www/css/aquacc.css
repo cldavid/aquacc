@@ -2,11 +2,11 @@ body {
   color: #b8ec79;
   background-color: black;
 }
-
+​
 header, footer {
     padding: 1em;
     color: inherit;;
-    background-color: inherit;;
+    background-color: inherit;
     clear: left;
     text-align: center;
 }
@@ -196,4 +196,65 @@ header, footer {
 
 .rrd-table-class td {
   text-align: center;
+}
+
+.dsu-class label {
+  display: inline-block;
+  width: 100px;
+}
+
+#maatbeker-img {
+  padding-top: 0px;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 50px;
+  width: 200px;
+  height: 250px;
+  content:url("/aquacc/images/maatbeker.png");
+  float: left;
+}
+
+#dsu-edit-motor {
+  text-align: right;
+  width: 160px;
+}
+
+#dsu-edit-startdate {
+  padding-right: 1em;
+  font-size: 1em;
+  height: 1.5em;
+  width: 160px;
+  direction: rtl;
+}
+
+#dsu-edit-starttime {
+  padding-right: 1em;
+  font-size: 1em;
+  height: 1.5em;
+  width: 160px;
+  direction: rtl;
+}
+
+#dsu-edit-starttime option {
+  direction: rtl;
+}
+
+
+#dsu-edit-duration {
+  padding-right: 1em;
+  height: 1em;
+  width: 115px;
+  direction: rtl;
+}
+
+#dsu-edit-frequency  {
+  height: 1em;
+  width:  160px;
+  direction: rtl;
+  text-align: right;
+}
+
+#dsu-edit-frequency option {
+  text-align: right;
+  direction: rtl;
 }
