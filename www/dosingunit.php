@@ -44,7 +44,7 @@ function dsu_parseCmd($cmd) {
 			echo($json_string);
 			break;
 
-		case 'setmotorinfo':
+		case 'setMotorInfo':
 			parseSetMotorInfo($fp);
 			break;
 
@@ -59,13 +59,15 @@ function dsu_parseCmd($cmd) {
 }
 
 function parseSetMotorInfo($fp) {
-	$id 	= isset($_POST['motor_id']) 	? $_POST['motor_id'] 	: 0;
+	global $MAXMOTOR;
+
+	$id 		= isset($_POST['motor_id']) 		? $_POST['motor_id'] 		: 0;
 	$start  = isset($_POST['motor_start']) 	? $_POST['motor_start'] : 0;
-	$for    = isset($_POST['motor_for']) 	? $_POST['motor_for'] 	: 0;
+	$for    = isset($_POST['motor_for']) 		? $_POST['motor_for'] 	: 0;
 	$every  = isset($_POST['motor_every']) 	? $_POST['motor_every'] : 0;
 
-	echo "Scheduling drive_motor_$id start $start for $for every $every<br/>";
-	if ($fp && $id && $start && $for && $every) {
+	echo "Scheduling drive_motor $id start $start for $for every $every<br/>";
+	if ($fp && ($id >=0) && ($id <=$MAXMOTOR)&& $start && $for && $every) {
 			setMotorInfo($fp, $id, $start, $for, $every);
 	} else {
 		echo "invalid input detected";

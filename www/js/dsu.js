@@ -53,11 +53,11 @@ function dsu_handle_button_ok(event) {
   var motor_id  = $('#dsu-edit-motor').val();
   var startdate = $('#dsu-edit-startdate').datepicker("getDate");
   var starttime = $('#dsu-edit-starttime').timepicker('getTime', startdate);
-  var duration  = $('#dsu-edit-duration').val();
-  var frequency = $('#dsu-edit-frequency').val();
-  var progtime  = parseInt(starttime.getTime() / 1000);
+  var motor_for   = $('#dsu-edit-duration').val();
+  var motor_every = $('#dsu-edit-frequency').val();
+  var motor_start = parseInt(starttime.getTime() / 1000);
 
-  alert("set motor " + motor_id + " start " + progtime + " for " + duration + " repeat " + frequency);
+  dsu_set_pump_info(motor_id, motor_start, motor_for, motor_every)
   $('#dsuModal').css('display', 'none');
 }
 
@@ -95,6 +95,28 @@ function dsu_show_pump_info(data) {
   $('#dsu-show-frequency').text(every);
 }
 
+function dsu_set_pump_info(motor_id, motor_start, motor_for, motor_every) {
+  $('#loader').show();
+  $.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=dsu&cmd=setMotorInfo",
+    data: {
+      html_header: 0,
+      motor_id: motor_id,
+      motor_start: motor_start,
+      motor_for: motor_for,
+      motor_every: motor_every
+    },
+		success: function () {
+      $("#dsu-tabs-pump1").trigger("click",{motor_id: motor_id, callback: dsu_show_pump_info});
+    },
+		complete: function(){
+			$('#loader').hide();
+    }
+	});
+}
+
 function dsu_get_pump_info(event) {
   var motor_id  = event.data.motor_id;
   var callback  = event.data.callback;
@@ -104,7 +126,7 @@ function dsu_get_pump_info(event) {
 		cache: false,
 		url: "aquacc.php?app=dsu&cmd=getMotorInfo",
     data: { html_header: 0, motor_id: motor_id },
-		success: callback,
+    success: callback,
 		complete: function(){
 			$('#loader').hide();
     }
@@ -140,27 +162,6 @@ function load_dsu_page() {
 			$('#loader').hide();
     }
 	});
-}
-
-function humanToTime(theForm) {
-	var humDate = new Date(theForm.year.value,
-			(stripLeadingZeroes(theForm.month.value)-1),
-			stripLeadingZeroes(theForm.day.value),
-			stripLeadingZeroes(theForm.hours.value),
-			stripLeadingZeroes(theForm.min.value),
-			stripLeadingZeroes(theForm.sec.value));
-	var epoch = humDate.getTime() / 1000.0;
-	return epoch;
-}
-
-function set_motor_start(theForm) {
-	var epoch = humanToTime(theForm);
-	var hiddenField = document.createElement("input");
-	hiddenField.setAttribute("type", "hidden");
-	hiddenField.setAttribute("name", "motor_start");
-	hiddenField.setAttribute("value", epoch);
-
-	theForm.appendChild(hiddenField);
 }
 
 function displayEvery(seconds) {
