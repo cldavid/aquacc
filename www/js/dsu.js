@@ -48,6 +48,33 @@ function dsu_handle_button_edit(event) {
   });
 }
 
+function dsu_handle_button_dose(event) {
+  event.preventDefault();
+  $('#dsuDriveModal').css('display', 'block');
+  $(".close").click(function () {
+    $('#dsuDriveModal').css('display', 'none');
+  });
+
+  var motorid   = $('#dsu-show-motor').text();
+  $('#dsu-drive-motor').val(motorid);
+  $('#dsu-drive-motor').prop("disabled", true);
+  $('#dsu-drive-volume').spinner({
+    min: -1,
+    max: 11,
+    start: 1,
+    numberFormat: "s",
+    spin: function(event, ui) {
+      if (ui.value > 10) {
+        $(this).spinner("value", 0);
+        return false;
+      } else if (ui.value < 0) {
+        $(this).spinner("value", 10);
+        return false;
+      }
+    }
+  });
+}
+
 function dsu_handle_button_ok(event) {
   event.preventDefault();
   var motor_id  = $('#dsu-edit-motor').val();
@@ -73,6 +100,18 @@ function dsu_handle_button_disable(event) {
 
   dsu_disable_motor(motor_id);
   $('#dsuModal').css('display', 'none');
+}
+
+function dsu_handle_drive_button_ok(event) {
+  event.preventDefault();
+
+  $('#dsuDriveModal').css('display', 'none');
+}
+
+function dsu_handle_drive_button_dose(event) {
+  event.preventDefault();
+
+  $('#dsuDriveModal').css('display', 'none');
 }
 
 function dsu_show_pump_info(data) {
@@ -174,12 +213,20 @@ function load_dsu_page() {
 
       $("#dsu-button-edit").button();
       $("#dsu-button-edit").click(dsu_handle_button_edit);
+      $("#dsu-button-dose").button();
+      $("#dsu-button-dose").click(dsu_handle_button_dose);
+
       $("#dsu-button-ok").button();
       $("#dsu-button-ok").click(dsu_handle_button_ok);
       $("#dsu-button-cancel").button();
       $("#dsu-button-cancel").click(dsu_handle_button_cancel);
       $("#dsu-button-disable").button();
       $("#dsu-button-disable").click(dsu_handle_button_disable);
+
+      $("#dsu-drive-button-ok").button();
+      $("#dsu-drive-button-ok").click(dsu_handle_drive_button_ok);
+      $("#dsu-drive-button-dose").button();
+      $("#dsu-drive-button-dose").click(dsu_handle_drive_button_dose);
 		},
 		complete: function(){
 			$('#loader').hide();

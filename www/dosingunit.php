@@ -262,7 +262,10 @@ function printDSU() {
 				<label for="dsu-show-frequency">Frequency:</label>
 				<span id="dsu-show-frequency"></span>
 			</p>
-			<button id="dsu-button-edit" class="ui-button ui-widget ui-corner-all">Edit</button>
+			<div class="dus-show-buttons">
+				<button id="dsu-button-edit" class="ui-button ui-widget ui-corner-all">Edit</button>
+				<button id="dsu-button-dose" class="ui-button ui-widget ui-corner-all">Dose</button>
+			</div>
 		</div>
 	</div>
 	<div id="dsuModal" class="dsu-class modal">
@@ -310,6 +313,35 @@ function printDSU() {
 						<button id="dsu-button-disable" class="ui-button ui-widget ui-corner-all">Disable</button>
 						<button id="dsu-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
 						<button id="dsu-button-cancel" class="ui-button ui-widget ui-corner-all">Cancel</button>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer"></div>
+		</div>
+	</div>
+	<div id="dsuDriveModal" class="dsu-class modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>Pump</h2>
+			</div>
+			<div class="modal-body">
+				<div id="maatbeker-img"></div>
+				<div id="dsu-drive-form">
+					<p>
+						<label for="dsu-drive-motor">Motor:</label>
+						<input id="dsu-drive-motor" name="dsu-drive-motor" class="ui-widget ui-corner-all ui-widget-content">
+					</p>
+					<p>
+						<label for="dsu-drive-volume">Volume:</label>
+						<input name="dsu-drive-volume" id="dsu-drive-volume" value="0">
+					</p>
+					<p>
+						<button id="dsu-drive-button-dose" class="ui-button ui-widget ui-corner-all">Dose</button>
+					</p>
+					<br/>
+					<div class="modal-buttons">
+						<button id="dsu-drive-button-ok" class="ui-button ui-widget ui-corner-all">OK</button>
 					</div>
 				</div>
 			</div>

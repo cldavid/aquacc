@@ -204,6 +204,7 @@ header, footer {
 }
 
 #maatbeker-img {
+  display:  inline;
   padding-top: 0px;
   padding-left: 50px;
   padding-right: 50px;
@@ -263,4 +264,25 @@ header, footer {
   padding-right: 1em;
   height: 5em;
   text-align: right;
+}
+
+#dsu-drive-motor {
+  text-align: right;
+  width: 160px;
+}
+
+#dsu-drive-volume {
+  padding-right: 1em;
+  height: 1em;
+  width: 115px;
+  text-align: right;
+  direction: rtl;
+}
+
+#dsu-drive-form {
+  padding-top: 1em;
+}
+
+#dsu-drive-button-dose {
+  margin-left: 275px;
 }
