@@ -23,7 +23,10 @@ Save and quit the Makefile
 Type make to compile.
 Type make install to install the aquacc binary and scripts.
 The following files are installed.
-.* /usr/local/bin/aquacc
-.* /usr/local/sbin/temp_client.py
-.* /etc/init.d/aquacc
+
+- /usr/local/bin/aquacc
+- /usr/local/sbin/temp_client.py
+- /etc/init.d/aquacc
+
+To automatically start the software on OpenWRT, a symlink must be created from /etc/init.d/aquacc to /etc/rc.d/S99aquacc
 
