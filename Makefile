@@ -40,6 +40,7 @@ install:
 	@echo "INSTALL" 
 	install -d /usr/local/bin
 	install -m 0755 aquacc /usr/local/bin/aquacc
+	install -m 0755 temp_client.py /usr/local/sbin/temp_client.py
 	install -m 0755 etc/init.d/aquacc /etc/init.d/aquacc
 	@echo
 	@echo "###"
