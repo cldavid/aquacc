@@ -12,7 +12,9 @@ Web interface for my DIY dosing unit (ds_motor) and GEMBIRD SIS-PM power distrib
 
 David Cluytens <david.cluytens@gmail.com>
 
-#Install
+Install
+=======
+
 Before compiling, configure the proper compiler in the Makefile.
 Set CC = YOUR-COMPILER
 
