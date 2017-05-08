@@ -3,10 +3,8 @@ import socket
 import re
 import subprocess 
 
-ret = subprocess.call("/bin/ls -al", shell=True)
-print ret
 sensors_db = { 
-	"285A2B3C50018": "in_temp",
+	"2857993450082": "in_temp",
 	"2866BC3C5006E": "out_temp"
 }
 
@@ -23,6 +21,11 @@ r = re.compile("^Epoch-Time:\s+(\d+)\s+Sensor:\s+(\w+),(\d+\.\d+),(\w+),(\d+\.\d
 
 s.connect((host, port))
 f = s.makefile()
+for i in range (0, 100) :
+	f.write("a")
+f.write("\n");
+f.flush();
+
 while 1:
 	data = f.readline()
 	m = r.match(data)
