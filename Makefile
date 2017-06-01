@@ -41,6 +41,7 @@ install:
 	install -d /usr/local/bin
 	install -m 0755 aquacc /usr/local/bin/aquacc
 	install -m 0755 temp_client.py /usr/local/sbin/temp_client.py
+	install -m 0755 update_rrd.sh /usr/local/sbin/update_rrd.sh
 	install -m 0755 etc/init.d/aquacc /etc/init.d/aquacc
 	@echo
 	@echo "###"
