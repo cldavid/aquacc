@@ -39,7 +39,11 @@
 		<link rel="stylesheet" type="text/css" href="framework/jquery-ui-1.12.1.custom/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="css/jquery.timepicker.css">
 		<link rel="stylesheet" type="text/css" href="css/aquacc.css">
+
+		<script src="//d3js.org/d3.v4.min.js"></script>
+		
 		<title>Aqua Control Center</title>
+		
 	</head>
 	<body>
     <header><h1>Aquarium Control Center</h1></header>

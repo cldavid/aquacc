@@ -21,6 +21,8 @@ function	printRRD() {
 	</tr>
 	<tr>
 		<td>
+			<svg id="hour"/>
+			<a onclick="drawMe()"><img src="rrd/mhour.png"/></a>
 			<a href="rrd/big_mhour.png"><img src="rrd/mhour.png"/></a>
 		</td>
 	</tr>

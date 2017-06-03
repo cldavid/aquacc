@@ -286,3 +286,26 @@ header, footer {
 #dsu-drive-button-dose {
   margin-left: 275px;
 }
+
+
+.line {
+  fill: none;
+  stroke: green;
+  stroke-width: 1.5px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: white;
+  shape-rendering: crispEdges;
+}
+
+.tick line {
+  fill: none;
+  stroke: white;
+}
+
+.tick text {
+  fill: white;
+}
