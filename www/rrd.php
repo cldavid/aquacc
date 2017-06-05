@@ -40,7 +40,7 @@ function	printRRD() {
 		<li id="rrd-tabs-lyear"><a href="#temperature-svg">Year</a></li>
 	</ul>
 	<div id="temperature-svg">
-		<svg/>
+		<svg id="d3js-rrd-graph"/>
 	</div>
 </div>
 

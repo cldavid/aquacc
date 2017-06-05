@@ -23,6 +23,9 @@ function parseRRD_XML(xml) {
 
 function rrdGraph(event) {
 	var xmlFile  = event.data.xmlFile;
+	var formater = event.data.timeFormat;
+
+	$('#d3js-rrd-graph').empty();
 
 	$.ajax({
 		type: "GET",
@@ -30,7 +33,7 @@ function rrdGraph(event) {
 		dataType: "xml",
 		success: function(xml) {
 			var series = parseRRD_XML(xml);
-			drawMe(series);
+			drawMe(series, formater);
 		},
 		error: function(request, msg) {
 		       alert(msg);
@@ -48,12 +51,12 @@ function load_rrd_page() {
 		success: function(html) {
 			$('#rrd-page').html(html);
 			$("#rrd-tabs").tabs();
-			$("#rrd-tabs-lhour").click({xmlFile: 'mhour'}, rrdGraph);
-			$("#rrd-tabs-lday").click({xmlFile: 'mday'}, rrdGraph);
-			$("#rrd-tabs-lweek").click({xmlFile: 'mweek'}, rrdGraph);
-			$("#rrd-tabs-lmonth").click({xmlFile: 'mmonth'}, rrdGraph);
-			$("#rrd-tabs-lyear").click({xmlFile: 'myear'}, rrdGraph);
-			$("#rrd-tabs-lhour").trigger("click", {xmlFile: 'mhour'});
+			$("#rrd-tabs-lhour").click({xmlFile: 'mhour', timeFormat: "%H:%M"}, rrdGraph);
+			$("#rrd-tabs-lday").click({xmlFile: 'mday', timeFormat: "%A %H:%M"}, rrdGraph);
+			$("#rrd-tabs-lweek").click({xmlFile: 'mweek', timeFormat: "%e %Hh"}, rrdGraph);
+			$("#rrd-tabs-lmonth").click({xmlFile: 'mmonth', timeFormat: "%W"}, rrdGraph);
+			$("#rrd-tabs-lyear").click({xmlFile: 'myear', timeFormat: "%B"}, rrdGraph);
+			$("#rrd-tabs-lhour").trigger("click", {xmlFile: 'mhour', timeFormat: "%H:%M"});
 		},
 		complete: function(){
 						$('#loader').hide();
