@@ -19,7 +19,7 @@ function drawMe(series, formater, ticks) {
 		.curve(d3.curveBasis)
 		.x(function(d) {return x(d.time); })
 		.y(function(d) {return y(d.value); });
-	console.log("ticks: " + ticks);
+
 	var xAxis = d3.axisBottom(x).tickFormat(timeFormat).ticks(ticks);
 	var yAxis = d3.axisLeft(y);
 
@@ -28,6 +28,13 @@ function drawMe(series, formater, ticks) {
 		.attr("height", height + margin.top + margin.bottom);
 
 	var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	//Grid Lines
+	g.append("g").attr("class", "grid").attr("transform", "translate(0," + height + ")")
+		.call(d3.axisBottom(x).ticks(ticks).tickSize(-height).tickFormat(""));
+	g.append("g").attr("class", "grid").call(d3.axisLeft(y).tickSize(-width).tickFormat(""));
+
+	//Axis
 	g.append("g").attr("class", "axis").attr("transform", "translate(0," + height + ")").call(xAxis);
 	g.append("g").attr("class", "axis").call(yAxis)
 		.append("text")
@@ -37,6 +44,7 @@ function drawMe(series, formater, ticks) {
 		.attr("fill", "white")
 		.text("Temperature, ºC");
 
+	//Plot data
 	var temp = g.selectAll(".temp").data(series).enter().append("g").attr("class", "temp");
 	temp.append("path").attr("class", "line").attr("d", function(d) {return line(d.data); });
 
