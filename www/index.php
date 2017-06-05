@@ -41,9 +41,9 @@
 		<link rel="stylesheet" type="text/css" href="css/aquacc.css">
 
 		<script src="//d3js.org/d3.v4.min.js"></script>
-		
+
 		<title>Aqua Control Center</title>
-		
+
 	</head>
 	<body>
     <header><h1>Aquarium Control Center</h1></header>
