@@ -1,6 +1,6 @@
-function drawMe(series, formater) {
+function drawMe(series, formater, ticks) {
 	var margin = {top: 20, right: 80, bottom: 30, left: 50};
-	var width = 600 - margin.left - margin.right;
+	var width = 660 - margin.left - margin.right;
 	var height = 300 - margin.top - margin.bottom;
 	var timeFormat = d3.timeFormat(formater);
 
@@ -19,8 +19,8 @@ function drawMe(series, formater) {
 		.curve(d3.curveBasis)
 		.x(function(d) {return x(d.time); })
 		.y(function(d) {return y(d.value); });
-
-	var xAxis = d3.axisBottom(x).tickFormat(timeFormat);
+	console.log("ticks: " + ticks);
+	var xAxis = d3.axisBottom(x).tickFormat(timeFormat).ticks(ticks);
 	var yAxis = d3.axisLeft(y);
 
 	var svg = d3.select("svg")
