@@ -2,7 +2,7 @@ body {
   color: #b8ec79;
   background-color: black;
 }
-​
+
 header, footer {
     padding: 1em;
     color: inherit;;
@@ -295,7 +295,7 @@ header, footer {
 }
 
 .grid line {
-  stroke: white;
+  stroke: lightgray;
   stroke-opacity: 0.7;
   shape-rendering: crispEdges;
 }
@@ -311,11 +311,6 @@ header, footer {
   shape-rendering: crispEdges;
 }
 
-.tick line {
-  fill: none;
-  stroke: white;
-}
-
-.tick text {
+.axis text {
   fill: white;
 }
