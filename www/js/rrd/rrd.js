@@ -1,6 +1,6 @@
 function drawMe(series, formater, ticks) {
-	var margin = {top: 20, right: 80, bottom: 30, left: 50};
-	var width = 660 - margin.left - margin.right;
+	var margin = {top: 20, right: 150, bottom: 30, left: 50};
+	var width = 680 - margin.left - margin.right;
 	var height = 300 - margin.top - margin.bottom;
 	var timeFormat = d3.timeFormat(formater);
 
@@ -38,14 +38,21 @@ function drawMe(series, formater, ticks) {
 	g.append("g").attr("class", "axis").attr("transform", "translate(0," + height + ")").call(xAxis);
 	g.append("g").attr("class", "axis").call(yAxis)
 		.append("text")
-		.attr("transform", "rotate(-90)")
-		.attr("y", 6)
+		.attr("transform", "rotate(270)")
+		.attr("y", 10)
 		.attr("dy", "0.71em")
 		.attr("fill", "white")
 		.text("Temperature, ºC");
 
 	//Plot data
 	var temp = g.selectAll(".temp").data(series).enter().append("g").attr("class", "temp");
-	temp.append("path").attr("class", "line").attr("d", function(d) {return line(d.data); });
+	temp.append("path").attr("class", "line").attr("d", function(d) {return line(d.data); }).style("stroke", function(d,i) { return z(i); });
+	temp.append("text")
+		.datum(function(d) { return {id: d.name, value: d.data[d.data.length - 1]}; })
+		.attr("transform", function(d) { return "translate(" + x(d.value.time) + "," + y(d.value.value) + ")"; })
+		.attr("x", 3)
+		.attr("dy", "0.35em")
+		.style("font", "12px sans-serif")
+		.text(function(d) { return d.id; });
 
 }

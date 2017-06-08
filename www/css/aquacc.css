@@ -290,8 +290,12 @@ header, footer {
 
 .line {
   fill: none;
-  stroke: green;
+  stroke: steelblue;
   stroke-width: 1.5px;
+}
+
+.temp text {
+   stroke: white;
 }
 
 .grid line {
