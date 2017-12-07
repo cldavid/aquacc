@@ -12,7 +12,7 @@ function drawMe(series, formater, ticks) {
 	x.domain(d3.extent(series[0].data, function(d) {return d.time;}));
 	y.domain([0,
 //		d3.min(series, function(s) { return d3.min(s.data, function(d) { return d.value; }); }),
-		d3.max(series, function(s) { return d3.max(s.data, function(d) { return d.value; }); })
+		d3.max(series, function(s) { return d3.max(s.data, function(d) { return d.value; }); }) + 2
 	]);
 
 	var line = d3.line()
