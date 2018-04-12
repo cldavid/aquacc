@@ -153,6 +153,7 @@ function pdu_getStatus(serial) {
 
 function load_pdu_page() {
   clearTimeout(pduReloadTimer);
+  clearTimeout(rrdReloadTimer);
   $('#loader').show();
 	$.ajax({
 		type: "POST",

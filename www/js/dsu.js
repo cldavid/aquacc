@@ -197,6 +197,7 @@ function dsu_get_pump_info(event) {
 
 function load_dsu_page() {
   clearTimeout(pduReloadTimer);
+  clearTimeout(rrdReloadTimer);
   $('#loader').show();
 	$.ajax({
 		type: "POST",

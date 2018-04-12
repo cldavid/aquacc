@@ -39,7 +39,7 @@
 		<link rel="stylesheet" type="text/css" href="framework/jquery-ui-1.12.1.custom/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="css/jquery.timepicker.css">
 		<link rel="stylesheet" type="text/css" href="css/aquacc.css">
-
+		<link rel="shortcut icon" href="favicon.ico" />
 		<script src="//d3js.org/d3.v4.min.js"></script>
 
 		<title>Aqua Control Center</title>
@@ -88,7 +88,7 @@
         <div id="pdu-page"></div>
       </div>
       <div id="tabs-4">
-        <div id="rrd-page"></div>
+        <div id="rrd-page"><svg/></div>
 			</div>
 		</div>
     <footer>Copyright &copy; David Cluytens</footer>
