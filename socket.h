@@ -22,7 +22,7 @@
 int readSocket(int fd);
 int writeSocket(int fd);
 int freeSocket(int fd);
-int addSocket(int fd);
+int addSocket(int fd, socket_type_t socket);
 void initSocket(void);
 int acceptSocket(int sock);
 int makeSocket(int16_t port);

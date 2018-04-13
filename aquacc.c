@@ -22,6 +22,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
 ssize_t writen_ni(int fd, const void *buff, size_t n) {
         size_t nl; 
@@ -48,4 +49,11 @@ int is_valid_fd(int fd) {
         int res = fcntl(fd, F_GETFL);
         return res != -1 || errno != EBADF;
 }
+
+char *replaceChar(char *str, char oldChar, char newChar) {
+    char *strPtr = str;
+    while ((strPtr = strchr (strPtr, oldChar)) != NULL)
+        *strPtr++ = newChar;
+    return str;             
+} 
 

@@ -44,9 +44,10 @@ static int fd_dosing;
 static int fd_socket;
 
 void dsu_init(void) {
-	char 	*serial_port 	= aquacc_config.dsu_tty_port;
-	int 	serial_baudrate = aquacc_config.dsu_tty_baudrate;
-	bool 	serial_rtscts  	= aquacc_config.dsu_tty_rtscts;
+	char 		*serial_port 	= aquacc_config.dsu_tty_port;
+	int 		serial_baudrate = aquacc_config.dsu_tty_baudrate;
+	bool 		serial_rtscts  	= aquacc_config.dsu_tty_rtscts;
+	userdata_t 	*data 		= NULL;
 
 	fd_dosing   = openSerial(serial_port, 8, 1, 'N', serial_baudrate, serial_rtscts);
 	fd_socket   = makeSocket(aquacc_config.dsu_socket_port);
@@ -56,14 +57,15 @@ void dsu_init(void) {
 		exit(EXIT_FAILURE);
 	}
 
-	initSocket();
 	if (listenSocket(fd_socket, 1) < 0) {
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
 
 	/* DSU Socket Server */
-	socketserver_set_read_event(fd_socket, fd_dosing);
+	data = socketserver_set_userdata(SOCKET_TYPE_DSU, fd_dosing); 
+
+	socketserver_set_read_event(fd_socket, data);
 
 	/* DSU */
 	dsu_set_read_event(fd_dosing, socks);
@@ -150,7 +152,7 @@ void dsu_write(int fd, aq_socket_t socks[]) {
 
 	/* Write socket information to dosing unit */
 	for (i = 0; i < MAX_SOCKETS; i++) {
-		if (socks[i].free && socks[i].has_r_data) {
+		if (socks[i].free && socks[i].has_r_data && (socks[i].socket_type == SOCKET_TYPE_DSU)) {
 			writen_ni(fd, socks[i].r_buffer, socks[i].r_len);
 			socks[i].has_r_data = 0;
 			socks[i].r_len = 0;
@@ -168,7 +170,7 @@ void dsu_read(int fd, aq_socket_t socks[]) {
 	if (dos_len >= 0) {
 		/* Copy Buffer To All Connected Sockets */
 		for (i = 0; i < MAX_SOCKETS; i++) {
-			if (socks[i].free) {
+			if (socks[i].free && (socks[i].socket_type == SOCKET_TYPE_DSU)) {
 				if (socks[i].has_w_data) {
 					printf("Appending wlen %u + dos_len %u\n", socks[i].w_len, dos_len);
 					memcpy(socks[i].w_buffer + socks[i].w_len, dos_buffer, dos_len);

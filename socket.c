@@ -92,12 +92,13 @@ void initSocket(void) {
 	return;
 }
 
-int addSocket(int fd) {
+int addSocket(int fd, socket_type_t socket_type) {
 	size_t i;
 
 	for (i = 0; i < MAX_SOCKETS; i++) {
 		if (!socks[i].free) {
-			socks[i].id			= i;
+			socks[i].id		= i;
+			socks[i].socket_type	= socket_type;
 			socks[i].free 		= 1;
 			socks[i].fd   		= fd;
 			socks[i].has_w_data = 0;

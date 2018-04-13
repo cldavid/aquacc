@@ -34,6 +34,7 @@
 #include "socket.h"
 #include "daemon.h"
 #include "dsu.h"
+#include "phmeter.h"
 #include "timer.h"
 #include "fd_list.h"
 #include "rrd_timer.h"
@@ -64,14 +65,16 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 
 	printf("Verbose level %d\n", aquacc_config.verbose);
 	daemonize();
+	openlog("aquacc", LOG_PID, LOG_USER);
 
 	/* Start DSU components */
+	initSocket();
 	dsu_init();
+	phmeter_init();
 
 	/* RRD Timer */
 	rrd_set_temperature_timer();
 
-	openlog("aquacc", LOG_PID, LOG_USER);
 
 	time(&cur_time);
 
@@ -110,6 +113,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
 exit:
 	/* Cleanup */
 	dsu_exit();
+	phmeter_exit();
 	aquacc_fd_list_destroy();
 	closelog();
 	exit(EXIT_SUCCESS);

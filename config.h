@@ -63,6 +63,8 @@ typedef struct {
 	char	dsu_tty_port[NAME_MAX];
 	int	dsu_tty_baudrate;
 	bool	dsu_tty_rtscts;
+	bool    phmeter_enable;
+	int     phmeter_socket_port;
 	char	phmeter_tty_port[NAME_MAX];
 	int	phmeter_tty_baudrate;
 	bool	phmeter_tty_rtscts;

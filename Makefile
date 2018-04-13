@@ -2,11 +2,11 @@ CC	= gcc
 CC	= /home/sah5056/x-tools/mips-unknown-linux-uclibc/bin/mips-unknown-linux-uclibc-gcc
 #CC	= /build/arduino/openwrt-yun/staging_dir/toolchain-mips_r2_gcc-4.6-linaro_uClibc-0.9.33.2/bin/mips-openwrt-linux-gcc
 CFLAGS += -g -Wall -Wextra -lc -lm -static
-CFLAGS += -g -Wall -Wextra -lc -lm 
+#CFLAGS += -g -Wall -Wextra -lc -lm 
 LDFLAGS += 
 
-TARGET	= aquacc
-SRCS	= main.c aquacc.c serial.c socket.c dsu_socket.c daemon.c dsu.c timer.c fd_list.c rrd_timer.c fd_event.c config.c
+TARGET	= aquacc2
+SRCS	= main.c aquacc.c serial.c socket.c dsu_socket.c daemon.c dsu.c timer.c fd_list.c rrd_timer.c fd_event.c config.c phmeter.c
 OBJS	= $(SRCS:.c=.o)
 
 TEMP_TARGET	= temp

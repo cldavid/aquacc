@@ -24,8 +24,15 @@
 #define MAXMSG                          8192
 #define MAX_SOCKETS                     10
 
+typedef enum {
+        SOCKET_TYPE_UNSET   = 0,
+	SOCKET_TYPE_DSU,
+	SOCKET_TYPE_PHMETER
+} socket_type_t;
+
 typedef struct {
         unsigned int    id; 
+	socket_type_t	socket_type;
         unsigned int    free;
         int                             fd; 
         unsigned int    has_r_data;
@@ -38,4 +45,5 @@ typedef struct {
 
 ssize_t writen_ni(int fd, const void *buff, size_t n);
 int is_valid_fd(int fd);
+char *replaceChar(char *str, char oldChar, char newChar);
 #endif //__AQUACC_H__

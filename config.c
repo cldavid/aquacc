@@ -45,6 +45,8 @@ const script_t script_tab[] = {
 	{"dsu_tty_port",   		STRING, (void *)&aquacc_config.dsu_tty_port,        	NULL },
 	{"dsu_tty_baudrate",		INT, 	(void *)&aquacc_config.dsu_tty_baudrate,    	NULL },
 	{"dsu_tty_rtscts",  		BOOL,   (void *)&aquacc_config.dsu_tty_rtscts,      	NULL },
+	{"phmeter_enable",       	BOOL,   (void *)&aquacc_config.phmeter_enable,          NULL },
+	{"phmeter_socket_port",        	INT,    (void *)&aquacc_config.phmeter_socket_port,     NULL },
 	{"phmeter_tty_port",   		STRING, (void *)&aquacc_config.phmeter_tty_port,       	NULL },
 	{"phmeter_tty_baudrate",	INT, 	(void *)&aquacc_config.phmeter_tty_baudrate,   	NULL },
 	{"phmeter_tty_rtscts", 		BOOL,   (void *)&aquacc_config.phmeter_tty_rtscts,     	NULL },

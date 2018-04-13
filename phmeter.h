@@ -16,21 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __DSU_SOCKET_H__
-#define __DSU_SOCKET_H__
 
-struct _userdata_t {
-        int fd_serial;
-        socket_type_t   socket_type;
-};
-typedef struct _userdata_t userdata_t;
-
-userdata_t *socketserver_set_userdata(socket_type_t socket_type, int srcfd);
-void socketserver_set_read_event(int fd_socket, userdata_t *data);
-
-void socketchild_set_write_event(int fd);
-void socketchild_set_read_event(int fd, int fd_dosing);
-bool socketchild_read_event_cb(int fd, void *data);
-bool socketchild_write_event_cb(int fd, void *data);
-bool socketserver_read_event_cb(int fd, void *data);
-#endif //__DSU_SOCKET_H__
+#ifndef __AQUACC_PHMETER_H__
+#define __AQUACC_PHMETER_H__
+void phmeter_init(void);
+void phmeter_exit(void);
+void phmeter_set_read_event(int fd_dosing, aq_socket_t *socks);
+void phmeter_set_write_event(int fd_dosing, aq_socket_t *socks);
+bool phmeter_read_event_cb(int fd, void *data);
+bool phmeter_write_event_cb(int fd, void *data);
+void phmeter_set_phresult_timer(int fd_dosing);
+ssize_t phmeter_getPH(int fd);
+bool phmeter_timer_phresult_cb(int fd, void *data);
+void phmeter_write(int fd, aq_socket_t socks[]);
+void phmeter_read(int fd, aq_socket_t socks[]);
+#endif //__AQUACC_PHMETER_H__
