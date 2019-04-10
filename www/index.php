@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Aquarium Control Center (aquacc). If not, see <http://www.gnu.org/licenses/>.
  */
+ openlog("php_aquacc", LOG_PID | LOG_PERROR, LOG_LOCAL0);
  date_default_timezone_set('Europe/Brussels');
 	require "dosingunit.php";
 	require "pdu.php";
@@ -94,3 +95,6 @@
     <footer>Copyright &copy; David Cluytens</footer>
 	</body>
 </html>
+<?php 
+	closelog();
+?>

@@ -111,7 +111,31 @@ function dsu_handle_drive_button_ok(event) {
 function dsu_handle_drive_button_dose(event) {
   event.preventDefault();
 
+  var motor_id  = parseInt($('#dsu-drive-motor').val());
+  var motor_vol = parseInt($('#dsu-drive-volume').val());
+
+  dsu_drive_pump(motor_id, motor_vol);
+
   $('#dsuDriveModal').css('display', 'none');
+}
+
+function dsu_drive_pump(motor_id, motor_volume) {
+  $('#loader').show();
+  $.ajax({
+		type: "POST",
+		cache: false,
+		url: "aquacc.php?app=dsu&cmd=driveMotor",
+    data: {
+      html_header: 0,
+      motor_id: motor_id,
+      motor_volume: motor_volume,
+    },
+		success: function () {
+    },
+		complete: function(){
+			$('#loader').hide();
+    }
+	});
 }
 
 function dsu_show_pump_info(data) {
@@ -257,6 +281,10 @@ function displayEvery(seconds) {
 
 		case 14400:
 			every = "four hours";
+			break;
+
+		case 21600:
+			every = "six hours";
 			break;
 
 		case 28800:

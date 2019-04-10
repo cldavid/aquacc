@@ -26,13 +26,12 @@ function dsu_parseCmd($cmd) {
 	if (!$fp) {
 		return;
 	}
-
 	switch($cmd) {
     case 'show-dsu':
       printDSU();
       break;
 
-		case 'drivemotor':
+		case 'driveMotor':
 			parseDriveMotor($fp);
 			break;
 
@@ -62,12 +61,12 @@ function dsu_parseCmd($cmd) {
 function parseSetMotorInfo($fp) {
 	global $MAXMOTOR;
 
-	$id 		= isset($_POST['motor_id']) 		? $_POST['motor_id'] 		: 0;
+	$id 	= isset($_POST['motor_id']) 		? $_POST['motor_id'] 		: 0;
 	$start  = isset($_POST['motor_start']) 	? $_POST['motor_start'] : 0;
 	$for    = isset($_POST['motor_for']) 		? $_POST['motor_for'] 	: 0;
 	$every  = isset($_POST['motor_every']) 	? $_POST['motor_every'] : 0;
 
-	echo "Scheduling drive_motor $id start $start for $for every $every<br/>";
+	syslog(LOG_INFO, "Scheduling drive_motor $id start $start for $for every $every.");
 	if ($fp && ($id >=0) && ($id <=$MAXMOTOR)&& $start && $for && $every) {
 			setMotorInfo($fp, $id, $start, $for, $every);
 	} else {
@@ -76,11 +75,12 @@ function parseSetMotorInfo($fp) {
 }
 
 function parseDriveMotor($fp) {
-	$motorid = isset($_POST['motor_id']) 			? $_POST['motor_id'] : 0;
+	syslog(LOG_INFO, "TEST: parseDriveMotor");
+	$motorid = isset($_POST['motor_id']) 		? $_POST['motor_id'] : 0;
 	$volume  = isset($_POST['motor_volume']) 	? $_POST['motor_volume'] : 0;
 	$t = dosingVolumeToTime($volume);
-	echo "Driving motor $motorid for $t seconds<br/>";
-	if ($fp && $motorid && $t) {
+	syslog(LOG_INFO, "Driving motor $motorid for $t seconds.");
+	if ($fp && ($motorid >= 0) && $t) {
 		if (10 > $t) {
 			driveMotor($fp, $motorid, $t);
 		}
@@ -98,40 +98,6 @@ function parseDisableMotor($fp, $motorid) {
 	} else {
 		echo "invalid input detected";
 	}
-}
-
-function driveMotor_form($id) {
-	global $MAXMOTOR;
-
-	echo "
-		<br/>
-		<center>
-		<form action=\"aquacc.php?app=dosingunit&cmd=drivemotor\" method=\"post\">
-		<table>
-		<tr>
-		<td><label>Motor</label></td>
-		<td>
-		<select name=\"motor_id\">";
-	for ($i = 0; $i < $MAXMOTOR; $i++) {
-		if ($i == $id) {
-			echo "<option value=\"$i\" selected>$i</option>";
-		} else {
-			echo "<option value=\"$i\">$i</option>";
-		}
-	}
-	echo "
-		</select>
-		</td>
-		<td><label>Volume</label></td>
-		<td><input type=\"text\" name=\"motor_volume\"></td>
-		</tr>
-		<tr>
-		<td colspan=\"8\" align=\"right\"><input type=\"submit\" value=\"Submit\"></td>
-		</tr>
-		</table>
-		</form>
-		</center>
-		";
 }
 
 function driveMotor($fp, $id, $seconds) {
