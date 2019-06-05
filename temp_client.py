@@ -8,6 +8,9 @@ sensors_db = {
 	"2866BC3C5006E": "out_temp"
 }
 
+ALERT_TEMP_IN_MIN = 27.5
+ALERT_TEMP_IN_MAX = 29.5
+
 print "Sensor DB"
 for i in sensors_db:
 	print i, sensors_db[i]
@@ -32,10 +35,19 @@ while 1:
 	if m :
 		epochTime 	= m.group(1)
 		sensorName1	= sensors_db[m.group(2)]
-		sensorValue1	= m.group(3)
+		sensorValue1	= float(m.group(3))
 		sensorName2	= sensors_db[m.group(4)]
-		sensorValue2	= m.group(5)
+		sensorValue2	= float(m.group(5))
+
+		sensor = { sensorName1: sensorValue1, sensorName2: sensorValue2 }
+
 		rrdString = "/usr/bin/rrdtool update /www/multirPItemp.rrd --template " + sensorName1 + ":" + sensorName2 + " -- " + str(epochTime) + ":" + str(sensorValue1) + ":" + str(sensorValue2)
 		print rrdString
 		subprocess.call(rrdString, shell=True)
+
+		if ((ALERT_TEMP_IN_MIN > sensor["in_temp"]) or (sensor["in_temp"] >= ALERT_TEMP_IN_MAX)) :
+			ifttt = "/root/sendIFTTTmsg.sh new_temperature_event " + str(sensor["in_temp"])
+			print ifttt
+			subprocess.call(ifttt, shell=True)
+		
 s.close                
