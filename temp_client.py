@@ -45,8 +45,12 @@ while 1:
 		print rrdString
 		subprocess.call(rrdString, shell=True)
 
+		ifttt = "/usr/local/sbin/sendIFTTTmsg.sh new_temperature_event " + str(sensor["in_temp"])
+		print ifttt
+		subprocess.call(ifttt, shell=True)
+
 		if ((ALERT_TEMP_IN_MIN > sensor["in_temp"]) or (sensor["in_temp"] >= ALERT_TEMP_IN_MAX)) :
-			ifttt = "/usr/local/sbin/sendIFTTTmsg.sh new_temperature_event " + str(sensor["in_temp"])
+			ifttt = "/usr/local/sbin/sendIFTTTmsg.sh new_temperature_alert " + str(sensor["in_temp"])
 			print ifttt
 			subprocess.call(ifttt, shell=True)
 		
