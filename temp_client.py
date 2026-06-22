@@ -25,8 +25,8 @@ r = re.compile(r"^Epoch-Time:\s+(\d+)\s+Sensor:\s+(\w+),(\d+\.\d+),(\w+),(\d+\.\
 s.connect((host, port))
 
 # FIX: Create separate text-mode handles for reading and writing
-f_read = s.makefile('r', buffering=1)
-f_write = s.makefile('w', buffering=1)
+f_read = s.makefile('r', encoding='utf-8', errors='ignore', buffering=1)
+f_write = s.makefile('w', encoding='utf-8', buffering=1)
 
 # Write to the write-handle
 for i in range(0, 100):
